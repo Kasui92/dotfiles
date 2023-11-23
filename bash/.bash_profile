@@ -19,4 +19,4 @@ function parse_git_branch() {
     fi
 }
 
-PS1='\[\e[38;5;76m\]→  \[\e[31m\]\w\[\e[0m\] $(parse_git_branch)/$ '
+PS1='\[\e[38;5;76m\]→  \[\e[31m\]\w\[\e[0m\] $(parse_git_branch)\$ '

@@ -4,19 +4,14 @@
 
 [[ -f ~/.bashrc ]] && . ~/.bashrc
 
-# overwrite bash prompt
-function parse_git_branch() {
-    CYAN='\033[0;36m'
-    OLIVE='\033[0;33m'
-    NO_COLOR='\033[0m'
-
-    BRANCH=`git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
-    if [ ! "${BRANCH}" == "" ]
-    then
-    	echo -e "${CYAN}git:(${NO_COLOR}${OLIVE}${BRANCH}${NO_COLOR}${CYAN})${NO_COLOR} "
-    else
-    	echo ""
+# get current git branch
+git_branch() {
+    local branch
+    branch=$(git symbolic-ref --short HEAD 2>/dev/null)
+    if [ -n "$branch" ]; then
+        echo -e " \001\e[1;36m\002git:(\001\e[0;38;5;107m\002${branch}\001\e[1;36m\002)\001\e[0m\002"
     fi
 }
 
-PS1='\[\e[38;5;76m\]→  \[\e[31m\]\w\[\e[0m\] $(parse_git_branch)\$ '
+# overwrite bash prompt
+export PS1='\[\e[38;5;76m\]→  \[\e[31m\]\w\[\e[0m\]$(git_branch) \$ '

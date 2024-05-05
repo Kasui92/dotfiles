@@ -4,6 +4,14 @@
 
 [[ -f ~/.bashrc ]] && . ~/.bashrc
 
+
+# get ssh user (e.g. ssh:(localuser@remotehost))
+ssh_user() {
+    if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+        echo -e " \001\e[1;36m\002ssh:(\001\e[0;38;5;107m\002${USER}@${HOSTNAME}\001\e[1;36m\002)\001\e[0m\002 "
+    fi
+}
+
 # get current git branch
 git_branch() {
     local branch
@@ -14,4 +22,4 @@ git_branch() {
 }
 
 # overwrite bash prompt
-export PS1='\[\e[38;5;76m\]→  \[\e[31m\]\w\[\e[0m\]$(git_branch) \$ '
+export PS1='$(ssh_user)\[\e[38;5;76m\]→  \[\e[31m\]\w\[\e[0m\]$(git_branch) \$ '

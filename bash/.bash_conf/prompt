@@ -1,9 +1,6 @@
-#
-# BASH PROFILE
-#
-
-[[ -f ~/.bashrc ]] && . ~/.bashrc
-
+# Prompt configuration
+force_color_prompt=yes
+color_prompt=yes
 
 # get ssh user (e.g. ssh:(localuser@remotehost))
 ssh_user() {
@@ -21,5 +18,5 @@ git_branch() {
     fi
 }
 
-# overwrite bash prompt
-export PS1='$(ssh_user)\[\e[38;5;76m\]→  \[\e[31m\]\w\[\e[0m\]$(git_branch) \$ '
+# A simple prompt with the user and git branch
+PS1='$(ssh_user)\[\e[38;5;76m\]→  \[\e[31m\]\w\[\e[0m\]$(git_branch) \$ '

@@ -25,7 +25,7 @@ fi
 # > Docker
 
 # Ask user if they want to install Docker
-read -p "Do you want to install Docker? [y/n]: " response
+read -p "Do you want to install Docker? [y/N]: " response
 if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
     # Add the official Docker repo
     sudo install -m 0755 -d /etc/apt/keyrings
@@ -47,7 +47,7 @@ fi
 # > Mise
 
 # Ask user if they want to install Mise
-read -p "Do you want to install Mise? [y/n]: " response
+read -p "Do you want to install Mise? [y/N]: " response
 if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
     # Install mise for managing multiple versions of languages. See https://mise.jdx.dev/
     sudo apt update -y && sudo apt install -y gpg wget curl

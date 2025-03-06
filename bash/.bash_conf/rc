@@ -1,14 +1,14 @@
 # Check if installation file exists, and if so execute it
 if [ -f ~/.bash_conf/install ]; then
     # Ask user if they want to install the packages
-    read -p "Do you want to install the packages? [y/n]: " response
+    read -p "Do you want to install the packages? [y/N]: " response
     if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
         # Run the installation script
         source ~/.bash_conf/install
-    # Otherwise, remove the file
-    else
-        rm ~/.bash_conf/install
     fi
+
+    # Remove the installation file
+    rm ~/.bash_conf/install
 fi
 
 # Load all the bash configuration files

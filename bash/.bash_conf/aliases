@@ -45,7 +45,7 @@ alias decompress="tar -xzf"
 webm2mp4() {
     input_file="$1"
     output_file="${input_file%.webm}.mp4"
-    ffmpeg -i "$input_file" -c:v libx264 -preset slow -crf 22 -c:a aac -b:a 192k "$output_file"
+    ffmpeg -i "$input_file" -c:v libx264 -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" -preset slow -crf 22 -c:a aac -b:a 192k "$output_file"
 }
 
 # SSH key management

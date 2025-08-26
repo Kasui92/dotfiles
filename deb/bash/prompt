@@ -2,10 +2,11 @@
 force_color_prompt=yes
 color_prompt=yes
 
-# get ssh user (e.g. ssh:(localuser@remotehost))
+
+# get ssh user (e.g. ssh:(localuser@remotehost)) e mostra la freccia solo in SSH
 ssh_user() {
     if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
-        echo -e " \001\e[1;36m\002ssh:(\001\e[0;38;5;107m\002${USER}@${HOSTNAME}\001\e[1;36m\002)\001\e[0m\002 "
+        echo -e " \001\e[1;36m\002ssh:(\001\e[0;38;5;107m\002${USER}@${HOSTNAME}\001\e[1;36m\002)\001\e[0m\002 \001\e[38;5;76m\002→\001\e[0m\002 "
     fi
 }
 
@@ -18,5 +19,47 @@ git_branch() {
     fi
 }
 
-# A simple prompt with the user and git branch
-PS1='$(ssh_user)\[\e[38;5;76m\]→  \[\e[31m\]\w\[\e[0m\]$(git_branch) \$ '
+
+# get short pwd
+short_pwd() {
+    local path="$PWD"
+    local home="$HOME"
+    local display_path
+    if [[ "$path" == "$home"* ]]; then
+        local rel_path="${path#$home}"
+        rel_path="${rel_path#/}"
+        local IFS="/"
+        read -ra parts <<< "$rel_path"
+        local len=${#parts[@]}
+        if [[ -z "$rel_path" ]]; then
+            display_path="~"
+        elif [ $len -le 2 ]; then
+            display_path="~/${rel_path}"
+        else
+            display_path="…/${parts[$((len-2))]}/${parts[$((len-1))]}"
+        fi
+    else
+        local IFS="/"
+        read -ra parts <<< "$path"
+        local len=${#parts[@]}
+        if [ $len -le 2 ]; then
+            display_path="$path"
+        else
+            display_path="…/${parts[$((len-2))]}/${parts[$((len-1))]}"
+        fi
+    fi
+    echo "$display_path"
+}
+
+# get cursor
+cursor() {
+    if [ "$EXIT_STATUS" -ne 0 ]; then
+        echo -e "\001\e[31m\002✗\001\e[0m\002 "
+    else
+        echo -e "\001\e[31m\002❯\001\e[0m\002 "
+    fi
+}
+
+# Prompt
+PROMPT_COMMAND='EXIT_STATUS=$?'
+PS1='$(ssh_user)\[\e[31m\]$(short_pwd)\[\e[0m\]$(git_branch) $(cursor)'

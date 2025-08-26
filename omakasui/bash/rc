@@ -1,3 +1,4 @@
 source ~/.cfg/omakasui/bash/aliases
 source ~/.cfg/omakasui/bash/functions
 source ~/.cfg/omakasui/bash/prompt
+source ~/.cfg/omakasui/bash/init

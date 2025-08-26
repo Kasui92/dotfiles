@@ -1,0 +1,10 @@
+md() {
+  mkdir -p $1
+  cd $1
+}
+
+# Tools
+alias gl='glab'
+alias bat='batcat'
+alias lzg='lazygit'
+alias lzd='lazydocker'

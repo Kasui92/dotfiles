@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Add source command to .bashrc
+if [ -f ~/.bashrc ]; then
+    echo "source ~/.cfg/omakasui/bash/rc" >> ~/.bashrc
+fi
+
+# Copy configuration
+cp -r ~/.cfg/omakasui/config/* ~/.config/

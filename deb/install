@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Install apps and dependencies
+INSTALLER_DIR="~/.cfg/deb/installer"
+
+# Install base components
+BASE_SCRIPT="$INSTALLER_DIR/base.sh"
+if [ -f "$BASE_SCRIPT" ]; then
+    source "$BASE_SCRIPT"
+fi
+
+# Install additional components, excluding base.sh
+for script in $(ls "$INSTALLER_DIR"/*.sh | grep -v "base.sh" | sort); do
+    source "$script"
+done
+
+# Add source command to .bashrc
+if [ -f ~/.bashrc ]; then
+    echo "source ~/.cfg/deb/bash/rc" >> ~/.bashrc
+fi
+
+# Copy configuration
+cp -r ~/.cfg/deb/config/* ~/.config/

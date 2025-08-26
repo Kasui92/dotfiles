@@ -1,0 +1,7 @@
+source ~/.cfg/deb/bash/shell
+source ~/.cfg/deb/bash/aliases
+source ~/.cfg/deb/bash/functions
+source ~/.cfg/deb/bash/prompt
+source ~/.cfg/deb/bash/init
+source ~/.cfg/deb/bash/envs
+[[ $- == *i* ]] && bind -f ~/.cfg/deb/bash/inputrc

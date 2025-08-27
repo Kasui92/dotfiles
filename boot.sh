@@ -8,7 +8,7 @@ DOTFILES_REPO="${DOTFILES_REPO:-Kasui92/dotfiles}"
 # Check if already exists .cfg folders, if yes ask to remove
 if [ -d ~/.cfg ]; then
   echo -e "\e[33m\nWarning: Dotfiles directory already exists.\e[0m"
-  read -p $'\e[36mDo you want to remove it? (y/n): \e[0m' choice
+  read -p $'\e[36mDo you want to remove it? (y/n): \e[0m' choice < /dev/tty
   case "$choice" in
     y|Y ) rm -rf ~/.cfg ;;
     n|N ) echo "Aborting installation."; exit 1 ;;

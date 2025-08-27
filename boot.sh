@@ -30,15 +30,15 @@ CONFIGS=$(find "$DOTFILES_DIR" -mindepth 1 -maxdepth 1 -type d -not -name ".*" -
 echo -e "\e[32m\nAvailable Configs:\e[0m"
 select CONFIG in $CONFIGS; do
   case "$CONFIG" in
-    "" ) echo "Invalid selection. Please try again." ;;
-    * ) echo "You selected $CONFIG"; break ;;
+    "" ) ;;
+    * ) break ;;
   esac
 done
 
 if [ -n "$CONFIG" ]; then
   echo -e "\e[32m\nInstalling $CONFIG...\e[0m"
   source "$DOTFILES_DIR/$CONFIG/install"
-  echo -e "\e[32m\nInstallation of $CONFIG completed!\e[0m"
+  echo -e "\e[32mCompleted!\e[0m"
 else
   echo -e "\e[31m\nNo valid config selected. Aborting installation.\e[0m"
   exit 1

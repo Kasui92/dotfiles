@@ -2,7 +2,6 @@
 force_color_prompt=yes
 color_prompt=yes
 
-
 # get ssh user (e.g. ssh:(localuser@remotehost)) e mostra la freccia solo in SSH
 ssh_user() {
     if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then

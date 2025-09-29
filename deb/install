@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Install apps and dependencies
-INSTALLER_DIR="~/.cfg/deb/installer"
+INSTALLER_DIR="$HOME/.cfg/deb/installer"
 
 # Install base components
 BASE_SCRIPT="$INSTALLER_DIR/base.sh"
@@ -10,7 +10,8 @@ if [ -f "$BASE_SCRIPT" ]; then
 fi
 
 # Install additional components, excluding base.sh
-for script in $(ls "$INSTALLER_DIR"/*.sh | grep -v "base.sh" | sort); do
+for script in "$INSTALLER_DIR"/*.sh; do
+    [[ "$script" == *base.sh ]] && continue
     source "$script"
 done
 

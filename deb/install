@@ -21,4 +21,5 @@ if [ -f ~/.bashrc ]; then
 fi
 
 # Copy configuration
+mkdir -p ~/.config/
 cp -r ~/.cfg/deb/config/* ~/.config/

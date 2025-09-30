@@ -23,17 +23,18 @@ git clone https://github.com/$DOTFILES_REPO.git ~/.cfg >/dev/null
 echo -e "\e[32m\nDotfiles cloned successfully!\e[0m"
 
 # Obtain list of folders in ~/.cfg, those are available configs to install
-DOTFILES_DIR=~/.cfg
-CONFIGS=$(find "$DOTFILES_DIR" -mindepth 1 -maxdepth 1 -type d -not -name ".*" -exec basename {} \;)
+DOTFILES_DIR="$HOME/.cfg"
+mapfile -t CONFIGS < <(find "$DOTFILES_DIR" -mindepth 1 -maxdepth 1 -type d -not -name ".*" -exec basename {} \;)
 
 # List the configs and ask user to select which ones to install
 echo -e "\e[32m\nAvailable Configs:\e[0m"
-select CONFIG in $CONFIGS; do
+select CONFIG in "${CONFIGS[@]}"; do
   case "$CONFIG" in
     "" ) ;;
     * ) break ;;
   esac
 done
+
 
 if [ -n "$CONFIG" ]; then
   echo -e "\e[32m\nInstalling $CONFIG...\e[0m"

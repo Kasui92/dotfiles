@@ -35,7 +35,6 @@ select CONFIG in "${CONFIGS[@]}"; do
   esac
 done
 
-
 if [ -n "$CONFIG" ]; then
   echo -e "\e[32m\nInstalling $CONFIG...\e[0m"
   source "$DOTFILES_DIR/$CONFIG/install"

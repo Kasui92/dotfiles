@@ -4,7 +4,7 @@
 # Priority: external monitor when connected, laptop only when it's the only one
 
 # ============ CONFIGURATION ============
-LAPTOP_MONITOR="eDP-1"  # Change if your laptop uses a different name
+LAPTOP_MONITOR=$(hyprctl get env LAPTOP_MONITOR)  # Change if your laptop uses a different name
 LAPTOP_POSITION=$(hyprctl get env LAPTOP_POSITION) # Get current laptop position
 # =======================================
 

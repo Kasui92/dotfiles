@@ -5,7 +5,7 @@
 
 # ============ CONFIGURATION ============
 LAPTOP_MONITOR="eDP-1"  # Change if your laptop uses a different name
-LAPTOP_POSITION="left"  # Options: "right", "left", "above", "below", "disable"
+LAPTOP_POSITION=$(hyprctl get env LAPTOP_POSITION) # Get current laptop position
 # =======================================
 
 # Get monitor status

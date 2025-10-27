@@ -17,7 +17,8 @@ ssh-key-put() {
 # Generate a changelog between two git references (tags, commits, or current state)
 create_gh_changelog() {
   local from=""
-  local to="HEAD"  # Default to current HEAD
+  local to=""
+  local use_remote_head=true
 
   # Parse arguments
   while [[ $# -gt 0 ]]; do
@@ -32,14 +33,16 @@ create_gh_changelog() {
         ;;
       --to-tag)
         to="$2"
+        use_remote_head=false
         shift 2
         ;;
       --to-commit)
         to="$2"
+        use_remote_head=false
         shift 2
         ;;
       --to-now)
-        to="HEAD"
+        use_remote_head=true
         shift
         ;;
       -h|--help)
@@ -52,17 +55,16 @@ create_gh_changelog() {
         echo "  --from-commit SHA    Use a commit SHA as starting reference (required)"
         echo "  --to-tag TAG         Use a git tag as ending reference"
         echo "  --to-commit SHA      Use a commit SHA as ending reference"
-        echo "  --to-now             Use current HEAD as ending reference (default)"
+        echo "  --to-now             Use latest commit on current branch in origin (default)"
         echo "  -h, --help           Show this help message"
         echo ""
         echo "Examples:"
         echo "  create_gh_changelog --from-tag v1.0.0 --to-tag v2.0.0"
         echo "  create_gh_changelog --from-commit abc123 --to-now"
         echo "  create_gh_changelog --from-tag v1.0.0"
-        echo "    (uses --to-now by default)"
         echo ""
         echo "Note: You must specify a 'from' reference. If 'to' is not specified,"
-        echo "      it defaults to current HEAD (--to-now)"
+        echo "      it defaults to the current branch on origin remote"
         return 0
         ;;
       *)
@@ -77,12 +79,36 @@ create_gh_changelog() {
   if [ -z "$from" ]; then
     echo "Error: 'from' reference not specified"
     echo "Use --from-tag or --from-commit to specify the starting reference"
-    echo "Use -h or --help for more information"
     return 1
   fi
 
+  # Get current branch if needed
+  if [ "$use_remote_head" = true ]; then
+    local current_branch
+    current_branch=$(git rev-parse --abbrev-ref HEAD)
+
+    if [ "$current_branch" = "HEAD" ]; then
+      echo "Error: Currently in detached HEAD state"
+      return 1
+    fi
+
+    to="$current_branch"
+  fi
+
+  # Get origin remote URL and extract repo name
+  local origin_url
+  origin_url=$(git remote get-url origin)
+
   local repo
-  repo=$(gh repo view --json nameWithOwner -q .nameWithOwner)
+  # Extract owner/repo from various git URL formats and remove .git suffix
+  if [[ "$origin_url" =~ github\.com[:/]([^/]+/[^/]+?)(\.git)?$ ]]; then
+    repo="${BASH_REMATCH[1]}"
+    # Remove .git suffix if present
+    repo="${repo%.git}"
+  else
+    echo "Error: Could not parse GitHub repository from origin URL: $origin_url"
+    return 1
+  fi
 
   echo "Generating changelog from '$from' to '$to' for $repo..."
   echo ""

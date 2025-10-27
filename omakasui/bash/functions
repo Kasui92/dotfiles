@@ -14,20 +14,80 @@ ssh-key-put() {
   cat ~/.ssh/id_ed25519.pub | ssh "$1" "mkdir -p ~/.ssh && chmod 700 ~/.ssh && cat >>  ~/.ssh/authorized_keys";
 }
 
-# Generate a changelog between two git tags
+# Generate a changelog between two git references (tags, commits, or current state)
 create_gh_changelog() {
-  if [ $# -ne 2 ]; then
-    echo "Usage: create_gh_changelog <from-tag> <to-tag>"
+  local from=""
+  local to="HEAD"  # Default to current HEAD
+
+  # Parse arguments
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      --from-tag)
+        from="$2"
+        shift 2
+        ;;
+      --from-commit)
+        from="$2"
+        shift 2
+        ;;
+      --to-tag)
+        to="$2"
+        shift 2
+        ;;
+      --to-commit)
+        to="$2"
+        shift 2
+        ;;
+      --to-now)
+        to="HEAD"
+        shift
+        ;;
+      -h|--help)
+        echo "Usage: create_gh_changelog [OPTIONS]"
+        echo ""
+        echo "Generate a changelog between two git references using GitHub API"
+        echo ""
+        echo "Options:"
+        echo "  --from-tag TAG       Use a git tag as starting reference (required)"
+        echo "  --from-commit SHA    Use a commit SHA as starting reference (required)"
+        echo "  --to-tag TAG         Use a git tag as ending reference"
+        echo "  --to-commit SHA      Use a commit SHA as ending reference"
+        echo "  --to-now             Use current HEAD as ending reference (default)"
+        echo "  -h, --help           Show this help message"
+        echo ""
+        echo "Examples:"
+        echo "  create_gh_changelog --from-tag v1.0.0 --to-tag v2.0.0"
+        echo "  create_gh_changelog --from-commit abc123 --to-now"
+        echo "  create_gh_changelog --from-tag v1.0.0"
+        echo "    (uses --to-now by default)"
+        echo ""
+        echo "Note: You must specify a 'from' reference. If 'to' is not specified,"
+        echo "      it defaults to current HEAD (--to-now)"
+        return 0
+        ;;
+      *)
+        echo "Error: Unknown option '$1'"
+        echo "Use -h or --help for usage information"
+        return 1
+        ;;
+    esac
+  done
+
+  # Validate that from is specified
+  if [ -z "$from" ]; then
+    echo "Error: 'from' reference not specified"
+    echo "Use --from-tag or --from-commit to specify the starting reference"
+    echo "Use -h or --help for more information"
     return 1
   fi
-
-  local base=$1
-  local head=$2
 
   local repo
   repo=$(gh repo view --json nameWithOwner -q .nameWithOwner)
 
-  gh api repos/$repo/compare/$base...$head \
+  echo "Generating changelog from '$from' to '$to' for $repo..."
+  echo ""
+
+  gh api repos/$repo/compare/$from...$to \
     --jq '.commits[] |
       "* \(
           .commit.message

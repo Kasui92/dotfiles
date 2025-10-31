@@ -1,0 +1,4 @@
+source ~/.cfg/omakasui/default/bash/aliases
+source ~/.cfg/omakasui/default/bash/functions
+source ~/.cfg/omakasui/default/bash/prompt
+source ~/.cfg/omakasui/default/bash/init

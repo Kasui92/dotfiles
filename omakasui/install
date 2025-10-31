@@ -3,6 +3,7 @@
 # Add source command to .bashrc
 if [ -f ~/.bashrc ]; then
     echo "source ~/.cfg/omakasui/bash/rc" >> ~/.bashrc
+    echo "export PATH=\"\$HOME/.cfg/omakasui/bin:\$PATH\"" >> ~/.bashrc
 fi
 
 # Copy configuration

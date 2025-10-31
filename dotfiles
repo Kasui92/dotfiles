@@ -1,0 +1,148 @@
+#!/bin/bash
+
+set -o pipefail
+
+# Dotfiles management command
+# This script provides various commands to manage your dotfiles configuration
+
+DOTFILES_DIR="$HOME/.cfg"
+
+# Colors for output
+RED='\e[31m'
+GREEN='\e[32m'
+YELLOW='\e[33m'
+CYAN='\e[36m'
+RESET='\e[0m'
+
+# Function to display help
+show_help() {
+    cat << EOF
+Usage: dotfiles <command> [options]
+
+Dotfiles management tool for configuration installation and management.
+
+Commands:
+    install     Install a dotfiles configuration
+    list        List available configurations
+    help        Show this help message
+
+Examples:
+    dotfiles install          # Interactive installation of a config
+    dotfiles list             # Show all available configurations
+    dotfiles help             # Display this help message
+
+EOF
+}
+
+# Function to list available configurations
+list_configs() {
+    if [ ! -d "$DOTFILES_DIR" ]; then
+        echo -e "${RED}Error: Dotfiles directory not found at $DOTFILES_DIR${RESET}"
+        exit 1
+    fi
+
+    echo -e "${GREEN}Available Configurations:${RESET}"
+    mapfile -t CONFIGS < <(find "$DOTFILES_DIR" -mindepth 1 -maxdepth 1 -type d -not -name ".*" -exec basename {} \;)
+
+    if [ ${#CONFIGS[@]} -eq 0 ]; then
+        echo -e "${YELLOW}No configurations found.${RESET}"
+        exit 0
+    fi
+
+    for CONFIG in "${CONFIGS[@]}"; do
+        if [ -f "$DOTFILES_DIR/$CONFIG/install" ]; then
+            echo -e "  ${CYAN}•${RESET} $CONFIG"
+        fi
+    done
+}
+
+# Function to install a configuration
+install_config() {
+    if [ ! -d "$DOTFILES_DIR" ]; then
+        echo -e "${RED}Error: Dotfiles directory not found at $DOTFILES_DIR${RESET}"
+        exit 1
+    fi
+
+    # Get list of available configs
+    mapfile -t CONFIGS < <(find "$DOTFILES_DIR" -mindepth 1 -maxdepth 1 -type d -not -name ".*" -exec basename {} \;)
+
+    if [ ${#CONFIGS[@]} -eq 0 ]; then
+        echo -e "${RED}Error: No configurations found.${RESET}"
+        exit 1
+    fi
+
+    # Filter configs that have an install script
+    VALID_CONFIGS=()
+    for CONFIG in "${CONFIGS[@]}"; do
+        if [ -f "$DOTFILES_DIR/$CONFIG/install" ]; then
+            VALID_CONFIGS+=("$CONFIG")
+        fi
+    done
+
+    if [ ${#VALID_CONFIGS[@]} -eq 0 ]; then
+        echo -e "${RED}Error: No installable configurations found.${RESET}"
+        exit 1
+    fi
+
+    # If a specific config is provided as argument, install it directly
+    if [ -n "$1" ]; then
+        CONFIG="$1"
+        if [ ! -d "$DOTFILES_DIR/$CONFIG" ]; then
+            echo -e "${RED}Error: Configuration '$CONFIG' not found.${RESET}"
+            exit 1
+        fi
+        if [ ! -f "$DOTFILES_DIR/$CONFIG/install" ]; then
+            echo -e "${RED}Error: Configuration '$CONFIG' does not have an install script.${RESET}"
+            exit 1
+        fi
+    else
+        # Interactive selection
+        echo -e "${GREEN}Available Configurations:${RESET}"
+        PS3=$'\e[36mSelect a configuration to install (enter number): \e[0m'
+        select CONFIG in "${VALID_CONFIGS[@]}"; do
+            if [ -n "$CONFIG" ]; then
+                break
+            else
+                echo -e "${YELLOW}Invalid selection. Please try again.${RESET}"
+            fi
+        done
+    fi
+
+    if [ -n "$CONFIG" ]; then
+        echo -e "${GREEN}\nInstalling $CONFIG...${RESET}"
+
+        # Source the install script
+        if source "$DOTFILES_DIR/$CONFIG/install"; then
+            echo -e "${GREEN}✓ $CONFIG installed successfully!${RESET}"
+        else
+            echo -e "${RED}✗ Failed to install $CONFIG${RESET}"
+            exit 1
+        fi
+    else
+        echo -e "${RED}\nNo valid configuration selected. Aborting installation.${RESET}"
+        exit 1
+    fi
+}
+
+# Main command parser
+case "${1:-}" in
+    install)
+        shift
+        install_config "$@"
+        ;;
+    list)
+        list_configs
+        ;;
+    help|--help|-h)
+        show_help
+        ;;
+    "")
+        show_help
+        exit 1
+        ;;
+    *)
+        echo -e "${RED}Unknown command: $1${RESET}\n"
+        show_help
+        exit 1
+        ;;
+esac

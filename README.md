@@ -1,6 +1,6 @@
 # dotfiles
 
-This repository provides a modular dotfiles setup.
+This repository provides a modular dotfiles setup with an easy-to-use command-line interface.
 
 ## Installation
 
@@ -14,15 +14,52 @@ For a quick and guided installation using the recommended approach:
 curl -fsSL https://omakasui.org/dotfiles | bash
 ```
 
-This script will automatically clone the repository to `~/.cfg` and guide you through the installation process.
+This script will automatically:
+
+- Clone the repository to `~/.cfg`
+- Create the `dotfiles` command in `~/.local/bin`
+- Set up everything you need to manage your configurations
 
 ### Manual Installation
 
-If you prefer to install manually or want to use a different approach, keep in mind that you'll need to update the references within the installer scripts accordingly.
+If you prefer to install manually:
 
-## Configurations
+```bash
+# Clone the repository
+git clone https://github.com/Kasui92/dotfiles.git ~/.cfg
 
-You can then install the desired configuration using the provided scripts.
+# Run the bootstrap script
+bash ~/.cfg/boot.sh
+```
+
+The bootstrap script will set up the `dotfiles` command for you.
+
+## Using the dotfiles Command
+
+Once installed, you can use the `dotfiles` command to manage your configurations:
+
+```bash
+# Show help and available commands
+dotfiles help
+
+# List all available configurations
+dotfiles list
+
+# Install a configuration interactively
+dotfiles install
+
+# Install a specific configuration directly
+dotfiles install deb
+dotfiles install omakasui
+```
+
+**Note:** Make sure `~/.local/bin` is in your PATH. If not, add this line to your `~/.bashrc` or `~/.zshrc`:
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+## Available Configurations
 
 - **deb**: For Debian/Ubuntu systems. See [deb/README.md](deb/README.md) for details.
 - **omakasui**: For Omakase installation. See [omakasui/README.md](omakasui/README.md) for details.

@@ -24,11 +24,13 @@ Dotfiles management tool for configuration installation and management.
 Commands:
     install     Install a dotfiles configuration
     list        List available configurations
+    update      Update dotfiles repository from git
     help        Show this help message
 
 Examples:
     dotfiles install          # Interactive installation of a config
     dotfiles list             # Show all available configurations
+    dotfiles update           # Pull latest changes from git repository
     dotfiles help             # Display this help message
 
 EOF
@@ -124,6 +126,71 @@ install_config() {
     fi
 }
 
+# Function to update dotfiles repository
+update_dotfiles() {
+    if [ ! -d "$DOTFILES_DIR" ]; then
+        echo -e "${RED}Error: Dotfiles directory not found at $DOTFILES_DIR${RESET}"
+        exit 1
+    fi
+
+    if [ ! -d "$DOTFILES_DIR/.git" ]; then
+        echo -e "${RED}Error: $DOTFILES_DIR is not a git repository${RESET}"
+        exit 1
+    fi
+
+    echo -e "${CYAN}Updating dotfiles from git repository...${RESET}"
+
+    cd "$DOTFILES_DIR" || exit 1
+
+    # Check if there are uncommitted changes
+    if ! git diff-index --quiet HEAD -- 2>/dev/null; then
+        echo -e "${YELLOW}Warning: You have uncommitted changes in the dotfiles directory.${RESET}"
+        read -p $'\e[36mDo you want to stash them and continue? (y/N): \e[0m' choice < /dev/tty
+        choice=${choice:-N}
+        case "$choice" in
+            y|Y )
+                echo -e "${CYAN}Stashing local changes...${RESET}"
+                git stash push -m "Auto-stash before dotfiles update at $(date)"
+                STASHED=true
+                ;;
+            * )
+                echo -e "${YELLOW}Update cancelled.${RESET}"
+                exit 0
+                ;;
+        esac
+    fi
+
+    # Pull latest changes
+    if git pull --rebase; then
+        echo -e "${GREEN}✓ Dotfiles updated successfully!${RESET}"
+
+        # If we stashed changes, ask to restore them
+        if [ "${STASHED:-false}" = true ]; then
+            echo -e "${CYAN}\nYour local changes were stashed.${RESET}"
+            read -p $'\e[36mDo you want to restore them now? (y/N): \e[0m' restore_choice < /dev/tty
+            restore_choice=${restore_choice:-N}
+            case "$restore_choice" in
+                y|Y )
+                    if git stash pop; then
+                        echo -e "${GREEN}✓ Local changes restored successfully!${RESET}"
+                    else
+                        echo -e "${YELLOW}Warning: Could not restore local changes automatically.${RESET}"
+                        echo -e "${CYAN}Run 'git stash pop' manually in $DOTFILES_DIR to restore them.${RESET}"
+                    fi
+                    ;;
+                * )
+                    echo -e "${CYAN}Local changes remain stashed.${RESET}"
+                    echo -e "${CYAN}Run 'git stash pop' in $DOTFILES_DIR to restore them later.${RESET}"
+                    ;;
+            esac
+        fi
+    else
+        echo -e "${RED}✗ Failed to update dotfiles repository.${RESET}"
+        echo -e "${CYAN}Please check your git configuration and try again.${RESET}"
+        exit 1
+    fi
+}
+
 # Main command parser
 case "${1:-}" in
     install)
@@ -132,6 +199,9 @@ case "${1:-}" in
         ;;
     list)
         list_configs
+        ;;
+    update)
+        update_dotfiles
         ;;
     help|--help|-h)
         show_help

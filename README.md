@@ -51,6 +51,9 @@ dotfiles install
 # Install a specific configuration directly
 dotfiles install deb
 dotfiles install omakasui
+
+# Update dotfiles repository from git
+dotfiles update
 ```
 
 **Note:** Make sure `~/.local/bin` is in your PATH. If not, add this line to your `~/.bashrc` or `~/.zshrc`:

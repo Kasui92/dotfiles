@@ -37,8 +37,16 @@ LAPTOP_EXISTS=$(echo "$ALL_MONITORS" | grep -c "$LAPTOP_MONITOR")
 
 # Determine primary monitor
 if [ "$EXTERNAL_COUNT" -gt 0 ]; then
-    PRIMARY_MONITOR=$(echo "$EXTERNAL_MONITORS" | head -n1)
-    SECONDARY_MONITOR="$LAPTOP_MONITOR"
+    # Sort external monitors numerically to get the first one in order
+    PRIMARY_MONITOR=$(echo "$EXTERNAL_MONITORS" | sort -V | head -n1)
+
+    # If laptop exists, it becomes secondary; otherwise no secondary monitor
+    if [ "$LAPTOP_EXISTS" -gt 0 ]; then
+        SECONDARY_MONITOR="$LAPTOP_MONITOR"
+    else
+        SECONDARY_MONITOR=""
+    fi
+
     # Show notification only when connecting external monitor (transition from 0 to 1+)
     if [ "$PREVIOUS_EXTERNAL_COUNT" -eq 0 ]; then
         notify-send "Monitor Setup" "External monitor detected: $PRIMARY_MONITOR set as primary" -t 3000
@@ -141,8 +149,16 @@ fi
 # Configure additional external monitors if present
 if [ "$EXTERNAL_COUNT" -gt 1 ]; then
     OFFSET=1920
-    WORKSPACE_NUM=$((NUM_WORKSPACES + 2))  # Start from NUM_WORKSPACES + 2
-    for monitor in $(echo "$EXTERNAL_MONITORS" | tail -n +2); do
+    # If laptop exists, secondary workspaces start from NUM_WORKSPACES + 2
+    # If laptop doesn't exist, secondary workspaces start from NUM_WORKSPACES + 1
+    if [ "$LAPTOP_EXISTS" -gt 0 ]; then
+        WORKSPACE_NUM=$((NUM_WORKSPACES + 2))
+    else
+        WORKSPACE_NUM=$((NUM_WORKSPACES + 1))
+    fi
+
+    # Sort external monitors numerically and skip the first one (already configured as primary)
+    for monitor in $(echo "$EXTERNAL_MONITORS" | sort -V | tail -n +2); do
         if [ -n "$monitor" ]; then
             OFFSET=$((OFFSET + 1920))
             hyprctl keyword monitor "$monitor,preferred,${OFFSET}x0,1" > /dev/null 2>&1

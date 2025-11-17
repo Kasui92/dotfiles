@@ -1,3 +1,4 @@
+# Navigation
 md() {
   mkdir -p $1
   cd $1
@@ -5,6 +6,12 @@ md() {
 
 # Tools
 alias gl='glab'
-alias bat='batcat'
+b() {
+  if command -v batcat &> /dev/null; then
+    batcat "$@"
+  else
+    bat "$@"
+  fi
+}
 alias lzg='lazygit'
 alias lzd='lazydocker'

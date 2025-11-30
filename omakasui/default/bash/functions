@@ -134,7 +134,19 @@ cdc() {
     return 1
   fi
 
-  cd $1 && code . && exit
+  local start_dir="$PWD"
+
+  # Try to change directory (will use cd alias which handles zoxide)
+  cd "$1"
+
+  # Check if we actually moved to a different directory
+  if [ "$PWD" = "$start_dir" ]; then
+    # We didn't move, cd failed silently or we're already there
+    return 1
+  fi
+
+  # Successfully changed directory, open VS Code
+  code . && exit
 }
 
 # Start a simple HTTP server

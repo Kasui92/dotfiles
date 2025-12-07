@@ -1,183 +1,287 @@
 #!/bin/bash
+#
+# Hyprland Monitor Setup Script
+# Automatically configures monitors with external monitor priority
+#
+# Features:
+# - External monitors are prioritized as primary
+# - Laptop screen becomes secondary when external monitors are connected
+# - Lid closed detection: disables laptop screen automatically
+# - Workspaces 1-N on primary, dedicated workspace per additional monitor
+# - Smart notifications only on configuration changes
 
-# Script to automatically manage monitor configuration on Hyprland
-# Priority: external monitor when connected, laptop only when it's the only one
+set -euo pipefail
+
+# ============ PREREQUISITES ============
+# Check if Hyprland is running
+if ! pgrep -x "Hyprland" &>/dev/null; then
+    echo "Error: Hyprland is not running. This script requires Hyprland." >&2
+    exit 1
+fi
+
+# Check if hyprctl is available
+if ! command -v hyprctl &>/dev/null; then
+    echo "Error: hyprctl not found. Please ensure Hyprland is properly installed." >&2
+    exit 1
+fi
 
 # ============ CONFIGURATION ============
-# Read configuration from monitors.conf
-CONFIG_FILE="$HOME/.config/hypr/monitors.conf"
+readonly CONFIG_FILE="$HOME/.config/hypr/monitors.conf"
+readonly HYPRLAND_CONF="$HOME/.config/hypr/hyprland.conf"
+readonly STATE_FILE="/tmp/hypr_monitor_state"
+readonly DEFAULT_WORKSPACES=10
 
-# Extract values from monitors.conf
-if [ -f "$CONFIG_FILE" ]; then
-    LAPTOP_MONITOR=$(grep "^env = LAPTOP_MONITOR" "$CONFIG_FILE" | cut -d',' -f2 | tr -d ' ')
-    LAPTOP_POSITION=$(grep "^env = LAPTOP_POSITION" "$CONFIG_FILE" | cut -d',' -f2 | tr -d ' ')
-fi
+# Load configuration from monitors.conf
+load_config() {
+    local laptop_mon="eDP-1"
+    local laptop_pos="disable"
 
-# Fallback to defaults if not found
-LAPTOP_MONITOR="${LAPTOP_MONITOR:-eDP-1}"
-LAPTOP_POSITION="${LAPTOP_POSITION:-right}"
-# =======================================
+    if [[ -f "$CONFIG_FILE" ]]; then
+        laptop_mon=$(grep "^env = LAPTOP_MONITOR" "$CONFIG_FILE" 2>/dev/null | cut -d',' -f2 | tr -d ' ') || true
+        laptop_pos=$(grep "^env = LAPTOP_POSITION" "$CONFIG_FILE" 2>/dev/null | cut -d',' -f2 | tr -d ' ') || true
+    fi
 
-# State file to track previous monitor configuration
-STATE_FILE="/tmp/hypr_monitor_state"
-PREVIOUS_EXTERNAL_COUNT=0
-if [ -f "$STATE_FILE" ]; then
-    PREVIOUS_EXTERNAL_COUNT=$(cat "$STATE_FILE")
-fi
+    LAPTOP_MONITOR="${laptop_mon:-eDP-1}"
+    LAPTOP_POSITION="${laptop_pos:-disable}"
+}
 
-# Get list of all active monitors
-ALL_MONITORS=$(hyprctl monitors -j | jq -r '.[].name')
-EXTERNAL_MONITORS=$(echo "$ALL_MONITORS" | grep -v "$LAPTOP_MONITOR")
+# ============ UTILITY FUNCTIONS ============
 
-# Count external monitors
-EXTERNAL_COUNT=$(echo "$EXTERNAL_MONITORS" | grep -v '^$' | wc -l)
+# Silent hyprctl wrapper
+hypr() {
+    hyprctl "$@" &>/dev/null
+}
 
-# Check if laptop screen exists
-LAPTOP_EXISTS=$(echo "$ALL_MONITORS" | grep -c "$LAPTOP_MONITOR")
+# Check if laptop lid is closed
+is_lid_closed() {
+    local lid_files=(
+        "/proc/acpi/button/lid/LID0/state"
+        "/proc/acpi/button/lid/LID/state"
+    )
 
-# Determine primary monitor
-if [ "$EXTERNAL_COUNT" -gt 0 ]; then
-    # Sort external monitors numerically to get the first one in order
-    PRIMARY_MONITOR=$(echo "$EXTERNAL_MONITORS" | sort -V | head -n1)
+    for lid_file in "${lid_files[@]}"; do
+        [[ -f "$lid_file" ]] && grep -q "closed" "$lid_file" && return 0
+    done
 
-    # If laptop exists, it becomes secondary; otherwise no secondary monitor
-    if [ "$LAPTOP_EXISTS" -gt 0 ]; then
-        SECONDARY_MONITOR="$LAPTOP_MONITOR"
+    # Fallback: check drm status for eDP/LVDS
+    for status_file in /sys/class/drm/*eDP*/status /sys/class/drm/*LVDS*/status; do
+        [[ -f "$status_file" ]] && grep -q "disconnected" "$status_file" 2>/dev/null && return 0
+    done
+
+    return 1
+}
+
+# Get monitor data from Hyprland (cached)
+get_monitors_json() {
+    hyprctl monitors -j
+}
+
+# Get workspace data from Hyprland (cached)
+get_workspaces_json() {
+    hyprctl workspaces -j
+}
+
+# Send notification
+notify() {
+    command -v notify-send &>/dev/null && notify-send "Monitor Setup" "$1" -t 3000
+}
+
+# Get configured number of workspaces
+get_num_workspaces() {
+    local num=$DEFAULT_WORKSPACES
+
+    if [[ -f "$HYPRLAND_CONF" ]]; then
+        local max
+        max=$(grep -oP 'workspace\s*=?\s*\K\d+' "$HYPRLAND_CONF" 2>/dev/null | sort -n | tail -1) || true
+        [[ -n "$max" && "$max" -gt 0 ]] && num="$max"
+    fi
+
+    echo "$num"
+}
+
+# ============ MAIN LOGIC ============
+
+main() {
+    load_config
+
+    # Cache monitor and workspace data
+    local monitors_json workspaces_json
+    monitors_json=$(get_monitors_json)
+    workspaces_json=$(get_workspaces_json)
+
+    # Parse monitor information
+    local all_monitors external_monitors
+    all_monitors=$(echo "$monitors_json" | jq -r '.[].name')
+    external_monitors=$(echo "$all_monitors" | grep -v "^$LAPTOP_MONITOR$" | grep -v '^$' || true)
+
+    local external_count laptop_in_list
+    external_count=$(echo "$external_monitors" | grep -c . 2>/dev/null || echo "0")
+    external_count=${external_count// /}  # Remove spaces
+    external_count=${external_count//[[:space:]]/}  # Remove all whitespace
+    [[ -z "$external_count" || ! "$external_count" =~ ^[0-9]+$ ]] && external_count=0
+
+    laptop_in_list=$(echo "$all_monitors" | grep -c "^$LAPTOP_MONITOR$" 2>/dev/null || echo "0")
+    laptop_in_list=${laptop_in_list// /}  # Remove spaces
+    laptop_in_list=${laptop_in_list//[[:space:]]/}  # Remove all whitespace
+    [[ -z "$laptop_in_list" || ! "$laptop_in_list" =~ ^[0-9]+$ ]] && laptop_in_list=0
+
+    # Load previous state
+    local previous_external_count=0
+    if [[ -f "$STATE_FILE" ]]; then
+        previous_external_count=$(cat "$STATE_FILE" 2>/dev/null || echo "0")
+        previous_external_count=${previous_external_count//[[:space:]]/}
+        [[ -z "$previous_external_count" || ! "$previous_external_count" =~ ^[0-9]+$ ]] && previous_external_count=0
+    fi
+
+    # Determine if laptop should be active
+    local laptop_active=0
+    if [[ "$laptop_in_list" -gt 0 ]]; then
+        if is_lid_closed && [[ "$external_count" -gt 0 ]]; then
+            # Lid closed with external monitors: disable laptop
+            hypr keyword monitor "$LAPTOP_MONITOR,disable"
+        else
+            laptop_active=1
+        fi
+    fi
+
+    # Determine primary and secondary monitors
+    local primary_monitor secondary_monitor=""
+
+    if [[ "$external_count" -gt 0 ]]; then
+        # Use first external monitor (sorted) as primary
+        primary_monitor=$(echo "$external_monitors" | sort -V | head -n1)
+        [[ "$laptop_active" -eq 1 ]] && secondary_monitor="$LAPTOP_MONITOR"
+
+        # Notify on external monitor connection
+        [[ "$previous_external_count" -eq 0 ]] && notify "Primary: $primary_monitor"
     else
-        SECONDARY_MONITOR=""
+        primary_monitor="$LAPTOP_MONITOR"
+        # Notify on external monitor disconnection
+        [[ "$previous_external_count" -gt 0 ]] && notify "Switched to laptop screen"
     fi
 
-    # Show notification only when connecting external monitor (transition from 0 to 1+)
-    if [ "$PREVIOUS_EXTERNAL_COUNT" -eq 0 ]; then
-        notify-send "Monitor Setup" "External monitor detected: $PRIMARY_MONITOR set as primary" -t 3000
+    # Save state for next run
+    echo "$external_count" > "$STATE_FILE"
+
+    # Get workspace configuration
+    local num_workspaces
+    num_workspaces=$(get_num_workspaces)
+
+    # Configure primary monitor at origin
+    hypr keyword monitor "$primary_monitor,preferred,0x0,1"
+
+    # Bind main workspaces to primary monitor
+    local i
+    for i in $(seq 1 "$num_workspaces"); do
+        hypr keyword workspace "$i,monitor:$primary_monitor,default:true"
+    done
+
+    # Get existing workspaces and move all to primary
+    local existing_workspaces workspace
+    existing_workspaces=$(echo "$workspaces_json" | jq -r '.[].id' | sort -n)
+
+    for workspace in $existing_workspaces; do
+        hypr dispatch moveworkspacetomonitor "$workspace $primary_monitor"
+    done
+
+    # Track next available workspace number for additional monitors
+    local next_workspace=$((num_workspaces + 1))
+
+    # Configure secondary monitor (laptop as secondary)
+    if [[ -n "$secondary_monitor" ]]; then
+        configure_secondary_monitor "$secondary_monitor" "$primary_monitor"
+
+        # Create dedicated workspace for secondary monitor
+        hypr keyword workspace "$next_workspace,monitor:$secondary_monitor,default:true"
+
+        if ! echo "$existing_workspaces" | grep -q "^$next_workspace$"; then
+            hypr dispatch workspace "$next_workspace"
+        fi
+
+        hypr dispatch moveworkspacetomonitor "$next_workspace $secondary_monitor"
+        next_workspace=$((next_workspace + 1))
+    else
+        # Clean up empty extra workspaces when no secondary monitor
+        cleanup_empty_workspaces "$num_workspaces" "$existing_workspaces" "$workspaces_json"
     fi
-else
-    PRIMARY_MONITOR="$LAPTOP_MONITOR"
-    SECONDARY_MONITOR=""
-    # Show notification only when disconnecting external monitors (transition from 1+ to 0)
-    if [ "$PREVIOUS_EXTERNAL_COUNT" -gt 0 ]; then
-        notify-send "Monitor Setup" "All workspaces moved to laptop screen" -t 3000
+
+    # Configure additional external monitors
+    if [[ "$external_count" -gt 1 ]]; then
+        configure_additional_monitors "$external_monitors" "$next_workspace" "$existing_workspaces"
     fi
-fi
 
-# Save current state for next run
-echo "$EXTERNAL_COUNT" > "$STATE_FILE"
+    # Switch to workspace 1 on primary
+    hypr dispatch workspace 1
+}
 
-# Get number of workspaces configured in Hyprland
-# Check for workspace configuration in hyprland.conf
-HYPRLAND_CONF="$HOME/.config/hypr/hyprland.conf"
-NUM_WORKSPACES=10  # Default fallback
+# Configure secondary monitor position
+configure_secondary_monitor() {
+    local secondary="$1"
+    local primary="$2"
 
-if [ -f "$HYPRLAND_CONF" ]; then
-    # Try to find workspace bindings to determine how many workspaces are configured
-    MAX_WORKSPACE=$(grep -oP 'workspace\s*=?\s*\K\d+' "$HYPRLAND_CONF" 2>/dev/null | sort -n | tail -1)
-    if [ -n "$MAX_WORKSPACE" ] && [ "$MAX_WORKSPACE" -gt 0 ]; then
-        NUM_WORKSPACES="$MAX_WORKSPACE"
-    fi
-fi
-
-# Configure primary monitor at position 0,0
-hyprctl keyword monitor "$PRIMARY_MONITOR,preferred,0x0,1" > /dev/null 2>&1
-
-# Bind workspaces 1-NUM_WORKSPACES to primary monitor only
-for i in $(seq 1 "$NUM_WORKSPACES"); do
-    hyprctl keyword workspace "$i,monitor:$PRIMARY_MONITOR,default:true" > /dev/null 2>&1
-done
-
-# Get all existing workspaces
-EXISTING_WORKSPACES=$(hyprctl workspaces -j | jq -r '.[].id' | sort -n)
-
-# Move ALL workspaces (including those beyond NUM_WORKSPACES) to primary monitor first
-for workspace in $EXISTING_WORKSPACES; do
-    hyprctl dispatch moveworkspacetomonitor "$workspace $PRIMARY_MONITOR" > /dev/null 2>&1
-done
-
-# Configure secondary monitor (laptop when external is connected)
-if [ -n "$SECONDARY_MONITOR" ] && [ "$LAPTOP_EXISTS" -gt 0 ]; then
     case "$LAPTOP_POSITION" in
-        "right")
-            hyprctl keyword monitor "$SECONDARY_MONITOR,preferred,1920x0,1" > /dev/null 2>&1
+        right)
+            hypr keyword monitor "$secondary,preferred,1920x0,1"
             ;;
-        "left")
-            hyprctl keyword monitor "$PRIMARY_MONITOR,preferred,1920x0,1" > /dev/null 2>&1
-            hyprctl keyword monitor "$SECONDARY_MONITOR,preferred,0x0,1" > /dev/null 2>&1
+        left)
+            hypr keyword monitor "$primary,preferred,1920x0,1"
+            hypr keyword monitor "$secondary,preferred,0x0,1"
             ;;
-        "above")
-            hyprctl keyword monitor "$SECONDARY_MONITOR,preferred,0x-1080,1" > /dev/null 2>&1
+        above)
+            hypr keyword monitor "$secondary,preferred,0x-1080,1"
             ;;
-        "below")
-            hyprctl keyword monitor "$SECONDARY_MONITOR,preferred,0x1080,1" > /dev/null 2>&1
+        below)
+            hypr keyword monitor "$secondary,preferred,0x1080,1"
             ;;
-        "disable")
-            hyprctl keyword monitor "$SECONDARY_MONITOR,disable" > /dev/null 2>&1
+        disable)
+            hypr keyword monitor "$secondary,disable"
             ;;
         *)
-            hyprctl keyword monitor "$SECONDARY_MONITOR,preferred,1920x0,1" > /dev/null 2>&1
+            hypr keyword monitor "$secondary,preferred,1920x0,1"
             ;;
     esac
+}
 
-    # Create a fixed workspace for secondary monitor (NUM_WORKSPACES + 1)
-    SECONDARY_WORKSPACE=$((NUM_WORKSPACES + 1))
-    hyprctl keyword workspace "$SECONDARY_WORKSPACE,monitor:$SECONDARY_MONITOR,default:true" > /dev/null 2>&1
+# Clean up empty workspaces beyond the main set
+cleanup_empty_workspaces() {
+    local num_workspaces="$1"
+    local existing_workspaces="$2"
+    local workspaces_json="$3"
 
-    # Check if the secondary workspace already exists and has windows
-    SECONDARY_WS_EXISTS=$(echo "$EXISTING_WORKSPACES" | grep -c "^$SECONDARY_WORKSPACE$")
-    if [ "$SECONDARY_WS_EXISTS" -eq 0 ]; then
-        # Create it only if it doesn't exist
-        hyprctl dispatch workspace "$SECONDARY_WORKSPACE" > /dev/null 2>&1
-    fi
-
-    # Move it to secondary monitor
-    hyprctl dispatch moveworkspacetomonitor "$SECONDARY_WORKSPACE $SECONDARY_MONITOR" > /dev/null 2>&1
-else
-    # When no external monitor, clean up extra workspaces that are empty
-    SECONDARY_WORKSPACE=$((NUM_WORKSPACES + 1))
-
-    # Check all workspaces beyond NUM_WORKSPACES
-    for workspace in $EXISTING_WORKSPACES; do
-        if [ "$workspace" -gt "$NUM_WORKSPACES" ]; then
-            # Check if workspace has windows
-            WINDOW_COUNT=$(hyprctl workspaces -j | jq -r ".[] | select(.id == $workspace) | .windows")
-            if [ "$WINDOW_COUNT" -eq 0 ]; then
-                # Remove empty workspace by switching away and letting Hyprland clean it up
-                hyprctl dispatch workspace 1 > /dev/null 2>&1
-            fi
+    local workspace window_count
+    for workspace in $existing_workspaces; do
+        if [[ "$workspace" -gt "$num_workspaces" ]]; then
+            window_count=$(echo "$workspaces_json" | jq -r ".[] | select(.id == $workspace) | .windows")
+            [[ "$window_count" -eq 0 ]] && hypr dispatch workspace 1
         fi
     done
-fi
+}
 
-# Configure additional external monitors if present
-if [ "$EXTERNAL_COUNT" -gt 1 ]; then
-    OFFSET=1920
-    # If laptop exists, secondary workspaces start from NUM_WORKSPACES + 2
-    # If laptop doesn't exist, secondary workspaces start from NUM_WORKSPACES + 1
-    if [ "$LAPTOP_EXISTS" -gt 0 ]; then
-        WORKSPACE_NUM=$((NUM_WORKSPACES + 2))
-    else
-        WORKSPACE_NUM=$((NUM_WORKSPACES + 1))
-    fi
+# Configure additional external monitors beyond the primary
+configure_additional_monitors() {
+    local external_monitors="$1"
+    local workspace_num="$2"
+    local existing_workspaces="$3"
 
-    # Sort external monitors numerically and skip the first one (already configured as primary)
-    for monitor in $(echo "$EXTERNAL_MONITORS" | sort -V | tail -n +2); do
-        if [ -n "$monitor" ]; then
-            OFFSET=$((OFFSET + 1920))
-            hyprctl keyword monitor "$monitor,preferred,${OFFSET}x0,1" > /dev/null 2>&1
+    local offset=1920
+    local monitor
 
-            # Create fixed workspace for this monitor
-            hyprctl keyword workspace "$WORKSPACE_NUM,monitor:$monitor,default:true" > /dev/null 2>&1
+    # Skip first monitor (already primary), process rest
+    for monitor in $(echo "$external_monitors" | sort -V | tail -n +2); do
+        [[ -z "$monitor" ]] && continue
 
-            # Check if workspace already exists
-            WS_EXISTS=$(echo "$EXISTING_WORKSPACES" | grep -c "^$WORKSPACE_NUM$")
-            if [ "$WS_EXISTS" -eq 0 ]; then
-                hyprctl dispatch workspace "$WORKSPACE_NUM" > /dev/null 2>&1
-            fi
+        offset=$((offset + 1920))
+        hypr keyword monitor "$monitor,preferred,${offset}x0,1"
+        hypr keyword workspace "$workspace_num,monitor:$monitor,default:true"
 
-            hyprctl dispatch moveworkspacetomonitor "$WORKSPACE_NUM $monitor" > /dev/null 2>&1
-
-            WORKSPACE_NUM=$((WORKSPACE_NUM + 1))
+        if ! echo "$existing_workspaces" | grep -q "^$workspace_num$"; then
+            hypr dispatch workspace "$workspace_num"
         fi
-    done
-fi
 
-# Switch to workspace 1 on primary monitor
-hyprctl dispatch workspace 1 > /dev/null 2>&1
+        hypr dispatch moveworkspacetomonitor "$workspace_num $monitor"
+        workspace_num=$((workspace_num + 1))
+    done
+}
+
+# Run main function
+main "$@"

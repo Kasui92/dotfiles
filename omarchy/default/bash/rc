@@ -1,0 +1,4 @@
+source ~/.cfg/omarchy/default/bash/aliases
+source ~/.cfg/omarchy/default/bash/functions
+source ~/.cfg/omarchy/default/bash/prompt
+source ~/.cfg/omarchy/default/bash/init

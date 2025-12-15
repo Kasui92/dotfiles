@@ -1,0 +1,81 @@
+# Prompt configuration
+force_color_prompt=yes
+color_prompt=yes
+
+# get ssh user (e.g. ssh:(localuser@remotehost)) and show arrow only in SSH
+ssh_user() {
+    if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+        echo -e " \001\e[1;36m\002ssh:(\001\e[0;38;5;107m\002${USER}@${HOSTNAME}\001\e[1;36m\002)\001\e[0m\002 "
+    fi
+}
+
+# get current git branch
+git_branch() {
+    local branch
+    branch=$(git symbolic-ref --short HEAD 2>/dev/null)
+    if [ -n "$branch" ]; then
+        echo -e " \001\e[1;36m\002git:(\001\e[0;38;5;107m\002${branch}\001\e[1;36m\002)\001\e[0m\002"
+    fi
+}
+
+# get short pwd
+short_pwd() {
+    local path="$PWD" home="$HOME" rel_path display_path git_root
+
+    # Find git repository root if exists
+    git_root=$(git rev-parse --show-toplevel 2>/dev/null)
+
+    if [[ -n "$git_root" ]]; then
+        # In a git repository: calculate relative path from git root
+        rel_path="${path#$git_root}"
+        rel_path="${rel_path#/}"
+        local IFS="/"; read -ra parts <<< "$rel_path"
+        local len=${#parts[@]}
+        local git_name=$(basename "$git_root")
+
+        if [[ -z "$rel_path" ]]; then
+            display_path="$git_name"
+        elif [ $len -le 1 ]; then
+            display_path="$git_name/$rel_path"
+        else
+            display_path="…/${parts[$((len-2))]}/${parts[$((len-1))]}"
+        fi
+    elif [[ "$path" == "$home"* ]]; then
+        # In home but not git: normal behavior with tilde
+        rel_path="${path#$home}"
+        rel_path="${rel_path#/}"
+        local IFS="/"; read -ra parts <<< "$rel_path"
+        local len=${#parts[@]}
+
+        if [[ -z "$rel_path" ]]; then
+            display_path="~"
+        elif [ $len -le 2 ]; then
+            display_path="~/$rel_path"
+        else
+            display_path="…/${parts[$((len-2))]}/${parts[$((len-1))]}"
+        fi
+    else
+        # Absolute path: normal behavior
+        local IFS="/"; read -ra parts <<< "$path"
+        local len=${#parts[@]}
+        if [ $len -le 2 ]; then
+            display_path="$path"
+        else
+            display_path="…/${parts[$((len-2))]}/${parts[$((len-1))]}"
+        fi
+    fi
+    echo -e "\001\e[31m\002$display_path\001\e[0m\002"
+}
+
+# get cursor
+cursor() {
+    if [ "$EXIT_STATUS" -ne 0 ]; then
+        echo -e "\001\e[31m\002✗\001\e[0m\002 "
+    else
+        echo -e "\001\e[31m\002❯\001\e[0m\002 "
+    fi
+}
+
+# Prompt
+PROMPT_COMMAND='EXIT_STATUS=$?'
+PS1='$(ssh_user)$(short_pwd)$(git_branch) $(cursor)'

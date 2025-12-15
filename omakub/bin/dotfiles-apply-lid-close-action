@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ============ CONFIGURATION ============
-readonly CONFIG_FILE="$HOME/.config/omakasui/default/systemd/lid-close-action.conf"
+readonly CONFIG_FILE="$HOME/.config/omakub/default/systemd/lid-close-action.conf"
 
 echo -e "Applying lid close action configuration..."
 sudo rm -rf /etc/systemd/logind.conf.d/lid-close-action.conf

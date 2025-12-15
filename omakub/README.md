@@ -1,6 +1,6 @@
-# dotfiles > Omakasui
+# dotfiles > Omakub
 
-Omakasui configuration for Hyprland-based desktop environments.
+Configuration for [Omakub](https://omakub.org) and [Omakube](https://github.com/Kasui92/omakube) (my personal Omakub fork)
 
 ## Installation
 
@@ -9,7 +9,7 @@ Omakasui configuration for Hyprland-based desktop environments.
 If you've already set up the dotfiles command via the bootstrap script:
 
 ```bash
-dotfiles install omakasui
+dotfiles install omakub
 ```
 
 ### Manual Installation
@@ -23,7 +23,7 @@ dotfiles install omakasui
 2. Run the installation script using `source`:
 
    ```bash
-   source ~/.cfg/omakasui/install
+   source ~/.cfg/omakub/install
    ```
 
 This will set up your environment with the provided configurations.
@@ -34,9 +34,8 @@ This will set up your environment with the provided configurations.
 omakasui/
 ├── bin/           # Custom utility commands
 ├── config/        # Application configurations
-│   ├── hypr/      # Hyprland configuration
-│   └── starship.toml
 ├── default/       # Default configurations and scripts
 |   └── bash/      # Bash configuration files
+|   └── systemd/   # Systemd confs
 └── install        # Installation script
 ```

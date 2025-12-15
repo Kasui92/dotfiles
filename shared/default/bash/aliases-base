@@ -18,10 +18,6 @@ zd() {
     z "$@" && printf " \U000F17A9 " && pwd || echo "Error: Directory not found"
   fi
 }
-md() {
-  mkdir -p $1
-  cd $1
-}
 
 # Directories
 alias ..='cd ..'
@@ -31,10 +27,6 @@ alias ....='cd ../../..'
 # Tools
 alias g='git'
 alias d='docker'
-alias gl='glab'
-alias bat='batcat'
-alias lzg='lazygit'
-alias lzd='lazydocker'
 n() { if [ "$#" -eq 0 ]; then nvim .; else nvim "$@"; fi; }
 
 # Browser

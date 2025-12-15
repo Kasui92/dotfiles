@@ -1,7 +1,9 @@
-source ~/.cfg/deb/default/bash/shell
-source ~/.cfg/deb/default/bash/aliases
-source ~/.cfg/deb/default/bash/functions
-source ~/.cfg/deb/default/bash/prompt
-source ~/.cfg/deb/default/bash/init
-source ~/.cfg/deb/default/bash/envs
-[[ $- == *i* ]] && bind -f ~/.cfg/deb/default/bash/inputrc
+source ~/.cfg/shared/default/bash/shell
+source ~/.cfg/shared/default/bash/aliases-base
+source ~/.cfg/shared/default/bash/aliases
+source ~/.cfg/shared/default/bash/functions-base
+source ~/.cfg/shared/default/bash/functions
+source ~/.cfg/shared/default/bash/prompt
+source ~/.cfg/shared/default/bash/init
+source ~/.cfg/shared/default/bash/envs
+[[ $- == *i* ]] && bind -f ~/.cfg/shared/default/bash/inputrc

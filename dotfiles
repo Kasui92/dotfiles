@@ -44,7 +44,7 @@ list_configs() {
     fi
 
     echo -e "${GREEN}Available Configurations:${RESET}"
-    mapfile -t CONFIGS < <(find "$DOTFILES_DIR" -mindepth 1 -maxdepth 1 -type d -not -name ".*" -exec basename {} \;)
+    mapfile -t CONFIGS < <(find "$DOTFILES_DIR" -mindepth 1 -maxdepth 1 -type d -not -name ".*" -not -name "shared" -exec basename {} \;)
 
     if [ ${#CONFIGS[@]} -eq 0 ]; then
         echo -e "${YELLOW}No configurations found.${RESET}"
@@ -66,7 +66,7 @@ install_config() {
     fi
 
     # Get list of available configs
-    mapfile -t CONFIGS < <(find "$DOTFILES_DIR" -mindepth 1 -maxdepth 1 -type d -not -name ".*" -exec basename {} \;)
+    mapfile -t CONFIGS < <(find "$DOTFILES_DIR" -mindepth 1 -maxdepth 1 -type d -not -name ".*" -not -name "shared" -exec basename {} \;)
 
     if [ ${#CONFIGS[@]} -eq 0 ]; then
         echo -e "${RED}Error: No configurations found.${RESET}"

@@ -47,10 +47,8 @@ These installers can be run individually as needed after the main installation.
 
 ```
 deb/
-├── bash/          # Bash configuration files
+├── default/       # Default configurations
 ├── config/        # Application configurations
-│   ├── fastfetch/ # Fastfetch configuration
-│   └── nvim/      # Neovim/LazyVim configuration
 ├── installer/     # Optional tool installers
 └── install        # Main installation script
 ```

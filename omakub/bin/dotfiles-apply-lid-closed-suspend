@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Configures lid-closed suspend with USB wake support
+# BIOS: Set Sleep State=Linux, USB Wake Support=Enabled
+
+# Backup and configure logind
+sudo cp /etc/systemd/logind.conf /etc/systemd/logind.conf.backup
+
+sudo tee /etc/systemd/logind.conf > /dev/null << 'EOF'
+[Login]
+HandleLidSwitch=suspend
+HandleLidSwitchExternalPower=suspend
+HandleLidSwitchDocked=suspend
+IdleAction=ignore
+EOF
+
+# Enable USB wake (permanent)
+sudo tee /etc/udev/rules.d/90-usb-wakeup.rules > /dev/null << 'EOF'
+ACTION=="add", SUBSYSTEM=="usb", ATTR{power/wakeup}="enabled"
+EOF
+
+# Enable USB wake (immediate)
+for device in /sys/bus/usb/devices/*/power/wakeup; do
+    [ -f "$device" ] && echo enabled > "$device" 2>/dev/null
+done
+
+# Apply changes
+sudo systemctl restart systemd-logind
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+
+echo "Done. Configure BIOS, then test by closing lid and pressing USB key."

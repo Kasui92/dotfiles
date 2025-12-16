@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# Configures lid-closed suspend with USB wake support
+# BIOS: Set Sleep State=Linux, USB Wake Support=Enabled
+# Requires reboot for GRUB changes
+
+# Backup and configure logind
+sudo cp /etc/systemd/logind.conf /etc/systemd/logind.conf.backup
+
+sudo tee /etc/systemd/logind.conf > /dev/null << 'EOF'
+[Login]
+HandleLidSwitch=suspend
+HandleLidSwitchExternalPower=suspend
+HandleLidSwitchDocked=suspend
+IdleAction=ignore
+EOF
+
+# Configure GRUB for AMD deep sleep
+sudo cp /etc/default/grub /etc/default/grub.backup
+
+if ! grep -q "mem_sleep_default" /etc/default/grub; then
+    sudo sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 mem_sleep_default=deep"/' /etc/default/grub
+    sudo grub-mkconfig -o /boot/grub/grub.cfg
+fi
+
+# Enable USB wake (permanent)
+sudo tee /etc/udev/rules.d/90-usb-wakeup.rules > /dev/null << 'EOF'
+ACTION=="add", SUBSYSTEM=="usb", ATTR{power/wakeup}="enabled"
+EOF
+
+# Enable USB wake (immediate)
+for device in /sys/bus/usb/devices/*/power/wakeup; do
+    [ -f "$device" ] && echo enabled > "$device" 2>/dev/null
+done
+
+# Apply changes
+systemctl restart systemd-logind
+udevadm control --reload-rules
+udevadm trigger
+
+echo "Done. Reboot required. Configure BIOS, then test by closing lid and pressing USB key."

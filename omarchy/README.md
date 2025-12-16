@@ -36,6 +36,5 @@ omarchy/
 ├── config/        # Application configurations
 ├── default/       # Default configurations and scripts
 |   └── bash/      # Bash configuration files
-|   └── systemd/   # Systemd confs
 └── install        # Installation script
 ```

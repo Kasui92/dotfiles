@@ -47,7 +47,8 @@ These installers can be run individually as needed after the main installation.
 
 ```
 deb/
-├── default/       # Default configurations
+├── default/       # Default configurations and scripts
+|   └── bash/      # Bash configuration files
 ├── config/        # Application configurations
 ├── installer/     # Optional tool installers
 └── install        # Main installation script

@@ -7,4 +7,5 @@ if [ -f ~/.bashrc ]; then
 fi
 
 # Copy configuration
+cp -r ~/.cfg/shared/config/* ~/.config/
 cp -r ~/.cfg/omakub/config/* ~/.config/

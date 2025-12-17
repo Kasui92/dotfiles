@@ -9,18 +9,30 @@ sudo cp /etc/systemd/logind.conf /etc/systemd/logind.conf.backup
 
 sudo tee /etc/systemd/logind.conf > /dev/null << 'EOF'
 [Login]
-HandleLidSwitch=suspend
-HandleLidSwitchExternalPower=suspend
-HandleLidSwitchDocked=suspend
+HandleLidSwitch=ignore
+HandleLidSwitchExternalPower=ignore
+HandleLidSwitchDocked=ignore
 IdleAction=ignore
 EOF
 
-# Configure GRUB for AMD deep sleep
-sudo cp /etc/default/grub /etc/default/grub.backup
-
-if ! grep -q "mem_sleep_default" /etc/default/grub; then
-    sudo sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 mem_sleep_default=deep"/' /etc/default/grub
-    sudo grub-mkconfig -o /boot/grub/grub.cfg
+# Configure bootloader for AMD deep sleep
+if [ -f /etc/default/grub ]; then
+    # GRUB bootloader
+    sudo cp /etc/default/grub /etc/default/grub.backup
+    if ! grep -q "mem_sleep_default" /etc/default/grub; then
+        sudo sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 mem_sleep_default=deep"/' /etc/default/grub
+        sudo grub-mkconfig -o /boot/grub/grub.cfg
+    fi
+elif [ -d /boot/loader/entries ]; then
+    # systemd-boot
+    echo "systemd-boot detected. Adding mem_sleep_default=deep to boot entries..."
+    for entry in /boot/loader/entries/*.conf; do
+        if [ -f "$entry" ] && ! grep -q "mem_sleep_default" "$entry"; then
+            sudo sed -i '/^options/ s/$/ mem_sleep_default=deep/' "$entry"
+        fi
+    done
+else
+    echo "Warning: Could not detect bootloader. Please manually add 'mem_sleep_default=deep' to kernel parameters."
 fi
 
 # Enable USB wake (permanent)
@@ -30,12 +42,21 @@ EOF
 
 # Enable USB wake (immediate)
 for device in /sys/bus/usb/devices/*/power/wakeup; do
-    [ -f "$device" ] && echo enabled > "$device" 2>/dev/null
+    [ -f "$device" ] && sudo sh -c "echo enabled > \"$device\"" 2>/dev/null
 done
 
 # Apply changes
-systemctl restart systemd-logind
-udevadm control --reload-rules
-udevadm trigger
+sudo udevadm control --reload-rules
+sudo udevadm trigger
 
-echo "Done. Reboot required. Configure BIOS, then test by closing lid and pressing USB key."
+# Use gum for confirmation if available
+if command -v gum >/dev/null 2>&1; then
+    gum confirm "Lid-closed suspend configuration applied. Reboot now to apply changes?" && REBOOT=true || REBOOT=false
+else
+    read -p "Lid-closed suspend configuration applied. Your system will reboot now to apply changes. Press Enter to continue..."
+    REBOOT=true
+fi
+
+if [ "$REBOOT" = true ]; then
+    omarchy-cmd-reboot
+fi

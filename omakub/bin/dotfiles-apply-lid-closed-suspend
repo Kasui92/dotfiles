@@ -25,8 +25,17 @@ for device in /sys/bus/usb/devices/*/power/wakeup; do
 done
 
 # Apply changes
-sudo systemctl restart systemd-logind
 sudo udevadm control --reload-rules
 sudo udevadm trigger
 
-echo "Done. Configure BIOS, then test by closing lid and pressing USB key."
+# Use gum for confirmation if available
+if command -v gum >/dev/null 2>&1; then
+    gum confirm "Lid-closed suspend configuration applied. Reboot now to apply changes?" && REBOOT=true || REBOOT=false
+else
+    read -p "Lid-closed suspend configuration applied. Your system will reboot now to apply changes. Press Enter to continue..."
+    REBOOT=true
+fi
+
+if [ "$REBOOT" = true ]; then
+    omakub-cmd-reboot
+fi

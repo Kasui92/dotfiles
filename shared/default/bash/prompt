@@ -5,7 +5,7 @@ color_prompt=yes
 # get ssh user (e.g. ssh:(localuser@remotehost)) and show arrow only in SSH
 ssh_user() {
     if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
-        echo -e " \001\e[1;36m\002ssh:(\001\e[0;38;5;107m\002${USER}@${HOSTNAME}\001\e[1;36m\002)\001\e[0m\002 "
+        printf " \001\e[1;36m\002ssh:(\001\e[0;38;5;107m\002${USER}@${HOSTNAME}\001\e[1;36m\002)\001\e[0m\002 "
     fi
 }
 
@@ -14,7 +14,7 @@ git_branch() {
     local branch
     branch=$(git symbolic-ref --short HEAD 2>/dev/null)
     if [ -n "$branch" ]; then
-        echo -e " \001\e[1;36m\002git:(\001\e[0;38;5;107m\002${branch}\001\e[1;36m\002)\001\e[0m\002"
+        printf " \001\e[1;36m\002git:(\001\e[0;38;5;107m\002${branch}\001\e[1;36m\002)\001\e[0m\002"
     fi
 }
 
@@ -64,15 +64,15 @@ short_pwd() {
             display_path="…/${parts[$((len-2))]}/${parts[$((len-1))]}"
         fi
     fi
-    echo -e "\001\e[31m\002$display_path\001\e[0m\002"
+    printf "\001\e[31m\002$display_path\001\e[0m\002"
 }
 
 # get cursor
 cursor() {
     if [ "$EXIT_STATUS" -ne 0 ]; then
-        echo -e "\001\e[31m\002✗\001\e[0m\002 "
+        printf "\001\e[31m\002✗\001\e[0m\002 "
     else
-        echo -e "\001\e[31m\002❯\001\e[0m\002 "
+        printf "\001\e[31m\002❯\001\e[0m\002 "
     fi
 }
 

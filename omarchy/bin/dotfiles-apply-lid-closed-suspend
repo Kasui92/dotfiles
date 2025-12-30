@@ -19,6 +19,8 @@ EOF
 if [ -f /etc/default/grub ]; then
     # GRUB bootloader
     sudo cp /etc/default/grub /etc/default/grub.backup
+
+    # Add mem_sleep_default if not present
     if ! grep -q "mem_sleep_default" /etc/default/grub; then
         sudo sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 mem_sleep_default=deep"/' /etc/default/grub
         sudo grub-mkconfig -o /boot/grub/grub.cfg
@@ -35,12 +37,51 @@ else
     echo "Warning: Could not detect bootloader. Please manually add 'mem_sleep_default=deep' to kernel parameters."
 fi
 
-# Enable USB wake (permanent)
-sudo tee /etc/udev/rules.d/90-usb-wakeup.rules > /dev/null << 'EOF'
+# Optimize USB power management (permanent)
+# Only disable autosuspend for input devices and USB hubs
+sudo tee /etc/udev/rules.d/90-usb-power-management.rules > /dev/null << 'EOF'
+# Enable USB wake for all devices
 ACTION=="add", SUBSYSTEM=="usb", ATTR{power/wakeup}="enabled"
+
+# Disable autosuspend ONLY for HID devices (keyboards, mice)
+# Interface Class 03 = Human Interface Device
+ACTION=="add", SUBSYSTEM=="usb", ATTRS{bInterfaceClass}=="03", ATTR{power/autosuspend}="-1"
+ACTION=="add", SUBSYSTEM=="usb", ATTRS{bInterfaceClass}=="03", ATTR{power/control}="on"
+
+# Disable autosuspend for USB hubs (important for KVM switches)
+# Device Class 09 = Hub
+ACTION=="add", SUBSYSTEM=="usb", ATTR{bDeviceClass}=="09", ATTR{power/autosuspend}="-1"
+ACTION=="add", SUBSYSTEM=="usb", ATTR{bDeviceClass}=="09", ATTR{power/control}="on"
+
+# Optional: Increase autosuspend delay for other devices (default is 2 seconds)
+# This allows brief inactivity without suspending
+ACTION=="add", SUBSYSTEM=="usb", ATTR{power/autosuspend}="10"
 EOF
 
-# Enable USB wake (immediate)
+# Apply USB power settings (immediate)
+# Disable autosuspend for HID devices
+for device in /sys/bus/usb/devices/*/power; do
+    if [ -f "$device/autosuspend" ] && [ -f "${device%/power}/bInterfaceClass" ]; then
+        class=$(cat "${device%/power}/bInterfaceClass" 2>/dev/null || echo "")
+        if [ "$class" = "03" ]; then
+            sudo sh -c "echo -1 > \"$device/autosuspend\"" 2>/dev/null
+            sudo sh -c "echo on > \"$device/control\"" 2>/dev/null
+        fi
+    fi
+done
+
+# Disable autosuspend for USB hubs
+for device in /sys/bus/usb/devices/*/power; do
+    if [ -f "$device/autosuspend" ] && [ -f "${device%/power}/bDeviceClass" ]; then
+        class=$(cat "${device%/power}/bDeviceClass" 2>/dev/null || echo "")
+        if [ "$class" = "09" ]; then
+            sudo sh -c "echo -1 > \"$device/autosuspend\"" 2>/dev/null
+            sudo sh -c "echo on > \"$device/control\"" 2>/dev/null
+        fi
+    fi
+done
+
+# Enable wake for all USB devices
 for device in /sys/bus/usb/devices/*/power/wakeup; do
     [ -f "$device" ] && sudo sh -c "echo enabled > \"$device\"" 2>/dev/null
 done

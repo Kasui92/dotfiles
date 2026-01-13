@@ -1,5 +1,5 @@
 #!/bin/bash
-# Aggiorna sistema e installa pacchetti di base
+# Update base system packages
 sudo apt update -y
 sudo apt upgrade -y
 

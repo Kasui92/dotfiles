@@ -29,6 +29,12 @@ if [ -d "$DOTFILES_DIR" ]; then
   esac
 fi
 
+# Check if git is installed
+if ! command -v git &>/dev/null; then
+  echo -e "${RED}\nGit is not installed. Please install Git and rerun this script.${RESET}"
+  exit 1
+fi
+
 # Clone the dotfiles repository if not skipped
 if [ ! -d "$DOTFILES_DIR" ]; then
   echo -e "${GREEN}\nCloning Dotfiles from https://github.com/$DOTFILES_REPO...${RESET}"

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Installa Mise
+# Install Mise
 if ! command -v mise &>/dev/null; then
     read -p "Do you want to install Mise? [y/N]: " response
     if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then

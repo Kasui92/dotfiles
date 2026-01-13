@@ -1,5 +1,5 @@
 #!/bin/bash
-# Installa LazyGit
+# Install LazyGit
 if ! command -v lazygit &>/dev/null; then
     read -p "Do you want to install LazyGit? [y/N]: " response
     if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then

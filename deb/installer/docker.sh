@@ -1,5 +1,5 @@
 #!/bin/bash
-# Installa Docker e LazyDocker
+# Install Docker and related tools
 if ! command -v docker &> /dev/null; then
     read -p "Do you want to install Docker? [y/N]: " response
     if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then

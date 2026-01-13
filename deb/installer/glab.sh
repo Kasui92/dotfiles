@@ -1,5 +1,5 @@
 #!/bin/bash
-# Installa GitLab CLI
+# Install GitLab CLI
 if ! command -v glab &>/dev/null; then
     read -p "Do you want to install GitLab Cli? [y/N]: " response
     if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then

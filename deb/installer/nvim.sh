@@ -1,6 +1,5 @@
 #!/bin/bash
-
-# Installa Neovim
+# Install Neovim
 if ! command -v nvim &>/dev/null; then
   read -p "Do you want to install Neovim? [y/N]: " response
   if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then

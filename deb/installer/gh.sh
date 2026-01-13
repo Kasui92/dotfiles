@@ -1,5 +1,5 @@
 #!/bin/bash
-# Installa GitHub CLI
+# Install GitHub CLI
 default_response="N"
 if ! command -v gh &>/dev/null; then
     read -p "Do you want to install GitHub Cli? [y/N]: " response

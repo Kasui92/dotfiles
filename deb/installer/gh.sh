@@ -1,6 +1,5 @@
 #!/bin/bash
 # Install GitHub CLI
-default_response="N"
 if ! command -v gh &>/dev/null; then
     read -p "Do you want to install GitHub Cli? [y/N]: " response
     if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then

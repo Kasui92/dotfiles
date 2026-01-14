@@ -1,12 +1,13 @@
 #!/bin/bash
 # Install Fastfetch
-default_response="N"
 if ! command -v fastfetch &>/dev/null; then
     read -p "Do you want to install Fastfetch? [y/N]: " response
     if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-      sudo add-apt-repository -y ppa:zhangsongcui3371/fastfetch
-      sudo apt update -y
-      sudo apt install -y fastfetch
+        cd /tmp
+        curl -sLo fastfetch.deb "https://github.com/fastfetch-cli/fastfetch/releases/latest/download/fastfetch_linux_$(dpkg --print-architecture).deb"
+        sudo dpkg -i fastfetch.deb
+        rm fastfetch.deb
+        cd -
     fi
 fi
 

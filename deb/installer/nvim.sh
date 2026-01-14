@@ -1,8 +1,7 @@
 #!/bin/bash
 # Install Neovim
-if ! command -v nvim &>/dev/null; then
-  read -p "Do you want to install Neovim? [y/N]: " response
-  if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+
+install() {
     cd /tmp
     wget -O nvim.tar.gz "https://github.com/neovim/neovim/releases/download/stable/nvim-linux-x86_64.tar.gz"
     tar -xf nvim.tar.gz
@@ -21,5 +20,15 @@ if ! command -v nvim &>/dev/null; then
     cp -R ~/.cfg/deb/config/nvim/* ~/.config/nvim/
     rm -rf ~/.config/nvim/.git
     echo "vim.opt.relativenumber = false" >>~/.config/nvim/lua/config/options.lua
-  fi
+}
+
+if [ "${DOTFILES_INSTALL_FORCE:-0}" = "1" ]; then
+    install
+else
+    if ! command -v nvim &> /dev/null; then
+        read -p "Do you want to install Neovim? [y/N]: " response
+        if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+            install
+        fi
+    fi
 fi

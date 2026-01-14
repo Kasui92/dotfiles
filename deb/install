@@ -17,7 +17,7 @@ done
 
 # Add source command to .bashrc
 if [ -f ~/.bashrc ]; then
-    echo "source ~/.cfg/deb/default/bash/rc" >> ~/.bashrc
+    echo "source ~/.cfg/${DOTFILES_ACTIVE_CONFIG}/default/bash/rc" >> ~/.bashrc
 fi
 
 # Copy configuration

@@ -3,7 +3,7 @@
 
 install() {
     cd /tmp
-    curl -sLo fastfetch.deb "https://github.com/fastfetch-cli/fastfetch/releases/latest/download/fastfetch_linux_$(dpkg --print-architecture).deb"
+    curl -sLo fastfetch.deb "https://github.com/fastfetch-cli/fastfetch/releases/latest/download/fastfetch-linux-$(dpkg --print-architecture).deb"
     sudo dpkg -i fastfetch.deb
     rm fastfetch.deb
     cd -

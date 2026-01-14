@@ -189,34 +189,6 @@ update_dotfiles() {
         exit 1
     fi
 
-    # Check and migrate active config if needed
-    local active_config=$(get_active_config)
-    if [ -z "$active_config" ]; then
-        echo -e "${YELLOW}Active configuration not found. Attempting to recover from .bashrc...${RESET}"
-        active_config=$(extract_config_from_bashrc)
-        if [ -n "$active_config" ]; then
-            echo -e "${GREEN}✓ Found configuration: $active_config${RESET}"
-            save_active_config "$active_config"
-
-            # Update .bashrc to use the standard pattern
-            if [ -f ~/.bashrc ]; then
-                echo -e "${CYAN}Updating .bashrc for alignment...${RESET}"
-                # Remove old source lines
-                sed -i "\|source ~/.cfg/$active_config/default/bash/rc|d" ~/.bashrc
-                sed -i "\|export PATH=\"\$HOME/.cfg/$active_config/bin:\$PATH\"|d" ~/.bashrc
-
-                # Add new source line
-                echo "source ~/.cfg/$active_config/default/bash/rc" >> ~/.bashrc
-                if [ -d "$DOTFILES_DIR/$active_config/bin" ]; then
-                    echo "export PATH=\"\$HOME/.cfg/$active_config/bin:\$PATH\"" >> ~/.bashrc
-                fi
-                echo -e "${GREEN}✓ .bashrc updated${RESET}"
-            fi
-        else
-            echo -e "${YELLOW}Could not determine active configuration. Skipping migration.${RESET}"
-        fi
-    fi
-
     echo -e "${CYAN}Updating dotfiles from git repository...${RESET}"
 
     cd "$DOTFILES_DIR" || exit 1
@@ -267,6 +239,34 @@ update_dotfiles() {
         echo -e "${RED}✗ Failed to update dotfiles repository.${RESET}"
         echo -e "${CYAN}Please check your git configuration and try again.${RESET}"
         exit 1
+    fi
+
+    # Check and migrate active config if needed
+    local active_config=$(get_active_config)
+    if [ -z "$active_config" ]; then
+        echo -e "${YELLOW}Active configuration not found. Attempting to recover from .bashrc...${RESET}"
+        active_config=$(extract_config_from_bashrc)
+        if [ -n "$active_config" ]; then
+            echo -e "${GREEN}✓ Found configuration: $active_config${RESET}"
+            save_active_config "$active_config"
+
+            # Update .bashrc to use the standard pattern
+            if [ -f ~/.bashrc ]; then
+                echo -e "${CYAN}Updating .bashrc for alignment...${RESET}"
+                # Remove old source lines
+                sed -i "\|source ~/.cfg/$active_config/default/bash/rc|d" ~/.bashrc
+                sed -i "\|export PATH=\"\$HOME/.cfg/$active_config/bin:\$PATH\"|d" ~/.bashrc
+
+                # Add new source line
+                echo "source ~/.cfg/$active_config/default/bash/rc" >> ~/.bashrc
+                if [ -d "$DOTFILES_DIR/$active_config/bin" ]; then
+                    echo "export PATH=\"\$HOME/.cfg/$active_config/bin:\$PATH\"" >> ~/.bashrc
+                fi
+                echo -e "${GREEN}✓ .bashrc updated${RESET}"
+            fi
+        else
+            echo -e "${YELLOW}Could not determine active configuration. Skipping migration.${RESET}"
+        fi
     fi
 }
 

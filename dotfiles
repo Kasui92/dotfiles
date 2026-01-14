@@ -6,6 +6,8 @@ set -o pipefail
 # This script provides various commands to manage your dotfiles configuration
 
 DOTFILES_DIR="$HOME/.cfg"
+DOTFILES_STATE_DIR="$HOME/.local/state/dotfiles"
+DOTFILES_ACTIVE_FILE="$DOTFILES_STATE_DIR/active"
 
 # Colors for output
 RED='\e[31m'
@@ -13,6 +15,37 @@ GREEN='\e[32m'
 YELLOW='\e[33m'
 CYAN='\e[36m'
 RESET='\e[0m'
+
+# Function to save active configuration
+save_active_config() {
+    local config="$1"
+    mkdir -p "$DOTFILES_STATE_DIR"
+    echo "$config" > "$DOTFILES_ACTIVE_FILE"
+}
+
+# Function to get active configuration
+get_active_config() {
+    if [ -f "$DOTFILES_ACTIVE_FILE" ]; then
+        cat "$DOTFILES_ACTIVE_FILE"
+    else
+        echo ""
+    fi
+}
+
+# Function to extract config from .bashrc
+extract_config_from_bashrc() {
+    if [ ! -f ~/.bashrc ]; then
+        return 1
+    fi
+
+    # Search for source ~/.cfg/<config>/default/bash/rc pattern
+    local config=$(grep -oP "source ~/.cfg/\K[^/]+" ~/.bashrc | head -n 1)
+    if [ -n "$config" ]; then
+        echo "$config"
+        return 0
+    fi
+    return 1
+}
 
 # Function to display help
 show_help() {
@@ -24,12 +57,14 @@ Dotfiles management tool for configuration installation and management.
 Commands:
     install     Install a dotfiles configuration
     list        List available configurations
+    current     Show the currently active configuration
     update      Update dotfiles repository from git
     help        Show this help message
 
 Examples:
     dotfiles install          # Interactive installation of a config
     dotfiles list             # Show all available configurations
+    dotfiles current          # Show the currently active configuration
     dotfiles update           # Pull latest changes from git repository
     dotfiles help             # Display this help message
 
@@ -56,6 +91,16 @@ list_configs() {
             echo -e "  ${CYAN}•${RESET} $CONFIG"
         fi
     done
+}
+
+# Function to show the current active configuration
+show_current() {
+    local active_config=$(get_active_config)
+    if [ -n "$active_config" ]; then
+        echo -e "${GREEN}Current active configuration: ${CYAN}$active_config${RESET}"
+    else
+        echo -e "${YELLOW}No active configuration set.${RESET}"
+    fi
 }
 
 # Function to install a configuration
@@ -113,6 +158,12 @@ install_config() {
     if [ -n "$CONFIG" ]; then
         echo -e "${GREEN}\nInstalling $CONFIG...${RESET}"
 
+        # Save the active configuration
+        save_active_config "$CONFIG"
+
+        # Export the config name for install scripts to use
+        export DOTFILES_ACTIVE_CONFIG="$CONFIG"
+
         # Source the install script
         if source "$DOTFILES_DIR/$CONFIG/install"; then
             echo -e "${GREEN}✓ $CONFIG installed successfully!${RESET}"
@@ -136,6 +187,34 @@ update_dotfiles() {
     if [ ! -d "$DOTFILES_DIR/.git" ]; then
         echo -e "${RED}Error: $DOTFILES_DIR is not a git repository${RESET}"
         exit 1
+    fi
+
+    # Check and migrate active config if needed
+    local active_config=$(get_active_config)
+    if [ -z "$active_config" ]; then
+        echo -e "${YELLOW}Active configuration not found. Attempting to recover from .bashrc...${RESET}"
+        active_config=$(extract_config_from_bashrc)
+        if [ -n "$active_config" ]; then
+            echo -e "${GREEN}✓ Found configuration: $active_config${RESET}"
+            save_active_config "$active_config"
+
+            # Update .bashrc to use the standard pattern
+            if [ -f ~/.bashrc ]; then
+                echo -e "${CYAN}Updating .bashrc for alignment...${RESET}"
+                # Remove old source lines
+                sed -i "\|source ~/.cfg/$active_config/default/bash/rc|d" ~/.bashrc
+                sed -i "\|export PATH=\"\$HOME/.cfg/$active_config/bin:\$PATH\"|d" ~/.bashrc
+
+                # Add new source line
+                echo "source ~/.cfg/$active_config/default/bash/rc" >> ~/.bashrc
+                if [ -d "$DOTFILES_DIR/$active_config/bin" ]; then
+                    echo "export PATH=\"\$HOME/.cfg/$active_config/bin:\$PATH\"" >> ~/.bashrc
+                fi
+                echo -e "${GREEN}✓ .bashrc updated${RESET}"
+            fi
+        else
+            echo -e "${YELLOW}Could not determine active configuration. Skipping migration.${RESET}"
+        fi
     fi
 
     echo -e "${CYAN}Updating dotfiles from git repository...${RESET}"
@@ -199,6 +278,9 @@ case "${1:-}" in
         ;;
     list)
         list_configs
+        ;;
+    current)
+        show_current
         ;;
     update)
         update_dotfiles

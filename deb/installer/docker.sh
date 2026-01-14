@@ -1,34 +1,32 @@
 #!/bin/bash
-# Install Docker and related tools
-if ! command -v docker &> /dev/null; then
-    read -p "Do you want to install Docker? [y/N]: " response
-    if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-        sudo install -m 0755 -d /etc/apt/keyrings
-        sudo wget -qO /etc/apt/keyrings/docker.asc https://download.docker.com/linux/ubuntu/gpg
-        sudo chmod a+r /etc/apt/keyrings/docker.asc
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-        sudo apt update
-        sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-ce-rootless-extras
-        sudo mkdir -p /etc/docker
-        echo '{"log-driver":"json-file","log-opts":{"max-size":"10m","max-file":"5"}}' | sudo tee /etc/docker/daemon.json
-        sudo systemctl enable docker
-        sudo usermod -aG docker ${USER}
-        sudo mkdir -p /etc/systemd/system/docker.service.d
-        sudo tee /etc/systemd/system/docker.service.d/no-block-boot.conf <<'EOF'
+# Install Docker
+
+install() {
+    sudo install -m 0755 -d /etc/apt/keyrings
+    sudo wget -qO /etc/apt/keyrings/docker.asc https://download.docker.com/linux/ubuntu/gpg
+    sudo chmod a+r /etc/apt/keyrings/docker.asc
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    sudo apt update
+    sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-ce-rootless-extras
+    sudo mkdir -p /etc/docker
+    echo '{"log-driver":"json-file","log-opts":{"max-size":"10m","max-file":"5"}}' | sudo tee /etc/docker/daemon.json
+    sudo systemctl enable docker
+    sudo usermod -aG docker ${USER}
+    sudo mkdir -p /etc/systemd/system/docker.service.d
+    sudo tee /etc/systemd/system/docker.service.d/no-block-boot.conf <<'EOF'
 [Unit]
 DefaultDependencies=no
 EOF
-        sudo systemctl daemon-reload
-    fi
-    if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-        if ! command -v lazydocker &>/dev/null; then
-          cd /tmp
-            LAZYDOCKER_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazydocker/releases/latest" | grep -Po '"tag_name": "v\\K[^"]*')
-            curl -sLo lazydocker.tar.gz "https://github.com/jesseduffield/lazydocker/releases/latest/download/lazydocker_${LAZYDOCKER_VERSION}_Linux_x86_64.tar.gz"
-            tar -xf lazydocker.tar.gz lazydocker
-            sudo install lazydocker /usr/local/bin
-            rm lazydocker.tar.gz lazydocker
-            cd -
+    sudo systemctl daemon-reload
+}
+
+if [ "${DOTFILES_INSTALL_FORCE:-0}" = "1" ]; then
+    install
+else
+    if ! command -v docker &> /dev/null; then
+        read -p "Do you want to install Docker? [y/N]: " response
+        if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+            install
         fi
     fi
 fi

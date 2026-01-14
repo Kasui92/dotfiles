@@ -2,8 +2,8 @@
 
 # Add source command to .bashrc
 if [ -f ~/.bashrc ]; then
-    echo "source ~/.cfg/${DOTFILES_ACTIVE_CONFIG}/default/bash/rc" >> ~/.bashrc
-    echo "export PATH=\"\$HOME/.cfg/${DOTFILES_ACTIVE_CONFIG}/bin:\$PATH\"" >> ~/.bashrc
+    echo "source ~/.cfg/omakub/default/bash/rc" >> ~/.bashrc
+    echo "export PATH=\"\$HOME/.cfg/omakub/bin:\$PATH\"" >> ~/.bashrc
 fi
 
 # Copy configuration

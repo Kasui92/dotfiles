@@ -1,0 +1,112 @@
+#!/bin/bash
+
+set -o pipefail
+
+# Package installer script for dotfiles
+# Usage: dotfiles-install-pkg <package-name> [--force]
+
+DOTFILES_DIR="$HOME/.cfg"
+INSTALLER_DIR="$DOTFILES_DIR/deb/installer"
+
+# Colors for output
+RED='\e[31m'
+GREEN='\e[32m'
+YELLOW='\e[33m'
+CYAN='\e[36m'
+RESET='\e[0m'
+
+# Function to display help
+show_help() {
+    cat << EOF
+Usage: dotfiles-install-pkg <package-name> [--force]
+
+Install a specific package from the dotfiles installer directory.
+
+Arguments:
+    package-name    Name of the package to install (without .sh extension)
+    --force         Skip user confirmation prompts
+
+Examples:
+    dotfiles-install-pkg docker
+    dotfiles-install-pkg lazygit --force
+    dotfiles-install-pkg nvim --force
+
+Available packages:
+EOF
+    # List available packages
+    if [ -d "$INSTALLER_DIR" ]; then
+        for script in "$INSTALLER_DIR"/*.sh; do
+            [ -f "$script" ] || continue
+            basename "$script" .sh | sed 's/^/    /'
+        done
+    fi
+    echo
+}
+
+# Parse arguments
+PACKAGE=""
+FORCE=false
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --force|-f)
+            FORCE=true
+            shift
+            ;;
+        --help|-h)
+            show_help
+            exit 0
+            ;;
+        *)
+            if [ -z "$PACKAGE" ]; then
+                PACKAGE="$1"
+            else
+                echo -e "${RED}Error: Multiple package names provided${RESET}"
+                show_help
+                exit 1
+            fi
+            shift
+            ;;
+    esac
+done
+
+# Validate package name
+if [ -z "$PACKAGE" ]; then
+    echo -e "${RED}Error: No package name provided${RESET}\n"
+    show_help
+    exit 1
+fi
+
+# Check if installer directory exists
+if [ ! -d "$INSTALLER_DIR" ]; then
+    echo -e "${RED}Error: Installer directory not found at $INSTALLER_DIR${RESET}"
+    exit 1
+fi
+
+# Check if package script exists
+SCRIPT_PATH="$INSTALLER_DIR/${PACKAGE}.sh"
+if [ ! -f "$SCRIPT_PATH" ]; then
+    echo -e "${RED}Error: Package '$PACKAGE' not found${RESET}"
+    echo -e "${CYAN}Available packages:${RESET}"
+    for script in "$INSTALLER_DIR"/*.sh; do
+        [ -f "$script" ] || continue
+        echo "  - $(basename "$script" .sh)"
+    done
+    exit 1
+fi
+
+# Export force flag for installer scripts
+if [ "$FORCE" = true ]; then
+    export DOTFILES_INSTALL_FORCE=1
+    echo -e "${CYAN}Installing $PACKAGE (force mode)...${RESET}"
+else
+    echo -e "${CYAN}Installing $PACKAGE...${RESET}"
+fi
+
+# Source the installer script
+if source "$SCRIPT_PATH"; then
+    echo -e "${GREEN}✓ Package '$PACKAGE' processed successfully!${RESET}"
+else
+    echo -e "${RED}✗ Failed to install package '$PACKAGE'${RESET}"
+    exit 1
+fi

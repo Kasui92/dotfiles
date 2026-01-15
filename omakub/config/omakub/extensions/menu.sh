@@ -33,15 +33,19 @@ show_dotfiles_menu() {
 }
 
 show_dotfiles_install_menu() {
-  case $(menu "Install" "  DBeaver" "--width 250 --height 50") in
+  case $(menu "Install" "󰉉  Bruno\n  DBeaver\n  Filezilla" "--width 250 --height 170") in
+  *Bruno*) install_dotfiles_app "bruno" ;;
   *DBeaver*) install_dotfiles_app "dbeaver" ;;
+  *Filezilla*) install_dotfiles_app "filezilla" ;;
   *) show_dotfiles_menu ;;
   esac
 }
 
 show_dotfiles_remove_menu() {
-  case $(menu "Remove" "  DBeaver" "--width 250 --height 50") in
+  case $(menu "Remove" "󰉉  Bruno\n  DBeaver\n  Filezilla" "--width 250 --height 170") in
+  *Bruno*) remove_dotfiles_app "bruno" ;;
   *DBeaver*) remove_dotfiles_app "dbeaver" ;;
+  *Filezilla*) remove_dotfiles_app "filezilla" ;;
   *) show_dotfiles_menu ;;
   esac
 }

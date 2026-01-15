@@ -1,4 +1,5 @@
 #!/bin/bash
+
 # Update base system packages
 sudo apt update -y
 sudo apt upgrade -y

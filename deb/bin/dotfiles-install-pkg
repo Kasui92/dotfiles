@@ -6,7 +6,7 @@ set -o pipefail
 # Usage: dotfiles-install-pkg <package-name> [--force]
 
 DOTFILES_DIR="$HOME/.cfg"
-INSTALLER_DIR="$DOTFILES_DIR/deb/installer"
+APPS_DIR="$DOTFILES_DIR/deb/applications"
 
 # Colors for output
 RED='\e[31m'
@@ -20,7 +20,7 @@ show_help() {
     cat << EOF
 Usage: dotfiles-install-pkg <package-name> [--force]
 
-Install a specific package from the dotfiles installer directory.
+Install a specific package from the dotfiles applications directory.
 
 Arguments:
     package-name    Name of the package to install (without .sh extension)
@@ -34,8 +34,8 @@ Examples:
 Available packages:
 EOF
     # List available packages
-    if [ -d "$INSTALLER_DIR" ]; then
-        for script in "$INSTALLER_DIR"/*.sh; do
+    if [ -d "$APPS_DIR" ]; then
+        for script in "$APPS_DIR"/*.sh; do
             [ -f "$script" ] || continue
             basename "$script" .sh | sed 's/^/    /'
         done
@@ -77,25 +77,25 @@ if [ -z "$PACKAGE" ]; then
     exit 1
 fi
 
-# Check if installer directory exists
-if [ ! -d "$INSTALLER_DIR" ]; then
-    echo -e "${RED}Error: Installer directory not found at $INSTALLER_DIR${RESET}"
+# Check if applications directory exists
+if [ ! -d "$APPS_DIR" ]; then
+    echo -e "${RED}Error: Applications directory not found at $APPS_DIR${RESET}"
     exit 1
 fi
 
 # Check if package script exists
-SCRIPT_PATH="$INSTALLER_DIR/${PACKAGE}.sh"
+SCRIPT_PATH="$APPS_DIR/${PACKAGE}.sh"
 if [ ! -f "$SCRIPT_PATH" ]; then
     echo -e "${RED}Error: Package '$PACKAGE' not found${RESET}"
     echo -e "${CYAN}Available packages:${RESET}"
-    for script in "$INSTALLER_DIR"/*.sh; do
+    for script in "$APPS_DIR"/*.sh; do
         [ -f "$script" ] || continue
         echo "  - $(basename "$script" .sh)"
     done
     exit 1
 fi
 
-# Export force flag for installer scripts
+# Export force flag for application scripts
 if [ "$FORCE" = true ]; then
     export DOTFILES_INSTALL_FORCE=1
     echo -e "${CYAN}Installing $PACKAGE (force mode)...${RESET}"
@@ -103,7 +103,7 @@ else
     echo -e "${CYAN}Installing $PACKAGE...${RESET}"
 fi
 
-# Source the installer script
+# Source the application script
 if source "$SCRIPT_PATH"; then
     echo -e "${GREEN}✓ Package '$PACKAGE' processed successfully!${RESET}"
 else

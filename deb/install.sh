@@ -1,19 +1,11 @@
 #!/bin/bash
 
 # Install apps and dependencies
-INSTALLER_DIR="$HOME/.cfg/deb/installer"
+INSTALLER_DIR="$HOME/.cfg/deb/install"
 
 # Install base components
-BASE_SCRIPT="$INSTALLER_DIR/base.sh"
-if [ -f "$BASE_SCRIPT" ]; then
-    source "$BASE_SCRIPT"
-fi
-
-# Install additional components, excluding base.sh
-for script in "$INSTALLER_DIR"/*.sh; do
-    [[ "$script" == *base.sh ]] && continue
-    source "$script"
-done
+source "$INSTALLER_DIR/base.sh"
+source "$INSTALLER_DIR/apps.sh"
 
 # Add source command to .bashrc
 if [ -f ~/.bashrc ]; then

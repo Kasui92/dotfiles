@@ -23,7 +23,7 @@ dotfiles install omarchy
 2. Run the installation script using `source`:
 
    ```bash
-   source ~/.cfg/omarchy/install
+   source ~/.cfg/omarchy/install.sh
    ```
 
 This will set up your environment with the provided configurations.

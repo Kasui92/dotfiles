@@ -23,7 +23,7 @@ dotfiles install omakub
 2. Run the installation script using `source`:
 
    ```bash
-   source ~/.cfg/omakub/install
+   source ~/.cfg/omakub/install.sh
    ```
 
 This will set up your environment with the provided configurations.

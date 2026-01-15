@@ -87,7 +87,7 @@ list_configs() {
     fi
 
     for CONFIG in "${CONFIGS[@]}"; do
-        if [ -f "$DOTFILES_DIR/$CONFIG/install" ]; then
+        if [ -f "$DOTFILES_DIR/$CONFIG/install.sh" ]; then
             echo -e "  ${CYAN}•${RESET} $CONFIG"
         fi
     done
@@ -121,7 +121,7 @@ install_config() {
     # Filter configs that have an install script
     VALID_CONFIGS=()
     for CONFIG in "${CONFIGS[@]}"; do
-        if [ -f "$DOTFILES_DIR/$CONFIG/install" ]; then
+        if [ -f "$DOTFILES_DIR/$CONFIG/install.sh" ]; then
             VALID_CONFIGS+=("$CONFIG")
         fi
     done
@@ -138,7 +138,7 @@ install_config() {
             echo -e "${RED}Error: Configuration '$CONFIG' not found.${RESET}"
             exit 1
         fi
-        if [ ! -f "$DOTFILES_DIR/$CONFIG/install" ]; then
+        if [ ! -f "$DOTFILES_DIR/$CONFIG/install.sh" ]; then
             echo -e "${RED}Error: Configuration '$CONFIG' does not have an install script.${RESET}"
             exit 1
         fi
@@ -165,7 +165,7 @@ install_config() {
         export DOTFILES_ACTIVE_CONFIG="$CONFIG"
 
         # Source the install script
-        if source "$DOTFILES_DIR/$CONFIG/install"; then
+        if source "$DOTFILES_DIR/$CONFIG/install.sh"; then
             echo -e "${GREEN}✓ $CONFIG installed successfully!${RESET}"
         else
             echo -e "${RED}✗ Failed to install $CONFIG${RESET}"

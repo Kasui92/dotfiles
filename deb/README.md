@@ -23,7 +23,7 @@ dotfiles install deb
 2. Run the installation script using `source`:
 
    ```bash
-   source ~/.cfg/deb/install
+   source ~/.cfg/deb/install.sh
    ```
 
 This will set up your environment with the provided configurations.

@@ -47,9 +47,10 @@ These installers can be run individually as needed after the main installation.
 
 ```
 deb/
+├── applications/  # Custom applications install/remove scripts
 ├── default/       # Default configurations and scripts
 |   └── bash/      # Bash configuration files
 ├── config/        # Application configurations
 ├── installer/     # Optional tool installers
-└── install        # Main installation script
+└── install        # Main installation scripts
 ```

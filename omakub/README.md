@@ -31,7 +31,8 @@ This will set up your environment with the provided configurations.
 ## Directory Structure
 
 ```
-omakasui/
+omakub/
+├── applications/  # Custom applications install/remove scripts
 ├── bin/           # Custom utility commands
 ├── config/        # Application configurations
 ├── default/       # Default configurations and scripts

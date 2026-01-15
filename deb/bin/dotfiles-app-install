@@ -3,7 +3,7 @@
 set -o pipefail
 
 # Package installer script for dotfiles
-# Usage: dotfiles-install-pkg <package-name> [--force]
+# Usage: dotfiles-app-install <package-name> [--force]
 
 DOTFILES_DIR="$HOME/.cfg"
 APPS_DIR="$DOTFILES_DIR/deb/applications"
@@ -18,7 +18,7 @@ RESET='\e[0m'
 # Function to display help
 show_help() {
     cat << EOF
-Usage: dotfiles-install-pkg <package-name> [--force]
+Usage: dotfiles-app-install <package-name> [--force]
 
 Install a specific package from the dotfiles applications directory.
 
@@ -27,9 +27,9 @@ Arguments:
     --force         Skip user confirmation prompts
 
 Examples:
-    dotfiles-install-pkg docker
-    dotfiles-install-pkg lazygit --force
-    dotfiles-install-pkg nvim --force
+    dotfiles-app-install docker
+    dotfiles-app-install lazygit --force
+    dotfiles-app-install nvim --force
 
 Available packages:
 EOF

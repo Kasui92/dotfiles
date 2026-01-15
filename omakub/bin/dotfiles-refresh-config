@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cp -r ~/.cfg/shared/config/* ~/.config/
+cp -r ~/.cfg/omakub/config/* ~/.config/

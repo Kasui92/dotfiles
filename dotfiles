@@ -213,8 +213,6 @@ update_dotfiles() {
 
     # Pull latest changes
     if git pull --rebase; then
-        echo -e "${GREEN}✓ Dotfiles updated successfully!${RESET}"
-
         # If we stashed changes, ask to restore them
         if [ "${STASHED:-false}" = true ]; then
             echo -e "${CYAN}\nYour local changes were stashed.${RESET}"

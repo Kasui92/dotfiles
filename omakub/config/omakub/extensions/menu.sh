@@ -52,9 +52,16 @@ show_dotfiles_remove_menu() {
 }
 
 show_dotfiles_setup_menu() {
-  case $(menu "Setup" "󱥸  Dotfiles\n  Lid Suspend" "--width 250 --height 130") in
+  # Check if lid suspend is currently enabled
+  if [ -f "$HOME/.local/state/dotfiles/toggles/lid-suspend" ]; then
+    LID_SUSPEND_LABEL="  Disable Lid Suspend"
+  else
+    LID_SUSPEND_LABEL="  Enable Lid Suspend"
+  fi
+
+  case $(menu "Setup" "󱥸  Dotfiles\n$LID_SUSPEND_LABEL" "--width 260 --height 130") in
   *Dotfiles*) open_in_editor "$HOME/.cfg/" ;;
-  *Lid*) dotfiles-cmd-lid-suspend ;;
+  *Lid*) dotfiles-cmd-lid-closed-suspend ;;
   *) show_dotfiles_menu ;;
   esac
 }

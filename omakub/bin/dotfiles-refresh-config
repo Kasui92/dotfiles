@@ -2,3 +2,5 @@
 
 cp -r ~/.cfg/shared/config/* ~/.config/
 cp -r ~/.cfg/omakub/config/* ~/.config/
+
+echo -e "\e[32m✓ Dotfiles configuration refreshed successfully!\e[0m"

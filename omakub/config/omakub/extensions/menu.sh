@@ -24,10 +24,11 @@ remove_dotfiles_app() {
 }
 
 show_dotfiles_menu() {
-  case $(menu "Dotfiles" "󰉉  Install\n󰭌  Remove\n  Setup" "--width 250 --height 170") in
+  case $(menu "Dotfiles" "󰉉  Install\n󰭌  Remove\n  Setup\n  Update" "--width 250 --height 210") in
   *Install*) show_dotfiles_install_menu ;;
   *Remove*) show_dotfiles_remove_menu ;;
   *Setup*) show_dotfiles_setup_menu ;;
+  *Update*) show_dotfiles_update_menu ;;
   *) show_main_menu ;;
   esac
 }
@@ -54,6 +55,14 @@ show_dotfiles_setup_menu() {
   case $(menu "Setup" "󱥸  Dotfiles\n  Lid Suspend" "--width 250 --height 130") in
   *Dotfiles*) open_in_editor "$HOME/.cfg/" ;;
   *Lid*) dotfiles-cmd-lid-suspend ;;
+  *) show_dotfiles_menu ;;
+  esac
+}
+
+show_dotfiles_update_menu() {
+  case $(menu "Update" "  Dotfiles\n  Config" "--width 250 --height 130") in
+  *Dotfiles*) present_terminal "dotfiles update" ;;
+  *Config*) present_terminal dotfiles-refresh-config ;;
   *) show_dotfiles_menu ;;
   esac
 }

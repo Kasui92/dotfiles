@@ -1,0 +1,24 @@
+#!/bin/bash
+# Simple monitor switch based on lid state
+
+# Check if lid is closed
+is_lid_closed() {
+    [[ -f "/proc/acpi/button/lid/LID0/state" ]] && grep -q "closed" "/proc/acpi/button/lid/LID0/state" && return 0
+    [[ -f "/proc/acpi/button/lid/LID/state" ]] && grep -q "closed" "/proc/acpi/button/lid/LID/state" && return 0
+    return 1
+}
+
+# Check if external monitor is connected
+has_external_monitor() {
+    hyprctl monitors -j | jq -e '.[] | select(.name == "DP-2")' &>/dev/null
+}
+
+if is_lid_closed && has_external_monitor; then
+    # Lid closed + external monitor: use only external
+    hyprctl keyword monitor "eDP-1,disable" &>/dev/null
+    hyprctl keyword monitor "DP-2,preferred,auto,1" &>/dev/null
+else
+    # Lid open or no external: use laptop screen
+    hyprctl keyword monitor "eDP-1,preferred,auto,1" &>/dev/null
+    hyprctl keyword monitor "DP-2,disable" &>/dev/null
+fi

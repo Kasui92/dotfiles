@@ -1,3 +1,20 @@
+# VSCode
+c() {
+  # cd can be a zoxide alias, so we save the current directory first
+  local start_dir="$PWD"
+
+  cd "$1"
+
+  # Check if we actually moved to a different directory
+  if [ "$PWD" = "$start_dir" ]; then
+    # We didn't move, cd failed silently or we're already there
+    return 1
+  fi
+
+  code .
+}
+ce() { c "$1" && exit; }
+
 # Navigation
 md() {
   mkdir -p $1
@@ -22,3 +39,6 @@ alias dpa='docker ps -a'
 alias di='docker images'
 alias dv='docker volume ls'
 alias dn='docker network ls'
+
+# OpenCode
+alias oc='opencode'

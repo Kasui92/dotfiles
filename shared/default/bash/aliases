@@ -33,7 +33,7 @@ c() {
     code .
   fi
 }
-ce() { c "$1" && exit; }
+ce() { if [ "$#" -eq 0 ]; then c; else c "$1"; fi; exit; }
 alias oc='opencode'
 
 # Docker

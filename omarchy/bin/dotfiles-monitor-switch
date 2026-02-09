@@ -22,3 +22,8 @@ else
     hyprctl keyword monitor "eDP-1,preferred,auto,1" &>/dev/null
     hyprctl keyword monitor "DP-2,disable" &>/dev/null
 fi
+
+# Restart waybar to update workspace indicators correctly
+killall waybar 2>/dev/null
+sleep 0.5
+waybar &>/dev/null &

@@ -18,7 +18,6 @@ alias lzd='lazydocker'
 c() {
   if [ "$#" -eq 0 ]; then
     code .
-    exit
   else
     # Save the current directory to check later
     local start_dir="$PWD"
@@ -32,9 +31,10 @@ c() {
     fi
 
     code .
-    exit
   fi
 }
+cx() { c "$@" && exit; }
+
 alias oc='opencode'
 
 # Docker

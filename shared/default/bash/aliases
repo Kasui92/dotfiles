@@ -33,6 +33,8 @@ c() {
     code .
   fi
 }
+# Remove the default 'cx' alias if it exists
+unalias cx 2>/dev/null
 cx() { c "$@" && exit; }
 
 alias oc='opencode'

@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Install one or more Omakub applications.
+# Remove one or more Omabuntu applications.
 
-APP_DIR="$HOME/.cfg/omakub/applications/install"
+APP_DIR="$HOME/.cfg/omabuntu/applications/remove"
 
 if [ "$#" -eq 0 ]; then
-  # Find all installable apps
+  # Find all removable apps
   APPS=()
   while IFS= read -r path; do
     filename=$(basename "$path" .sh)
@@ -15,14 +15,14 @@ if [ "$#" -eq 0 ]; then
   if ((${#APPS[@]})); then
     IFS=$'\n' SORTED_APPS=($(sort <<<"${APPS[*]}"))
     unset IFS
-    APP_NAMES_STRING=$(gum choose --no-limit --header "Select app to install..." --selected-prefix="✓ " "${SORTED_APPS[@]}")
+    APP_NAMES_STRING=$(gum choose --no-limit --header "Select app to remove..." --selected-prefix="✗ " "${SORTED_APPS[@]}")
     # Convert newline-separated string to array
     APP_NAMES=()
     while IFS= read -r line; do
       [[ -n "$line" ]] && APP_NAMES+=("$line")
     done <<< "$APP_NAMES_STRING"
   else
-    echo "No apps to install."
+    echo "No apps to remove."
     exit 1
   fi
 else
@@ -38,14 +38,12 @@ fi
 for APP_NAME in "${APP_NAMES[@]}"; do
   APP_NAME=$(echo "$APP_NAME" | sed -E 's/<[^>]+>//g' | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
 
-  # If APP_NAME exists in $APP_DIR, source it to install the app
+  # If APP_NAME exists in $APP_DIR, source it to uninstall the app
   if [[ -f "$APP_DIR/$APP_NAME.sh" ]]; then
     source "$APP_DIR/$APP_NAME.sh"
   # If the app is not recognized, print an error message
   else
-    echo "Error: App $APP_NAME is not recognized or not available for installation." >&2
+    echo "Error: App $APP_NAME is not recognized or not available for uninstallation." >&2
     exit 1
   fi
 done
-
-exit 0

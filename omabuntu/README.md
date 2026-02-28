@@ -1,6 +1,6 @@
-# dotfiles > Omakub
+# dotfiles > Omabuntu
 
-Configuration for [Omakub](https://omakub.org) and [Omakube](https://github.com/Kasui92/omakube) (my personal Omakub fork)
+Configuration for [Omabuntu](https://omabuntu.omakasui.org)
 
 ## Installation
 
@@ -9,7 +9,7 @@ Configuration for [Omakub](https://omakub.org) and [Omakube](https://github.com/
 If you've already set up the dotfiles command via the bootstrap script:
 
 ```bash
-dotfiles install omakub
+dotfiles install omabuntu
 ```
 
 ### Manual Installation
@@ -20,10 +20,16 @@ dotfiles install omakub
    git clone <repo-url> ~/.cfg
    ```
 
-2. Run the installation script using `source`:
+2. Run the following instalation script:
 
    ```bash
-   source ~/.cfg/omakub/install.sh
+   if [ -f ~/.bashrc ]; then
+      echo "source ~/.cfg/omabuntu/default/bash/rc" >> ~/.bashrc
+      echo "export PATH=\"\$HOME/.cfg/omabuntu/bin:\$PATH\"" >> ~/.bashrc
+   fi
+
+   cp -r ~/.cfg/shared/config/* ~/.config/
+   cp -r ~/.cfg/omabuntu/config/* ~/.config/
    ```
 
 This will set up your environment with the provided configurations.
@@ -31,7 +37,7 @@ This will set up your environment with the provided configurations.
 ## Directory Structure
 
 ```
-omakub/
+omabuntu/
 ├── applications/  # Custom applications install/remove scripts
 ├── bin/           # Custom utility commands
 ├── config/        # Application configurations

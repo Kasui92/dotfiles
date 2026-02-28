@@ -87,9 +87,7 @@ list_configs() {
     fi
 
     for CONFIG in "${CONFIGS[@]}"; do
-        if [ -f "$DOTFILES_DIR/$CONFIG/install.sh" ]; then
-            echo -e "  ${CYAN}•${RESET} $CONFIG"
-        fi
+        echo -e "  ${CYAN}•${RESET} $CONFIG"
     done
 }
 
@@ -118,19 +116,6 @@ install_config() {
         exit 1
     fi
 
-    # Filter configs that have an install script
-    VALID_CONFIGS=()
-    for CONFIG in "${CONFIGS[@]}"; do
-        if [ -f "$DOTFILES_DIR/$CONFIG/install.sh" ]; then
-            VALID_CONFIGS+=("$CONFIG")
-        fi
-    done
-
-    if [ ${#VALID_CONFIGS[@]} -eq 0 ]; then
-        echo -e "${RED}Error: No installable configurations found.${RESET}"
-        exit 1
-    fi
-
     # If a specific config is provided as argument, install it directly
     if [ -n "$1" ]; then
         CONFIG="$1"
@@ -138,15 +123,11 @@ install_config() {
             echo -e "${RED}Error: Configuration '$CONFIG' not found.${RESET}"
             exit 1
         fi
-        if [ ! -f "$DOTFILES_DIR/$CONFIG/install.sh" ]; then
-            echo -e "${RED}Error: Configuration '$CONFIG' does not have an install script.${RESET}"
-            exit 1
-        fi
     else
         # Interactive selection
         echo -e "${GREEN}Available Configurations:${RESET}"
         PS3=$'\e[36mSelect a configuration to install (enter number): \e[0m'
-        select CONFIG in "${VALID_CONFIGS[@]}"; do
+        select CONFIG in "${CONFIGS[@]}"; do
             if [ -n "$CONFIG" ]; then
                 break
             else
@@ -161,16 +142,40 @@ install_config() {
         # Save the active configuration
         save_active_config "$CONFIG"
 
-        # Export the config name for install scripts to use
-        export DOTFILES_ACTIVE_CONFIG="$CONFIG"
-
-        # Source the install script
-        if source "$DOTFILES_DIR/$CONFIG/install.sh"; then
-            echo -e "${GREEN}✓ $CONFIG installed successfully!${RESET}"
+        # Check if dotfiles are already sourced in .bashrc
+        if grep -q "source ~/.cfg/" ~/.bashrc 2>/dev/null; then
+            echo -e "${YELLOW}Dotfiles already present in .bashrc, skipping shell and config setup.${RESET}"
         else
-            echo -e "${RED}✗ Failed to install $CONFIG${RESET}"
-            exit 1
+            # Add source command to .bashrc
+            if [ -f ~/.bashrc ]; then
+                echo "source ~/.cfg/$CONFIG/default/bash/rc" >> ~/.bashrc
+                if [ -d "$DOTFILES_DIR/$CONFIG/bin" ]; then
+                    echo "export PATH=\"\$HOME/.cfg/$CONFIG/bin:\$PATH\"" >> ~/.bashrc
+                fi
+            fi
+
+            # Copy shared config if present
+            if [ -d "$DOTFILES_DIR/shared/config" ]; then
+                mkdir -p ~/.config/
+                cp -r "$DOTFILES_DIR/shared/config/." ~/.config/
+            fi
+
+            # Copy config-specific files if present
+            if [ -d "$DOTFILES_DIR/$CONFIG/config" ]; then
+                mkdir -p ~/.config/
+                cp -r "$DOTFILES_DIR/$CONFIG/config/." ~/.config/
+            fi
         fi
+
+        # Run install.sh only if present
+        if [ -f "$DOTFILES_DIR/$CONFIG/install.sh" ]; then
+            if ! source "$DOTFILES_DIR/$CONFIG/install.sh"; then
+                echo -e "${RED}✗ Failed to install $CONFIG${RESET}"
+                exit 1
+            fi
+        fi
+
+        echo -e "${GREEN}✓ $CONFIG installed successfully!${RESET}"
     else
         echo -e "${RED}\nNo valid configuration selected. Aborting installation.${RESET}"
         exit 1

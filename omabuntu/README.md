@@ -1,6 +1,6 @@
 # dotfiles > Omabuntu
 
-Configuration for [Omabuntu](https://omabuntu.omakasui.org)
+Configuration for [Omabuntu](https://omabuntu.omakasui.org) (Ubuntu + GNOME)
 
 ## Installation
 

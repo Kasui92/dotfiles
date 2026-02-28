@@ -45,7 +45,7 @@ EOF
     fi
 
     if [ "$REBOOT" = true ]; then
-        omakub-cmd-reboot
+        omakub-system-reboot
     fi
 }
 
@@ -83,7 +83,7 @@ EOF
     fi
 
     if [ "$REBOOT" = true ]; then
-        omakub-cmd-reboot
+        omakub-system-reboot
     fi
 }
 

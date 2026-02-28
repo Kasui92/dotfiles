@@ -51,6 +51,7 @@ dotfiles install
 # Install a specific configuration directly
 dotfiles install deb
 dotfiles install omabuntu
+dotfiles install omadeb
 dotfiles install omarchy
 
 # Update dotfiles repository from git
@@ -67,6 +68,7 @@ export PATH="$HOME/.local/bin:$PATH"
 
 - **deb**: For Debian/Ubuntu systems. See [deb/README.md](deb/README.md) for details.
 - **omabuntu**: For Omabuntu installation. See [omabuntu/README.md](omabuntu/README.md) for details.
+- **omadeb**: For Omadeb installation. See [omadeb/README.md](omadeb/README.md) for details.
 - **omarchy**: For Omarchy installation. See [omarchy/README.md](omarchy/README.md) for details.
 
 Refer to the documentation in each directory for specific instructions.

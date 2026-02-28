@@ -1,0 +1,95 @@
+#!/bin/bash
+
+# Configures lid-closed suspend with USB wake support
+# BIOS: Set Sleep State=Linux, USB Wake Support=Enabled
+
+TOGGLES_DIR="$HOME/.local/state/dotfiles/toggles"
+TOGGLE_FILE="$TOGGLES_DIR/lid-suspend"
+
+enable_lid_suspend() {
+    # Backup and configure logind
+    sudo cp /etc/systemd/logind.conf /etc/systemd/logind.conf.backup
+
+    sudo tee /etc/systemd/logind.conf > /dev/null << 'EOF'
+[Login]
+HandleLidSwitch=suspend
+HandleLidSwitchExternalPower=suspend
+HandleLidSwitchDocked=suspend
+IdleAction=ignore
+EOF
+
+    # Enable USB wake (permanent)
+    sudo tee /etc/udev/rules.d/90-usb-wakeup.rules > /dev/null << 'EOF'
+ACTION=="add", SUBSYSTEM=="usb", ATTR{power/wakeup}="enabled"
+EOF
+
+    # Enable USB wake (immediate)
+    for device in /sys/bus/usb/devices/*/power/wakeup; do
+        [ -f "$device" ] && echo enabled > "$device" 2>/dev/null
+    done
+
+    # Apply changes
+    sudo udevadm control --reload-rules
+    sudo udevadm trigger
+
+    # Create toggle file
+    mkdir -p "$TOGGLES_DIR"
+    touch "$TOGGLE_FILE"
+
+    # Use gum for confirmation if available
+    if command -v gum >/dev/null 2>&1; then
+        gum confirm "Lid-closed suspend enabled. Reboot now to apply changes?" && REBOOT=true || REBOOT=false
+    else
+        read -p "Lid-closed suspend enabled. Your system will reboot now to apply changes. Press Enter to continue..."
+        REBOOT=true
+    fi
+
+    if [ "$REBOOT" = true ]; then
+        omadeb-system-reboot
+    fi
+}
+
+disable_lid_suspend() {
+    # Restore backup if exists
+    if [ -f /etc/systemd/logind.conf.backup ]; then
+        sudo cp /etc/systemd/logind.conf.backup /etc/systemd/logind.conf
+    else
+        # Restore default settings
+        sudo tee /etc/systemd/logind.conf > /dev/null << 'EOF'
+[Login]
+HandleLidSwitch=ignore
+HandleLidSwitchExternalPower=ignore
+HandleLidSwitchDocked=ignore
+IdleAction=ignore
+EOF
+    fi
+
+    # Remove USB wake rules
+    sudo rm -f /etc/udev/rules.d/90-usb-wakeup.rules
+
+    # Apply changes
+    sudo udevadm control --reload-rules
+    sudo udevadm trigger
+
+    # Remove toggle file
+    rm -f "$TOGGLE_FILE"
+
+    # Use gum for confirmation if available
+    if command -v gum >/dev/null 2>&1; then
+        gum confirm "Lid-closed suspend disabled. Reboot now to apply changes?" && REBOOT=true || REBOOT=false
+    else
+        read -p "Lid-closed suspend disabled. Your system will reboot now to apply changes. Press Enter to continue..."
+        REBOOT=true
+    fi
+
+    if [ "$REBOOT" = true ]; then
+        omadeb-system-reboot
+    fi
+}
+
+# Main logic
+if [ -f "$TOGGLE_FILE" ]; then
+    disable_lid_suspend
+else
+    enable_lid_suspend
+fi

@@ -24,6 +24,4 @@ else
 fi
 
 # Restart waybar to update workspace indicators correctly
-killall waybar 2>/dev/null
-sleep 0.5
-waybar &>/dev/null &
+omarchy-restart-waybar

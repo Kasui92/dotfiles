@@ -6,14 +6,6 @@
 TOGGLES_DIR="$HOME/.local/state/dotfiles/toggles"
 TOGGLE_FILE="$TOGGLES_DIR/lid-suspend"
 
-configure_gnome_lid() {
-    local action="$1"
-    if command -v gsettings >/dev/null 2>&1; then
-        gsettings set org.gnome.settings-daemon.plugins.power lid-close-ac-action "$action"
-        gsettings set org.gnome.settings-daemon.plugins.power lid-close-battery-action "$action"
-    fi
-}
-
 enable_lid_suspend() {
     # Backup and configure logind
     sudo cp /etc/systemd/logind.conf /etc/systemd/logind.conf.backup
@@ -25,9 +17,6 @@ HandleLidSwitchExternalPower=suspend
 HandleLidSwitchDocked=suspend
 IdleAction=ignore
 EOF
-
-    # Configure GNOME power settings (overrides logind on GNOME desktops)
-    configure_gnome_lid "suspend"
 
     # Enable USB wake (permanent)
     sudo tee /etc/udev/rules.d/90-usb-wakeup.rules > /dev/null << 'EOF'
@@ -75,9 +64,6 @@ HandleLidSwitchDocked=ignore
 IdleAction=ignore
 EOF
     fi
-
-    # Restore GNOME power settings
-    configure_gnome_lid "nothing"
 
     # Remove USB wake rules
     sudo rm -f /etc/udev/rules.d/90-usb-wakeup.rules

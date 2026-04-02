@@ -1,4 +1,0 @@
-source ~/.cfg/shared/default/bash/aliases
-source ~/.cfg/shared/default/bash/functions
-source ~/.cfg/shared/default/bash/prompt
-source ~/.cfg/shared/default/bash/init

@@ -1,6 +1,0 @@
-#!/bin/bash
-
-cp -r ~/.cfg/shared/config/* ~/.config/
-cp -r ~/.cfg/omarchy/config/* ~/.config/
-
-echo -e "\e[32m✓ Dotfiles configuration refreshed successfully!\e[0m"

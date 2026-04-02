@@ -6,6 +6,14 @@
 TOGGLES_DIR="$HOME/.local/state/dotfiles/toggles"
 TOGGLE_FILE="$TOGGLES_DIR/lid-suspend"
 
+configure_gnome_lid() {
+    local action="$1"
+    if command -v gsettings >/dev/null 2>&1; then
+        gsettings set org.gnome.settings-daemon.plugins.power lid-close-ac-action "$action"
+        gsettings set org.gnome.settings-daemon.plugins.power lid-close-battery-action "$action"
+    fi
+}
+
 enable_lid_suspend() {
     # Backup and configure logind
     sudo cp /etc/systemd/logind.conf /etc/systemd/logind.conf.backup
@@ -18,6 +26,9 @@ HandleLidSwitchDocked=suspend
 IdleAction=ignore
 EOF
 
+    # Configure GNOME power settings (overrides logind on GNOME desktops)
+    configure_gnome_lid "suspend"
+
     # Enable USB wake (permanent)
     sudo tee /etc/udev/rules.d/90-usb-wakeup.rules > /dev/null << 'EOF'
 ACTION=="add", SUBSYSTEM=="usb", ATTR{power/wakeup}="enabled"
@@ -25,12 +36,13 @@ EOF
 
     # Enable USB wake (immediate)
     for device in /sys/bus/usb/devices/*/power/wakeup; do
-        [ -f "$device" ] && echo enabled > "$device" 2>/dev/null
+        [ -f "$device" ] && echo enabled | sudo tee "$device" > /dev/null
     done
 
     # Apply changes
     sudo udevadm control --reload-rules
     sudo udevadm trigger
+    sudo systemctl kill -s HUP systemd-logind
 
     # Create toggle file
     mkdir -p "$TOGGLES_DIR"
@@ -38,10 +50,10 @@ EOF
 
     # Use gum for confirmation if available
     if command -v gum >/dev/null 2>&1; then
-        gum confirm "Lid-closed suspend enabled. Reboot now to apply changes?" && REBOOT=true || REBOOT=false
+        gum confirm "Lid-closed suspend enabled. Reboot now to fully apply changes?" && REBOOT=true || REBOOT=false
     else
-        read -p "Lid-closed suspend enabled. Your system will reboot now to apply changes. Press Enter to continue..."
-        REBOOT=true
+        read -p "Lid-closed suspend enabled. Reboot now? [y/N] " answer
+        [[ "$answer" =~ ^[Yy]$ ]] && REBOOT=true || REBOOT=false
     fi
 
     if [ "$REBOOT" = true ]; then
@@ -64,22 +76,26 @@ IdleAction=ignore
 EOF
     fi
 
+    # Restore GNOME power settings
+    configure_gnome_lid "nothing"
+
     # Remove USB wake rules
     sudo rm -f /etc/udev/rules.d/90-usb-wakeup.rules
 
     # Apply changes
     sudo udevadm control --reload-rules
     sudo udevadm trigger
+    sudo systemctl kill -s HUP systemd-logind
 
     # Remove toggle file
     rm -f "$TOGGLE_FILE"
 
     # Use gum for confirmation if available
     if command -v gum >/dev/null 2>&1; then
-        gum confirm "Lid-closed suspend disabled. Reboot now to apply changes?" && REBOOT=true || REBOOT=false
+        gum confirm "Lid-closed suspend disabled. Reboot now to fully apply changes?" && REBOOT=true || REBOOT=false
     else
-        read -p "Lid-closed suspend disabled. Your system will reboot now to apply changes. Press Enter to continue..."
-        REBOOT=true
+        read -p "Lid-closed suspend disabled. Reboot now? [y/N] " answer
+        [[ "$answer" =~ ^[Yy]$ ]] && REBOOT=true || REBOOT=false
     fi
 
     if [ "$REBOOT" = true ]; then

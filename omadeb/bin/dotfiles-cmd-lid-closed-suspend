@@ -25,8 +25,31 @@ EOF
 
     # Enable USB wake (immediate)
     for device in /sys/bus/usb/devices/*/power/wakeup; do
-        [ -f "$device" ] && echo enabled | sudo tee "$device" > /dev/null
+        [[ -f $device ]] && echo enabled | sudo tee "$device" > /dev/null
     done
+
+    # Install systemd-sleep hook to restore USB input + Bluetooth for GDM3 after resume
+    sudo tee /lib/systemd/system-sleep/omadeb-gdm-device-restore > /dev/null << 'EOF'
+#!/bin/bash
+# Restores USB input devices and Bluetooth for GDM3 after resume from suspend
+case "$1/$2" in
+  post/suspend|post/hibernate|post/hybrid-sleep)
+    udevadm trigger --subsystem-match=input
+    udevadm trigger --subsystem-match=usb
+    systemctl restart bluetooth
+    ;;
+esac
+EOF
+    sudo chmod +x /lib/systemd/system-sleep/omadeb-gdm-device-restore
+
+    # Allow GDM3 (gdm user) to use Bluetooth via polkit
+    sudo tee /etc/polkit-1/rules.d/85-gdm-bluetooth.rules > /dev/null << 'EOF'
+polkit.addRule(function(action, subject) {
+    if (action.id.indexOf("org.bluez.") === 0 && subject.user === "gdm") {
+        return polkit.Result.YES;
+    }
+});
+EOF
 
     # Apply changes
     sudo udevadm control --reload-rules
@@ -52,7 +75,7 @@ EOF
 
 disable_lid_suspend() {
     # Restore backup if exists
-    if [ -f /etc/systemd/logind.conf.backup ]; then
+    if [[ -f /etc/systemd/logind.conf.backup ]]; then
         sudo cp /etc/systemd/logind.conf.backup /etc/systemd/logind.conf
     else
         # Restore default settings
@@ -67,6 +90,10 @@ EOF
 
     # Remove USB wake rules
     sudo rm -f /etc/udev/rules.d/90-usb-wakeup.rules
+
+    # Remove GDM3 device restore hook and polkit rule
+    sudo rm -f /lib/systemd/system-sleep/omadeb-gdm-device-restore
+    sudo rm -f /etc/polkit-1/rules.d/85-gdm-bluetooth.rules
 
     # Apply changes
     sudo udevadm control --reload-rules

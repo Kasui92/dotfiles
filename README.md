@@ -1,5 +1,8 @@
 # dotfiles
 
+> [!WARNING]
+> This repository is moved to [Codeberg](https://codeberg.org/Kasui92/dotfiles). The GitHub repository will no longer receive updates and is read-only. Please visit the new location to access the latest version and updates.
+
 This repository provides a modular dotfiles setup with an easy-to-use command-line interface.
 
 ## Installation

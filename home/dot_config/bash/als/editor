@@ -1,0 +1,26 @@
+# VS Code
+if command -v code &> /dev/null; then
+  c() {
+    if [ "$#" -eq 0 ]; then
+      code .
+    else
+      # Save the current directory to check later
+      local start_dir="$PWD"
+
+      cd "$1"
+
+      # Check if we actually moved to a different directory
+      if [ "$PWD" = "$start_dir" ]; then
+        # We didn't move, cd failed silently or we're already there
+        return 1
+      fi
+
+      code .
+    fi
+  }
+fi
+
+# Neovim
+if command -v nvim &> /dev/null; then
+  n() { if [ "$#" -eq 0 ]; then command nvim . ; else command nvim "$@"; fi; }
+fi

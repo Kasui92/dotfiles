@@ -1,0 +1,31 @@
+# Update system function
+update-system() {
+  echo -e "\e[32m\nUpdate system packages\e[0m"
+  sudo apt-get update
+  sudo apt-get -y upgrade
+  sudo apt-get -y dist-upgrade
+
+  # Se ci sono pacchetti non più necessari, rimuovili
+  if (( $(sudo apt-get -s autoremove 2>/dev/null | grep 'The following packages will be REMOVED:' | wc -l) > 0 )); then
+    echo -e "\e[32m\nRemoving unnecessary packages\e[0m"
+    sudo apt-get -y autoremove
+  fi
+}
+
+# Update firmware function
+if command -v fwupdmgr &> /dev/null; then
+  update-firmware() {
+    echo -e "\e[32m\nUpdate firmware\e[0m"
+    sudo fwupdmgr get-devices
+    sudo fwupdmgr get-updates
+    sudo fwupdmgr update
+  }
+fi
+
+# If Flatpak is installed, update Flatpak packages
+if command -v flatpak &> /dev/null; then
+  update-flatpak() {
+    echo -e "\e[32m\nUpdate flatpak packages\e[0m"
+    flatpak update -y
+  }
+fi

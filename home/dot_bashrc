@@ -1,0 +1,2 @@
+# ~/.bashrc is entirely managed by configs ($HOME/.config/bash)
+source ~/.config/bash/rc

@@ -1,0 +1,1 @@
+for a in $HOME/.config/bash/als/*; do source "$a"; done

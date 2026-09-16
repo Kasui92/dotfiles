@@ -1,0 +1,7 @@
+source $HOME/.config/bash/envs
+source $HOME/.config/bash/shell
+source $HOME/.config/bash/aliases
+source $HOME/.config/bash/functions
+source $HOME/.config/bash/prompt
+source $HOME/.config/bash/init
+[[ $- == *i* ]] && bind -f $HOME/.config/bash/inputrc

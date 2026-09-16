@@ -1,2 +1,5 @@
-# ~/.bashrc is entirely managed by configs ($HOME/.config/bash)
+# If not running interactively, don't do anything else
+[[ $- != *i* ]] && return
+
+# All the bash configs
 source ~/.config/bash/rc

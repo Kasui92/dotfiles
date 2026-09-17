@@ -1,0 +1,20 @@
+{{- $bat := lookPath "bat" -}}
+{{- $batcat := lookPath "batcat" -}}
+{{- if and (eq $bat "") (ne $batcat "") }}
+#!/bin/sh
+set -eu
+
+target_dir={{ joinPath .chezmoi.homeDir ".local/bin" | quote }}
+target="${target_dir}/bat"
+batcat={{ $batcat | quote }}
+
+if [ -e "$target" ] && [ ! -L "$target" ]; then
+  printf '%s\n' "$target already exists and is not a symlink" >&2
+  exit 1
+fi
+
+mkdir -p "$target_dir"
+ln -sfn "$batcat" "$target"
+
+printf 'Linked %s -> %s\n' "$target" "$batcat"
+{{- end }}

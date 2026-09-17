@@ -60,3 +60,7 @@
 
 [includeIf "hasconfig:remote.*.url:https://codeberg.org/**"]
 		path = ~/.config/git/config-codeberg
+
+# Machine-local configuration (intentionally unmanaged by chezmoi)
+[include]
+    path = ~/.config/git/config-local

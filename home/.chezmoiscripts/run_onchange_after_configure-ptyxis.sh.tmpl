@@ -1,0 +1,28 @@
+{{- $hasPtyxis := ne (lookPath "ptyxis") "" -}}
+#!/bin/sh
+set -eu
+
+{{ if $hasPtyxis -}}
+profile_uuid='5cdb864c6987438e4e576ff46a390db0'
+profile_schema="org.gnome.Ptyxis.Profile:/org/gnome/Ptyxis/Profiles/${profile_uuid}/"
+
+profile_uuids=$(gsettings get org.gnome.Ptyxis profile-uuids)
+case "$profile_uuids" in
+  *"'${profile_uuid}'"*) ;;
+  '[]'|'@as []')
+    gsettings set org.gnome.Ptyxis profile-uuids "['${profile_uuid}']"
+    ;;
+  *)
+    gsettings set org.gnome.Ptyxis profile-uuids "${profile_uuids%]}, '${profile_uuid}']"
+    ;;
+esac
+
+gsettings set org.gnome.Ptyxis default-profile-uuid "'${profile_uuid}'"
+
+gsettings set "$profile_schema" label "'Default'"
+gsettings set "$profile_schema" login-shell false
+gsettings set "$profile_schema" palette "'Rosé Pine'"
+gsettings set "$profile_schema" bold-is-bright false
+{{ else -}}
+# Ptyxis is not installed, so there is nothing to configure.
+{{ end -}}

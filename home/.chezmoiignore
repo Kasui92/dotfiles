@@ -1,9 +1,5 @@
 .config/git/config-local*
 
-{{ if eq (lookPath "gnome-shell") "" }}
+{{ if not (dig "desktop" "gnome" false .) }}
 .local/share/gnome-background-properties/rose-pine.xml
-{{ end }}
-
-{{ if eq (lookPath "starship") "" }}
-.config/starship.toml
 {{ end }}

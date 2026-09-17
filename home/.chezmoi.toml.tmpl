@@ -1,6 +1,10 @@
 {{- $name := promptStringOnce . "git.name" "Git name" "Luca Pattocchio" -}}
 {{- $email := promptStringOnce . "git.email" "Default Git email" -}}
 {{- $githubEmail := promptStringOnce . "git.github.email" "GitHub email" "15154851+Kasui92@users.noreply.github.com" -}}
+{{- $gnome := promptBoolOnce . "desktop.gnome" "Configure GNOME desktop" false -}}
+
+[data.desktop]
+    gnome = {{ $gnome }}
 
 [data.git]
     name = {{ $name | quote }}

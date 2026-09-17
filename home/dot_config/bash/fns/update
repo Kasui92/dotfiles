@@ -13,19 +13,25 @@ update-system() {
 }
 
 # Update firmware function
-if command -v fwupdmgr &> /dev/null; then
-  update-firmware() {
-    echo -e "\e[32m\nUpdate firmware\e[0m"
-    sudo fwupdmgr get-devices
-    sudo fwupdmgr get-updates
-    sudo fwupdmgr update
-  }
-fi
+update-firmware() {
+  if ! command -v fwupdmgr &> /dev/null; then
+    echo "Error: fwupdmgr is not installed" >&2
+    return 127
+  fi
+
+  echo -e "\e[32m\nUpdate firmware\e[0m"
+  sudo fwupdmgr get-devices
+  sudo fwupdmgr get-updates
+  sudo fwupdmgr update
+}
 
 # If Flatpak is installed, update Flatpak packages
-if command -v flatpak &> /dev/null; then
-  update-flatpak() {
-    echo -e "\e[32m\nUpdate flatpak packages\e[0m"
-    flatpak update -y
-  }
-fi
+update-flatpak() {
+  if ! command -v flatpak &> /dev/null; then
+    echo "Error: flatpak is not installed" >&2
+    return 127
+  fi
+
+  echo -e "\e[32m\nUpdate flatpak packages\e[0m"
+  flatpak update -y
+}

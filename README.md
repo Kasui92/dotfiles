@@ -34,9 +34,3 @@ Then put the provider-specific values in the referenced file:
 
 Missing local files are ignored by Git, so no additional setup is required on
 machines that do not need them.
-
-## Optional setup
-
-### `bat`
-
-On Debian/Ubuntu, run `setup-bat` to link `batcat` as `bat`.

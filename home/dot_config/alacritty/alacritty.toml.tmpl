@@ -1,3 +1,4 @@
+{{- $zellij := lookPath "zellij" -}}
 [general]
 import = [ "~/.config/alacritty/themes/rose-pine.toml" ]
 
@@ -6,9 +7,19 @@ TERM = "xterm-256color"
 
 [terminal]
 osc52 = "CopyPaste"
+{{ if $zellij }}
+[terminal.shell]
+program = {{ $zellij | quote }}
+{{ end }}
 
 [font]
 size = 9
+normal = { family = "CaskaydiaMono Nerd Font", style = "Regular" }
+bold = { family = "CaskaydiaMono Nerd Font", style = "Bold" }
+italic = { family = "CaskaydiaMono Nerd Font", style = "Italic" }
+
+[colors]
+transparent_background_colors = true
 
 [window]
 padding.x = 14

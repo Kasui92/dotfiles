@@ -3,3 +3,9 @@
 {{ if not (dig "desktop" "gnome" false .) }}
 .local/share/gnome-background-properties/rose-pine.xml
 {{ end }}
+
+{{ if not (lookPath "niri") }}
+.config/niri
+{{ else if not (lookPath "dms") }}
+.config/niri/dms
+{{ end }}

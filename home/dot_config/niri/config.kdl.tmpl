@@ -1,0 +1,22 @@
+// Niri configuration managed by chezmoi.
+// Keep this file as an entry point; edit the files under config/ instead.
+
+include "config/general.kdl"
+include "config/input.kdl"
+include "config/outputs.kdl"
+include "config/layout.kdl"
+include "config/animations.kdl"
+include "config/window-rules.kdl"
+include "config/window-switcher.kdl"
+
+{{- if lookPath "dms" }}
+// Local integration first, followed by files managed by DMS.
+include "dms/general.kdl"
+include "dms/colors.kdl"
+include "dms/layout.kdl"
+include "dms/alttab.kdl"
+include "dms/binds.kdl"
+include "dms/outputs.kdl"
+include "dms/cursor.kdl"
+include "dms/windowrules.kdl"
+{{- end }}

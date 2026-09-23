@@ -1,0 +1,16 @@
+input {
+    keyboard {
+        // With an empty xkb block, Niri uses the settings from
+        // org.freedesktop.locale1 (configured through localectl).
+        xkb {}
+        numlock
+    }
+
+    touchpad {
+        tap
+        natural-scroll
+    }
+
+    mouse {}
+    trackpoint {}
+}

@@ -1,0 +1,7 @@
+// Discover output names and modes with `niri msg outputs`.
+// Remove /- to enable this machine-specific example.
+/-output "eDP-2" {
+    mode "2560x1600@239.998993"
+    position x=2560 y=0
+    variable-refresh-rate
+}

@@ -1,0 +1,13 @@
+// User-maintained integration for DankMaterialShell.
+// Generated DMS configuration belongs in ../dms/.
+
+layer-rule {
+    match namespace="^quickshell$"
+    place-within-backdrop true
+}
+
+window-rule {
+    match app-id=r#"org.quickshell$"#
+    match app-id=r#"com.danklinux.dms$"#
+    open-floating true
+}

@@ -3,3 +3,6 @@
 
 # All the bash configs
 source ~/.config/bash/rc
+
+# Machine-local configuration, not managed by chezmoi
+[[ -r "$HOME/.bashrc.local" ]] && source "$HOME/.bashrc.local"

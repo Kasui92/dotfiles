@@ -1,4 +1,5 @@
 .config/git/config-local*
+.bashrc.local
 
 {{ if not (dig "desktop" "gnome" false .) }}
 .local/share/gnome-background-properties/rose-pine.xml

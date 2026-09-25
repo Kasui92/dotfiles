@@ -1,0 +1,52 @@
+{{- $connectedOutputs := dict -}}
+{{- range $output := list "HDMI-A-3" "DP-2" "DP-1" "eDP-1" -}}
+{{-   range glob (printf "/sys/class/drm/*-%s/status" $output) -}}
+{{-     if eq (output "cat" . | trim) "connected" -}}
+{{-       $_ := set $connectedOutputs $output true -}}
+{{-     end -}}
+{{-   end -}}
+{{- end -}}
+// Managed by chezmoi; only connected outputs are configured.
+
+{{ if hasKey $connectedOutputs "HDMI-A-3" -}}
+output "HDMI-A-3" {
+    mode "1920x1080@60.000"
+    scale 1
+    position x=0 y=0
+    layout {
+        always-center-single-column
+    }
+}
+{{- end }}
+
+{{ if hasKey $connectedOutputs "DP-2" -}}
+output "DP-2" {
+    mode "1920x1080@60.000"
+    scale 1
+    position x=0 y=0
+    layout {
+        always-center-single-column
+    }
+}
+{{- end }}
+
+{{ if hasKey $connectedOutputs "DP-1" -}}
+output "DP-1" {
+    mode "1920x1080@60.000"
+    scale 1
+    position x=0 y=0
+    layout {
+        always-center-single-column
+    }
+}
+{{- end }}
+
+{{ if hasKey $connectedOutputs "eDP-1" -}}
+output "eDP-1" {
+    scale 1
+    position x=0 y=0
+    layout {
+        always-center-single-column
+    }
+}
+{{- end }}

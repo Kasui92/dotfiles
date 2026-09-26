@@ -19,4 +19,21 @@ c() {
 }
 
 # Neovim
-n() { if [ "$#" -eq 0 ]; then command nvim . ; else command nvim "$@"; fi; }
+n() {
+  if [ "$#" -eq 0 ]; then
+    command nvim .
+  else
+    # Save the current directory to check later
+    local start_dir="$PWD"
+
+    cd "$1" || return
+
+    # Check if we actually moved to a different directory
+    if [ "$PWD" = "$start_dir" ]; then
+      # We didn't move, cd failed or we're already there
+      return 1
+    fi
+
+    command nvim .
+  fi
+}

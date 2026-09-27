@@ -27,3 +27,8 @@ alias cma='chezmoi apply'
 # Ai
 alias cl='claude'
 alias co='codex'
+
+# Fastfetch
+if command -v fastfetch &> /dev/null; then
+  alias ffh='fastfetch'
+fi

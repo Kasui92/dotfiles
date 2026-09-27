@@ -114,6 +114,7 @@ binds {
     Mod+Shift+Minus { set-window-height "-10%"; }
     Mod+Shift+R { switch-preset-window-height; }
     Mod+Shift+Return hotkey-overlay-title="Open Browser" { spawn "zen" "--new-window"; }
+    Mod+Shift+Alt+Return hotkey-overlay-title="Open Browser in Private Mode" { spawn "zen" "--private-window"; }
     Mod+Shift+Right { move-column-right; }
     Mod+Shift+Up { move-window-up; }
     Mod+Shift+WheelScrollDown { focus-column-right; }
@@ -131,7 +132,7 @@ binds {
     XF86Launch1 { screenshot; }
     Mod+Shift+E { quit; }
     Mod+Return hotkey-overlay-title="Open Terminal" { spawn "xdg-terminal-exec"; }
-    Mod+Shift+M hotkey-overlay-title="Open Music Player" { spawn "spotify-client"; }
+    Mod+Shift+M hotkey-overlay-title="Open Music Player" { spawn "spotify"; }
     Mod+O repeat=false { toggle-overview; }
     Mod+Shift+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
     Mod+Shift+Slash { show-hotkey-overlay; }

@@ -3,7 +3,8 @@
 
 include "config/general.kdl"
 include "config/input.kdl"
-include "config/outputs.kdl"
+// Output settings are device-local and intentionally not managed by chezmoi.
+include optional=true "config/outputs.kdl"
 include "config/layout.kdl"
 include "config/animations.kdl"
 include "config/window-rules.kdl"
@@ -16,7 +17,8 @@ include "dms/colors.kdl"
 include "dms/layout.kdl"
 include "dms/alttab.kdl"
 include "dms/binds.kdl"
-include "dms/outputs.kdl"
+// Output settings are device-local and intentionally not managed by chezmoi.
+include optional=true "dms/outputs.kdl"
 include "dms/cursor.kdl"
 include "dms/windowrules.kdl"
 {{- end }}

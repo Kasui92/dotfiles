@@ -1,5 +1,7 @@
 .config/git/config-local*
 .bashrc.local
+.config/niri/config/outputs.kdl
+.config/niri/dms/outputs.kdl
 
 {{ if not (lookPath "gnome-shell") }}
 .local/share/gnome-background-properties/rose-pine.xml

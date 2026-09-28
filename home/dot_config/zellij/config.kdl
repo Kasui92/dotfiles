@@ -17,6 +17,10 @@ keybinds clear-defaults=true {
         bind "l" "Right" { MoveFocus "Right"; }
         bind "j" "Down" { MoveFocus "Down"; }
         bind "k" "Up" { MoveFocus "Up"; }
+        bind "left" { MoveFocus "Left"; }
+        bind "down" { MoveFocus "Down"; }
+        bind "up" { MoveFocus "Up"; }
+        bind "right" { MoveFocus "Right"; }
         bind "\\" { FocusLastPane; }
         bind "p" { SwitchFocus; }
         bind "n" { NewPane; SwitchToMode "Locked"; }
@@ -29,6 +33,7 @@ keybinds clear-defaults=true {
         bind "w" { ToggleFloatingPanes; SwitchToMode "Locked"; }
         bind "e" { TogglePaneEmbedOrFloating; SwitchToMode "Locked"; }
         bind "c" { SwitchToMode "RenamePane"; PaneNameInput 0;}
+        bind "tab" { SwitchFocus; }
     }
     move {
         bind "Ctrl h" { SwitchToMode "Normal"; }

@@ -22,7 +22,9 @@ alias lzg='lazygit'
 
 # Chezmoi
 alias cm='chezmoi'
+alias cmi='chezmoi init'
 alias cma='chezmoi apply'
+alias cmu='chezmoi update'
 
 # Ai
 if command -v claude &> /dev/null; then

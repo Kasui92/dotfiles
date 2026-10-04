@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Toggle a focus layout: wider niri struts and hidden DMS bar.
+# Pressing it again empties the override and restores the struts from layout.kdl.
+set -euo pipefail
+
+override="${XDG_CONFIG_HOME:-$HOME/.config}/niri/config/struts.kdl"
+
+if [[ -s $override ]]; then
+    : >"$override"
+    dms ipc call bar reveal index 0 >/dev/null
+else
+    cat >"$override" <<'KDL'
+layout {
+    struts {
+        left 30
+        right 30
+        top 30
+        bottom 30
+    }
+}
+KDL
+    dms ipc call bar hide index 0 >/dev/null
+fi
+
+niri msg action load-config-file
+

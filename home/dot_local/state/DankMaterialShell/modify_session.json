@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# DMS keeps volatile state in session.json, so manage only the keys listed here.
+set -euo pipefail
+
+current=$(cat)
+[[ -n $current ]] || current='{}'
+
+jq '.showConfigReloadToast = false' <<<"$current"

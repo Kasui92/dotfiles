@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# DMS rewrites settings.json on every change, so manage only the keys that differ from its defaults.
+set -euo pipefail
+
+current=$(cat)
+[[ -n $current ]] || current='{}'
+
+jq --arg theme {{ printf "%s/.config/DankMaterialShell/themes/rosePine/theme.json" .chezmoi.homeDir | quote }} '
+    .currentThemeName = "custom"
+    | .currentThemeCategory = "registry"
+    | .customThemeFile = $theme
+    | .registryThemeVariants.rosePine = "dawn"
+    | .cornerRadius = 12
+    | .clockFormat = "24h"
+    | .barElevationEnabled = false
+    | .blurWallpaperOnOverview = true
+    | .showWorkspaceIndex = true
+    | .launcherStyle = "spotlight"
+    | .launcherLogoMode = "os"
+    | .launcherLogoColorOverride = "primary"
+    | .useAutoLocation = true
+    | .networkPreference = "wifi"
+    | .dashTabs = [
+        {id: "overview", enabled: true},
+        {id: "media", enabled: true},
+        {id: "wallpaper", enabled: false},
+        {id: "weather", enabled: true},
+        {id: "settings", enabled: true}
+    ]
+    | .barConfigs = ((.barConfigs // [{
+        id: "default",
+        name: "Main Bar",
+        enabled: true,
+        position: 0,
+        screenPreferences: ["all"],
+        showOnLastDisplay: true
+    }]) | map(if .id == "default" then . + {
+        leftWidgets: ["launcherButton", "workspaceSwitcher", {id: "music", enabled: true}],
+        centerWidgets: ["clock", "weather"],
+        rightWidgets: [
+            {id: "systemTray", enabled: true},
+            {id: "cpuUsage", enabled: true},
+            {id: "memUsage", enabled: true},
+            {id: "notificationButton", enabled: true},
+            {id: "battery", enabled: true},
+            {
+                id: "controlCenterButton",
+                enabled: true,
+                showAudioPercent: false,
+                showMicIcon: false,
+                showMicPercent: false,
+                showBatteryIcon: false
+            }
+        ]
+    } else . end))
+' <<<"$current"

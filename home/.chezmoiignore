@@ -1,6 +1,7 @@
 .config/git/config-local*
 .bashrc.local
 .config/niri/config/outputs.kdl
+.config/niri/config/struts.kdl
 .config/niri/dms/outputs.kdl
 .config/niri/config/input.kdl
 .config/niri/dms/input.kdl
@@ -13,4 +14,10 @@
 .config/niri
 {{ else if not (lookPath "dms") }}
 .config/niri/dms
+{{ end }}
+
+{{ if not (lookPath "dms") }}
+.config/DankMaterialShell
+.local/bin/niri-toggle-struts
+.local/state/DankMaterialShell
 {{ end }}

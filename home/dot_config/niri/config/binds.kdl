@@ -87,7 +87,10 @@ binds {
     Mod+Alt+T { switch-focus-between-floating-and-tiling; }
     Mod+BracketLeft { consume-or-expel-window-left; }
     Mod+BracketRight { consume-or-expel-window-right; }
+    Mod+Alt+Left { consume-or-expel-window-left; }
+    Mod+Alt+Right { consume-or-expel-window-right; }
     Mod+C { center-column; }
+    Mod+Comma { consume-window-into-column; }
     Mod+Ctrl+C { center-visible-columns; }
     Mod+Ctrl+F { maximize-window-to-edges; }
     Mod+F { maximize-column; }

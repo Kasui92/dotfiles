@@ -21,8 +21,8 @@ binds {
     Mod+9 { focus-workspace 9; }
     Mod+I { focus-workspace-up; }
     Mod+U { focus-workspace-down; }
-    Mod+Page_Up { focus-workspace-up;
-    Mod+Page_Down { focus-workspace-down; }}
+    Mod+Page_Up { focus-workspace-up; }
+    Mod+Page_Down { focus-workspace-down; }
     Mod+WheelScrollDown cooldown-ms=150 { focus-workspace-down; }
     Mod+WheelScrollUp cooldown-ms=150 { focus-workspace-up; }
 

@@ -11,6 +11,8 @@ jq --arg theme {{ printf "%s/.config/DankMaterialShell/themes/rosePine/theme.jso
     | .customThemeFile = $theme
     | .registryThemeVariants.rosePine = "dawn"
     | .cornerRadius = 12
+    | .niriLayoutGapsOverride = 8
+    | .niriLayoutRadiusOverride = 16
     | .clockFormat = "24h"
     | .barElevationEnabled = false
     | .blurWallpaperOnOverview = true
@@ -53,4 +55,4 @@ jq --arg theme {{ printf "%s/.config/DankMaterialShell/themes/rosePine/theme.jso
             }
         ]
     } else . end))
-' <<<"$current"
+' <<<"$current" | head -c -1

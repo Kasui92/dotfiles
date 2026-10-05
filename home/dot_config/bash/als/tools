@@ -25,6 +25,8 @@ alias cm='chezmoi'
 alias cmi='chezmoi init'
 alias cma='chezmoi apply'
 alias cmu='chezmoi update'
+alias cmadd='chezmoi add'
+alias cmpush='chezmoi push'
 
 # Ai
 if command -v claude &> /dev/null; then

@@ -203,7 +203,9 @@ on_force_close "quit"
 //   - false
 //
 // pane_frames true
+{{- if lookPath "gnome-shell" }}
 pane_frame_style "full"
+{{- end }}
 
 // Define color themes for Zellij
 // For more examples, see: https://github.com/zellij-org/zellij/tree/main/example/themes

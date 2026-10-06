@@ -15,3 +15,7 @@ fi
 if command -v fzf &> /dev/null; then
   eval "$(fzf --bash)"
 fi
+
+if command -v tv &> /dev/null; then
+  eval "$(tv init bash)"
+fi

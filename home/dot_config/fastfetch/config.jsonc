@@ -58,11 +58,11 @@
       "keyColor": "blue",
     },
     {
-      "type": "wm",
+      "type": "command",
       "key": "",
       "keyColor": "blue",
+      "text": "ff='fastfetch -c none --pipe -l none --key-type none'; de=$($ff -s de 2>/dev/null); wm=$($ff -s wm 2>/dev/null); if [ -n \"$de\" ]; then echo \"$de${wm:+ · $wm}\"; else echo \"$wm\"; fi",
     },
-
     {
       "type": "command",
       "key": "󰸌",
@@ -73,7 +73,7 @@
     {
       "type": "disk",
       "key": "󰋊",
-      "keyColor": "cyan", // Green for Disk section
+      "keyColor": "cyan",
       "format": "{1} / {2} ({3})",
     },
     {
@@ -82,11 +82,10 @@
       "keyColor": "green",
       "format": "{used} / {total} ({percentage})",
     },
-
     {
       "type": "memory",
       "key": "",
-      "keyColor": "green", // Cyan for Memory section
+      "keyColor": "green",
     },
     "break",
     {
@@ -97,13 +96,13 @@
     {
       "type": "cpu",
       "key": "",
-      "keyColor": "yellow", // Blue for CPU section
+      "keyColor": "yellow",
     },
     {
       "type": "gpu",
       "key": "",
       "detectionMethod": "pci",
-      "keyColor": "yellow", // Blue for GPU section
+      "keyColor": "yellow",
     },
     "break",
   ],

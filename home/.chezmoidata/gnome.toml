@@ -1,0 +1,6 @@
+[gnome.extensions]
+# Required by the GNOME keybindings; installed and enabled when missing.
+mosaic = "gnome-mosaic@jardon.github.com"
+spacebar = "space-bar@luchrioh"
+# Competing tilers, always disabled.
+conflicting = ["tiling-assistant@ubuntu.com"]

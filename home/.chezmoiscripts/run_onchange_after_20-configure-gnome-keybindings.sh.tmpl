@@ -1,0 +1,201 @@
+{{- $hasGnome := ne (lookPath "gnome-shell") "" -}}
+#!/bin/sh
+set -eu
+
+{{ if $hasGnome -}}
+{{- /* Re-run whenever an extension is installed, removed, enabled or disabled. */ -}}
+{{- $extDirs := list (joinPath .chezmoi.homeDir ".local/share/gnome-shell/extensions") "/usr/share/gnome-shell/extensions" -}}
+{{- $enabled := output "gsettings" "get" "org.gnome.shell" "enabled-extensions" -}}
+{{- $disabled := output "gsettings" "get" "org.gnome.shell" "disabled-extensions" -}}
+{{- $userOff := output "gsettings" "get" "org.gnome.shell" "disable-user-extensions" | trim -}}
+{{- $uuids := concat (list .gnome.extensions.mosaic .gnome.extensions.spacebar) .gnome.extensions.conflicting -}}
+# Extension state:
+{{- range $uuids }}
+{{- $uuid := . }}
+{{- $installed := false }}
+{{- range $extDirs }}{{ if stat (joinPath . $uuid) }}{{ $installed = true }}{{ end }}{{ end }}
+#   {{ $uuid }} installed={{ $installed }} enabled={{ contains (squote $uuid) $enabled }} disabled={{ contains (squote $uuid) $disabled }}
+{{- end }}
+#   disable-user-extensions={{ $userOff }}
+
+{{ template "gnome-extensions.sh" . }}
+
+mosaic_uuid='{{ .gnome.extensions.mosaic }}'
+spacebar_uuid='{{ .gnome.extensions.spacebar }}'
+
+wm_key() { gsettings set org.gnome.desktop.wm.keybindings "$@"; }
+shell_key() { gsettings set org.gnome.shell.keybindings "$@"; }
+mutter_key() { gsettings set org.gnome.mutter.keybindings "$@"; }
+media_key() { gsettings set org.gnome.settings-daemon.plugins.media-keys "$@"; }
+mosaic_key() { ext_set "$mosaic_uuid" org.gnome.shell.extensions.gnome-mosaic "$@"; }
+spacebar_key() { ext_set "$spacebar_uuid" org.gnome.shell.extensions.space-bar.shortcuts "$@"; }
+
+# Applications
+media_key terminal "['<Super>Return']"
+media_key www "['<Super><Shift>b']"
+media_key home "['<Super><Shift>f']"
+media_key control-center "['<Super><Shift>s']"
+media_key search "['<Super>space']"
+wm_key switch-input-source "['<Super><Alt>space']"
+wm_key switch-input-source-backward "['<Super><Shift><Alt>space']"
+
+{{- $custom := list }}
+{{- if lookPath "zen" }}
+{{- $custom = append $custom (dict "id" "zen" "name" "Open Browser" "command" "zen --new-window" "binding" "<Super><Shift>Return") }}
+{{- $custom = append $custom (dict "id" "zen-private" "name" "Open Browser in Private Mode" "command" "zen --private-window" "binding" "<Super><Shift><Alt>b") }}
+{{- $custom = append $custom (dict "id" "zen-private-return" "name" "Open Browser in Private Mode" "command" "zen --private-window" "binding" "<Super><Shift><Alt>Return") }}
+{{- end }}
+{{- if lookPath "spotify" }}
+{{- $custom = append $custom (dict "id" "spotify" "name" "Open Music Player" "command" "spotify" "binding" "<Super><Shift>m") }}
+{{- end }}
+{{- $customPath := "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings" }}
+{{- $customPaths := list }}
+{{- range $custom }}{{ $customPaths = append $customPaths (squote (printf "%s/%s/" $customPath .id)) }}{{ end }}
+
+custom_key() {
+  gsettings set "org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:{{ $customPath }}/$1/" "$2" "$3"
+}
+{{ range $custom }}
+custom_key {{ .id }} name "{{ squote .name }}"
+custom_key {{ .id }} command "{{ squote .command }}"
+custom_key {{ .id }} binding "'{{ .binding }}'"
+{{- end }}
+media_key custom-keybindings "[{{ $customPaths | join ", " }}]"
+
+# Workspaces
+# Focus (GNOME workspaces are horizontal: niri's up/down is left/right here)
+wm_key switch-to-workspace-left "['<Super>i', '<Super>Page_Up', '<Super>KP_Prior', '<Control><Alt>Left']"
+wm_key switch-to-workspace-right "['<Super>u', '<Super>Page_Down', '<Super>KP_Next', '<Control><Alt>Right']"
+
+# Move windows. Mosaic's own workspace moves only work with vertical workspaces;
+# Mosaic re-tiles windows moved by GNOME.
+wm_key move-to-workspace-left "['<Super><Control>i', '<Super><Control>Up', '<Control><Shift><Alt>Left']"
+wm_key move-to-workspace-right "['<Super><Control>u', '<Super><Control>Down', '<Control><Shift><Alt>Right']"
+for i in 1 2 3 4 5 6 7 8 9 10; do
+  wm_key "move-to-workspace-$i" "['<Super><Shift>$((i % 10))']"
+done
+
+# Super+N belongs to workspaces, not to the dock favourites.
+for i in 1 2 3 4 5 6 7 8 9; do
+  shell_key "switch-to-application-$i" "[]"
+done
+if gsettings list-schemas | grep -qx org.gnome.shell.extensions.dash-to-dock; then
+  gsettings set org.gnome.shell.extensions.dash-to-dock hot-keys false
+fi
+
+if ext_enabled "$spacebar_uuid"; then
+  # Space Bar: Super+N focus, Super+Shift+I/U reorder.
+  spacebar_key enable-activate-workspace-shortcuts true
+  spacebar_key enable-move-to-workspace-shortcuts true
+  for i in 1 2 3 4 5 6 7 8 9 10; do
+    spacebar_key "activate-$i-key" "['<Super>$((i % 10))']"
+    gsettings reset org.gnome.desktop.wm.keybindings "switch-to-workspace-$i"
+  done
+  spacebar_key move-workspace-left "['<Super><Shift>i', '<Super><Shift>Page_Up']"
+  spacebar_key move-workspace-right "['<Super><Shift>u', '<Super><Shift>Page_Down']"
+  spacebar_key activate-previous-key "[]"
+  spacebar_key activate-empty-key "[]"
+  spacebar_key open-menu "[]"
+else
+  # Native fallback: no workspace reordering without Space Bar.
+  for i in 1 2 3 4 5 6 7 8 9 10; do
+    wm_key "switch-to-workspace-$i" "['<Super>$((i % 10))']"
+  done
+fi
+
+# Windows
+gnome_window_keys='maximize unmaximize minimize move-to-monitor-left move-to-monitor-right move-to-monitor-up move-to-monitor-down'
+
+if ext_enabled "$mosaic_uuid"; then
+  # Mosaic owns tiling, focus and monitor moves.
+  gsettings set org.gnome.mutter edge-tiling false
+  mutter_key toggle-tiled-left "[]"
+  mutter_key toggle-tiled-right "[]"
+  for key in $gnome_window_keys; do
+    wm_key "$key" "[]"
+  done
+
+  # Focus
+  mosaic_key focus-left "['<Super>h', '<Super>Left', '<Super>KP_Left']"
+  mosaic_key focus-down "['<Super>j', '<Super>Down', '<Super>KP_Down']"
+  mosaic_key focus-up "['<Super>k', '<Super>Up', '<Super>KP_Up']"
+  mosaic_key focus-right "['<Super>l', '<Super>Right', '<Super>KP_Right']"
+
+  # Move and reorder
+  mosaic_key tile-move-left-global "['<Super><Shift>h', '<Super><Shift>Left']"
+  mosaic_key tile-move-down-global "['<Super><Shift>j', '<Super><Shift>Down']"
+  mosaic_key tile-move-up-global "['<Super><Shift>k', '<Super><Shift>Up']"
+  mosaic_key tile-move-right-global "['<Super><Shift>l', '<Super><Shift>Right']"
+  mosaic_key mosaic-workspace-up "[]"
+  mosaic_key mosaic-workspace-down "[]"
+
+  # Layout and state
+  mosaic_key toggle-floating "['<Super>t']"
+  mosaic_key tile-orientation "['<Super>slash']"
+  mosaic_key toggle-tiling "['<Super>y']"
+  mosaic_key management-orientation "[]"
+
+  # Size: Super+R is the modal resize (arrows/HJKL, Shift to shrink, Esc/Return to exit).
+  # The direct keys act on the right/bottom edge, so they do nothing on windows
+  # touching that edge of the screen.
+  mosaic_key resize-mode "['<Super>r']"
+  mosaic_key resize-grow-right "['<Super>equal']"
+  mosaic_key resize-shrink-right "['<Super>minus']"
+  mosaic_key resize-grow-down "['<Super><Shift>equal']"
+  mosaic_key resize-shrink-down "['<Super><Shift>minus']"
+  for key in resize-grow-left resize-grow-up resize-shrink-left resize-shrink-up; do
+    mosaic_key "$key" "[]"
+  done
+
+  # Keyboard tile mode stays off: Super+Return is the terminal.
+  mosaic_key tile-enter "[]"
+  mosaic_key tile-accept "['Return', 'KP_Enter']"
+  mosaic_key tile-reject "['Escape']"
+  for direction in left down up right; do
+    mosaic_key "tile-move-$direction" "[]"
+    mosaic_key "tile-swap-$direction" "[]"
+  done
+
+  # Monitors
+  mosaic_key mosaic-monitor-left "['<Super><Shift><Control>h', '<Super><Shift><Control>Left']"
+  mosaic_key mosaic-monitor-down "['<Super><Shift><Control>j', '<Super><Shift><Control>Down']"
+  mosaic_key mosaic-monitor-up "['<Super><Shift><Control>k', '<Super><Shift><Control>Up']"
+  mosaic_key mosaic-monitor-right "['<Super><Shift><Control>l', '<Super><Shift><Control>Right']"
+else
+  # Upstream GNOME behaviour. Ubuntu empties maximize/unmaximize for Tiling
+  # Assistant, which stays disabled, so set them explicitly.
+  gsettings set org.gnome.mutter edge-tiling true
+  mutter_key toggle-tiled-left "['<Super>Left']"
+  mutter_key toggle-tiled-right "['<Super>Right']"
+  wm_key maximize "['<Super>Up']"
+  wm_key unmaximize "['<Super>Down', '<Alt>F5']"
+  wm_key minimize "['<Super>h']"
+  for direction in left right up down; do
+    gsettings reset org.gnome.desktop.wm.keybindings "move-to-monitor-$direction"
+  done
+fi
+
+# Layout and state
+wm_key toggle-maximized "['<Super>f', '<Alt>F10']"
+wm_key toggle-fullscreen "['<Super><Alt>f']"
+
+# Lifecycle
+wm_key close "['<Super>w']"
+
+# Screenshots
+shell_key show-screenshot-ui "['Print']"
+shell_key screenshot-window "['<Alt>Print']"
+shell_key screenshot "['<Control>Print', '<Shift>Print']"
+
+# Overview
+shell_key toggle-overview "['<Super>o']"
+media_key rotate-video-lock-static "['XF86RotationLockToggle']"
+shell_key toggle-message-tray "['<Super>n', '<Super>v']"
+shell_key focus-active-notification "[]"
+
+# System
+media_key screensaver "['<Super><Alt>l']"
+media_key logout "['<Super><Shift>e', '<Control><Alt>Delete']"
+{{ else -}}
+# GNOME Shell is not installed, so there is nothing to configure.
+{{ end -}}

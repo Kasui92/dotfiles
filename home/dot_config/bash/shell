@@ -5,10 +5,8 @@ HISTSIZE=32768
 HISTFILESIZE="${HISTSIZE}"
 
 # Autocompletion
-if [ -f /usr/share/bash-completion/bash_completion ]; then
+if [[ ! -v BASH_COMPLETION_VERSINFO && -f /usr/share/bash-completion/bash_completion ]]; then
   source /usr/share/bash-completion/bash_completion
-elif [ -f /etc/bash_completion ]; then
-  source /etc/bash_completion
 fi
 
 # Disable hashall to avoid caching of commands

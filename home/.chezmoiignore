@@ -6,6 +6,10 @@
 .config/niri/config/input.kdl
 .config/niri/dms/input.kdl
 
+{{ if not (lookPath "batcat") }}
+.local/bin/bat
+{{ end }}
+
 {{ if not (lookPath "gnome-shell") }}
 .local/share/gnome-background-properties/rose-pine.xml
 {{ end }}

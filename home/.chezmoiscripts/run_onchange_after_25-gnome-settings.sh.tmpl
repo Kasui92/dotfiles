@@ -1,0 +1,58 @@
+{{- $shell := lookPath "gnome-shell" -}}
+{{- $ptyxis := lookPath "ptyxis" -}}
+{{- if or $shell $ptyxis -}}
+#!/bin/sh
+set -eu
+{{- if $shell }}
+
+{{/* Re-run whenever an extension is installed or removed. */ -}}
+{{- $extDirs := list (joinPath .chezmoi.homeDir ".local/share/gnome-shell/extensions") "/usr/share/gnome-shell/extensions" -}}
+{{- $uuids := list .gnome.extensions.justperfection -}}
+# Extension state:
+{{- range $uuids }}
+{{- $uuid := . }}
+{{- $installed := false }}
+{{- range $extDirs }}{{ if stat (joinPath . $uuid) }}{{ $installed = true }}{{ end }}{{ end }}
+#   {{ $uuid }} installed={{ $installed }}
+{{- end }}
+
+{{ template "gnome-extensions.sh" . }}
+
+# Just Perfection
+justperfection_uuid='{{ .gnome.extensions.justperfection }}'
+justperfection_set() { ext_set "$justperfection_uuid" org.gnome.shell.extensions.just-perfection "$@"; }
+
+if ext_installed "$justperfection_uuid"; then
+  justperfection_set animation 2
+  justperfection_set dash-app-running true
+  justperfection_set workspace true
+  justperfection_set workspace-popup false
+else
+  echo "warning: $justperfection_uuid not installed; skipping its settings" >&2
+fi
+{{- end }}
+{{- if $ptyxis }}
+
+# Ptyxis
+profile_uuid='5cdb864c6987438e4e576ff46a390db0'
+profile_schema="org.gnome.Ptyxis.Profile:/org/gnome/Ptyxis/Profiles/${profile_uuid}/"
+
+profile_uuids=$(gsettings get org.gnome.Ptyxis profile-uuids)
+case "$profile_uuids" in
+  *"'${profile_uuid}'"*) ;;
+  '[]'|'@as []')
+    gsettings set org.gnome.Ptyxis profile-uuids "['${profile_uuid}']"
+    ;;
+  *)
+    gsettings set org.gnome.Ptyxis profile-uuids "${profile_uuids%]}, '${profile_uuid}']"
+    ;;
+esac
+
+gsettings set org.gnome.Ptyxis default-profile-uuid "'${profile_uuid}'"
+
+gsettings set "$profile_schema" label "'Default'"
+gsettings set "$profile_schema" login-shell false
+gsettings set "$profile_schema" palette "'Rosé Pine'"
+gsettings set "$profile_schema" bold-is-bright false
+{{- end }}
+{{ end -}}

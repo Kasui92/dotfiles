@@ -2,5 +2,7 @@
 # Required by the GNOME keybindings; installed and enabled when missing.
 mosaic = "gnome-mosaic@jardon.github.com"
 spacebar = "space-bar@luchrioh"
+# Shell tweaks; installed and enabled when missing.
+justperfection = "just-perfection-desktop@just-perfection"
 # Competing tilers, always disabled.
 conflicting = ["tiling-assistant@ubuntu.com"]

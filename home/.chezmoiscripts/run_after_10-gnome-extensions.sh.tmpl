@@ -4,7 +4,7 @@ set -eu
 
 {{ template "gnome-extensions.sh" . }}
 
-required='{{ .gnome.extensions.mosaic }} {{ .gnome.extensions.spacebar }}'
+required='{{ .gnome.extensions.mosaic }} {{ .gnome.extensions.spacebar }} {{ .gnome.extensions.justperfection }}'
 conflicting='{{ .gnome.extensions.conflicting | join " " }}'
 
 # Competing tilers are always disabled. Wait for the shell to tear them down:

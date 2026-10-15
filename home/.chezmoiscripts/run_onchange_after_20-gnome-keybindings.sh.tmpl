@@ -35,7 +35,7 @@ media_key www "['<Super><Shift>b']"
 media_key home "['<Super><Shift>f']"
 media_key control-center "['<Super><Shift>s']"
 media_key search "['<Super>space']"
-wm_key switch-input-source "['<Super><Alt>space']"
+wm_key switch-input-source "['<Super><Shift>space']"
 wm_key switch-input-source-backward "['<Super><Shift><Alt>space']"
 
 {{- $custom := list }}
@@ -46,6 +46,10 @@ wm_key switch-input-source-backward "['<Super><Shift><Alt>space']"
 {{- end }}
 {{- if lookPath "spotify" }}
 {{- $custom = append $custom (dict "id" "spotify" "name" "Open Music Player" "command" "spotify" "binding" "<Super><Shift>m") }}
+{{- end }}
+{{- if lookPath "resources" }}
+{{- $custom = append $custom (dict "id" "resources" "name" "Task Manager" "command" "resources" "binding" "<Super><Shift>t") }}
+{{- $custom = append $custom (dict "id" "resources-alt" "name" "Task Manager" "command" "resources" "binding" "<Control><Alt>Delete") }}
 {{- end }}
 {{- $customPath := "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings" }}
 {{- $customPaths := list }}
@@ -194,5 +198,9 @@ shell_key focus-active-notification "[]"
 
 # System
 media_key screensaver "['<Super><Alt>l']"
-media_key logout "['<Super><Shift>e', '<Control><Alt>Delete']"
+media_key logout "['<Super><Shift>e']"
+media_key shutdown "['<Super>Escape']"
+media_key reboot "['<Super><Control>Escape']"
+gsettings set org.gnome.mutter.wayland.keybindings restore-shortcuts "['<Super><Shift>Escape']"
+mutter_key cancel-input-capture "['<Super><Shift><Control>Escape']"
 {{ end -}}

@@ -51,9 +51,13 @@ install_from_ego() {
     return 0
   fi
   tmp=$(mktemp -d)
-  trap 'rm -rf "$tmp"' EXIT
-  curl -fsSL -o "$tmp/extension.zip" "https://extensions.gnome.org$url"
-  gnome-extensions install --force "$tmp/extension.zip"
+  if ! curl -fsSL -o "$tmp/extension.zip" "https://extensions.gnome.org$url" ||
+    ! gnome-extensions install --force "$tmp/extension.zip"; then
+    rm -rf "$tmp"
+    echo "warning: failed to install $1" >&2
+    return 0
+  fi
+  rm -rf "$tmp"
   ext_list_remove disabled-extensions "$1"
   ext_list_add enabled-extensions "$1"
   echo "Installed GNOME extension $1; log out and back in to load it"

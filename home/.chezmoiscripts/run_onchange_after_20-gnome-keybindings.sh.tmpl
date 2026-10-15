@@ -1,9 +1,8 @@
-{{- $hasGnome := ne (lookPath "gnome-shell") "" -}}
+{{- if lookPath "gnome-shell" -}}
 #!/bin/sh
 set -eu
 
-{{ if $hasGnome -}}
-{{- /* Re-run whenever an extension is installed, removed, enabled or disabled. */ -}}
+{{/* Re-run whenever an extension is installed, removed, enabled or disabled. */ -}}
 {{- $extDirs := list (joinPath .chezmoi.homeDir ".local/share/gnome-shell/extensions") "/usr/share/gnome-shell/extensions" -}}
 {{- $enabled := output "gsettings" "get" "org.gnome.shell" "enabled-extensions" -}}
 {{- $disabled := output "gsettings" "get" "org.gnome.shell" "disabled-extensions" -}}
@@ -196,6 +195,4 @@ shell_key focus-active-notification "[]"
 # System
 media_key screensaver "['<Super><Alt>l']"
 media_key logout "['<Super><Shift>e', '<Control><Alt>Delete']"
-{{ else -}}
-# GNOME Shell is not installed, so there is nothing to configure.
 {{ end -}}

@@ -1,8 +1,7 @@
-{{- $hasGnome := ne (lookPath "gnome-shell") "" -}}
+{{- if lookPath "gnome-shell" -}}
 #!/bin/sh
 set -eu
 
-{{ if $hasGnome -}}
 {{ template "gnome-extensions.sh" . }}
 
 required='{{ .gnome.extensions.mosaic }} {{ .gnome.extensions.spacebar }}'
@@ -86,6 +85,4 @@ for uuid in $required; do
     install_from_ego "$uuid"
   fi
 done
-{{ else -}}
-# GNOME Shell is not installed, so there is nothing to configure.
 {{ end -}}

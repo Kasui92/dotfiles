@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# DMS keeps volatile state in session.json, so manage only the keys listed here.
+set -euo pipefail
+
+current=$(cat)
+[[ -n $current ]] || current='{}'
+
+jq --arg light {{ printf "%s/Pictures/Wallpapers/rose-pine.jpg" .chezmoi.homeDir | quote }} \
+    --arg dark {{ printf "%s/Pictures/Wallpapers/rose-pine-dark.jpg" .chezmoi.homeDir | quote }} '
+    .showConfigReloadToast = false
+    | .perModeWallpaper = true
+    | .wallpaperPathLight = $light
+    | .wallpaperPathDark = $dark
+    | .wallpaperPath = (if .isLightMode then $light else $dark end)
+' <<<"$current" | head -c -1

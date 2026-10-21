@@ -1,7 +1,7 @@
 // Minimal status bar. Colors are ANSI names, so they follow the terminal
 // palette (rose-pine / rose-pine-dawn) instead of being hardcoded.
 zjstatus location="file:{{ .chezmoi.homeDir }}/.config/zellij/plugins/zjstatus.wasm" {
-    format_left   " {mode}  {swap_layout}  {tabs}"
+    format_left   " {mode}  {tabs}"
     format_center ""
     format_right  "#[fg=cyan]{{ .chezmoi.username }}@{{ .chezmoi.hostname }} #[fg=bright_black][{session}] "
     format_space  ""
@@ -19,9 +19,6 @@ zjstatus location="file:{{ .chezmoi.homeDir }}/.config/zellij/plugins/zjstatus.w
     tab_fullscreen_indicator " □"
     tab_floating_indicator   " 󰉈"
     tab_sync_indicator       " "
-
-    swap_layout_format        "#[fg=yellow]#[fg=black,bg=yellow,bold] {name} #[fg=yellow]"
-    swap_layout_hide_if_empty "true"
 
     mode_locked       "#[fg=blue,bold]LOCKED"
     mode_normal       "#[fg=green,bold]NORMAL"

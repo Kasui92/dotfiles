@@ -1,0 +1,40 @@
+// Minimal status bar. Colors are ANSI names, so they follow the terminal
+// palette (rose-pine / rose-pine-dawn) instead of being hardcoded.
+zjstatus location="file:{{ .chezmoi.homeDir }}/.config/zellij/plugins/zjstatus.wasm" {
+    format_left   " {mode}  {swap_layout}  {tabs}"
+    format_center ""
+    format_right  "#[fg=cyan]{{ .chezmoi.username }}@{{ .chezmoi.hostname }} #[fg=bright_black][{session}] "
+    format_space  ""
+    format_hide_on_overlength "true"
+    format_precedence "lrc"
+
+    border_enabled  "true"
+    border_char     "─"
+    border_format   "#[fg=black]{char}"
+    border_position "bottom"
+
+    tab_normal    "#[fg=black]#[fg=white,bg=black] {name}{fullscreen_indicator}{floating_indicator}{sync_indicator} #[fg=black]"
+    tab_active    "#[fg=magenta]#[fg=black,bg=magenta,bold] {name}{fullscreen_indicator}{floating_indicator}{sync_indicator} #[fg=magenta]"
+    tab_separator " "
+    tab_fullscreen_indicator " □"
+    tab_floating_indicator   " 󰉈"
+    tab_sync_indicator       " "
+
+    swap_layout_format        "#[fg=yellow]#[fg=black,bg=yellow,bold] {name} #[fg=yellow]"
+    swap_layout_hide_if_empty "true"
+
+    mode_locked       "#[fg=blue,bold]LOCKED"
+    mode_normal       "#[fg=green,bold]NORMAL"
+    mode_pane         "#[fg=magenta,bold]PANE"
+    mode_tab          "#[fg=cyan,bold]TAB"
+    mode_resize       "#[fg=red,bold]RESIZE"
+    mode_move         "#[fg=yellow,bold]MOVE"
+    mode_scroll       "#[fg=yellow,bold]SCROLL"
+    mode_enter_search "#[fg=green,bold]SEARCH"
+    mode_search       "#[fg=green,bold]SEARCH"
+    mode_rename_tab   "#[fg=cyan,bold]RENAME"
+    mode_rename_pane  "#[fg=magenta,bold]RENAME"
+    mode_session      "#[fg=blue,bold]SESSION"
+    mode_tmux         "#[fg=yellow,bold]TMUX"
+    mode_prompt       "#[fg=green,bold]PROMPT"
+}

@@ -34,6 +34,8 @@ keybinds clear-defaults=true {
         bind "e" { TogglePaneEmbedOrFloating; SwitchToMode "Locked"; }
         bind "c" { SwitchToMode "RenamePane"; PaneNameInput 0;}
         bind "tab" { SwitchFocus; }
+        bind "[" { PreviousSwapLayout; }
+        bind "]" { NextSwapLayout; }
     }
     move {
         bind "Ctrl h" { SwitchToMode "Normal"; }

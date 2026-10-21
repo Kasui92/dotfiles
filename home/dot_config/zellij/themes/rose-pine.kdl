@@ -2,7 +2,7 @@ themes {
   rose-pine {
     text_unselected {
       base 224 222 244
-      background 33 32 46
+      background 25 23 36
       emphasis_0 235 188 186
       emphasis_1 156 207 216
       emphasis_2 49 116 143
@@ -17,23 +17,23 @@ themes {
       emphasis_3 196 167 231
     }
     ribbon_selected {
-      base 33 32 46
-      background 49 116 143
-      emphasis_0 246 193 119
-      emphasis_1 235 188 186
-      emphasis_2 196 167 231
-      emphasis_3 156 207 216
+      base 25 23 36
+      background 196 167 231
+      emphasis_0 235 111 146
+      emphasis_1 49 116 143
+      emphasis_2 38 35 58
+      emphasis_3 25 23 36
     }
     ribbon_unselected {
-      base 25 23 36
-      background 224 222 244
+      base 144 140 170
+      background 38 35 58
       emphasis_0 246 193 119
       emphasis_1 235 188 186
       emphasis_2 196 167 231
       emphasis_3 156 207 216
     }
     table_title {
-      base 49 116 143
+      base 196 167 231
       background 0 0 0
       emphasis_0 235 188 186
       emphasis_1 156 207 216
@@ -50,7 +50,7 @@ themes {
     }
     table_cell_unselected {
       base 224 222 244
-      background 33 32 46
+      background 25 23 36
       emphasis_0 235 188 186
       emphasis_1 156 207 216
       emphasis_2 49 116 143
@@ -66,14 +66,22 @@ themes {
     }
     list_unselected {
       base 224 222 244
-      background 33 32 46
+      background 25 23 36
       emphasis_0 235 188 186
       emphasis_1 156 207 216
       emphasis_2 49 116 143
       emphasis_3 196 167 231
     }
     frame_selected {
-      base 49 116 143
+      base 196 167 231
+      background 0 0 0
+      emphasis_0 235 188 186
+      emphasis_1 156 207 216
+      emphasis_2 196 167 231
+      emphasis_3 0 0 0
+    }
+    frame_unselected {
+      base 82 79 103
       background 0 0 0
       emphasis_0 235 188 186
       emphasis_1 156 207 216

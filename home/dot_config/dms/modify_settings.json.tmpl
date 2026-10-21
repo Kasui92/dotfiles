@@ -1,34 +1,35 @@
 #!/usr/bin/env bash
-# DMS rewrites settings.json on every change, so manage only the keys that differ from its defaults.
+# DuxShell rewrites settings.json on every change, so manage only the keys that differ from its defaults.
 set -euo pipefail
 
 current=$(cat)
 [[ -n $current ]] || current='{}'
 
-jq --arg theme {{ printf "%s/.config/DankMaterialShell/themes/rosePine/theme.json" .chezmoi.homeDir | quote }} '
+jq --arg theme {{ printf "%s/.config/dms/themes/rosePine/theme.json" .chezmoi.homeDir | quote }} '
     .currentThemeName = "custom"
     | .currentThemeCategory = "registry"
     | .customThemeFile = $theme
     | .registryThemeVariants.rosePine = "dawn"
-    | .cornerRadius = 12
+    | .radiusStrength = 38
     | .niriLayoutGapsOverride = 8
     | .niriLayoutRadiusOverride = 16
     | .clockFormat = "24h"
     | .barElevationEnabled = false
     | .blurWallpaperOnOverview = true
-    | .showWorkspaceIndex = true
     | .launcherStyle = "spotlight"
-    | .launcherLogoMode = "os"
-    | .launcherLogoColorOverride = "primary"
     | .useAutoLocation = true
     | .networkPreference = "wifi"
     | .dashTabs = [
-        {id: "overview", enabled: true},
-        {id: "media", enabled: true},
+        {id: "overview", enabled: false},
+        {id: "media", enabled: false},
         {id: "wallpaper", enabled: false},
-        {id: "weather", enabled: true},
-        {id: "settings", enabled: true}
+        {id: "weather", enabled: false},
+        {id: "settings", enabled: true},
+        {id: "wellbeing", enabled: false},
+        {id: "notifications", enabled: false}
     ]
+    | .dashTabsEvenlySpaced = false
+    | .dashOptions = {overview: {panelRows: 4}, weather: {city: true}}
     | .barConfigs = ((.barConfigs // [{
         id: "default",
         name: "Main Bar",
@@ -37,7 +38,24 @@ jq --arg theme {{ printf "%s/.config/DankMaterialShell/themes/rosePine/theme.jso
         screenPreferences: ["all"],
         showOnLastDisplay: true
     }]) | map(if .id == "default" then . + {
-        leftWidgets: ["launcherButton", "workspaceSwitcher", {id: "music", enabled: true}],
+        leftWidgets: [
+            {
+                id: "launcherButton",
+                enabled: true,
+                launcherLogoMode: "os",
+                launcherLogoColorOverride: "primary",
+                launcherLogoSizeOffset: 0
+            },
+            {
+                id: "workspaceSwitcher",
+                enabled: true,
+                showWorkspaceIndex: true,
+                workspaceIndicatorStyle: "pills",
+                workspaceIndicatorCompact: false,
+                workspaceIndicatorRoundness: -1
+            },
+            {id: "music", enabled: true}
+        ],
         centerWidgets: ["clock", "weather"],
         rightWidgets: [
             {id: "systemTray", enabled: true},

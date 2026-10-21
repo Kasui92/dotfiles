@@ -19,7 +19,7 @@
 {{ end }}
 
 {{ if not (lookPath "dms") }}
-.config/DankMaterialShell
+.config/dms
 .local/bin/niri-toggle-struts
-.local/state/DankMaterialShell
+.local/state/dms
 {{ end }}

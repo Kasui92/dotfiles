@@ -1,4 +1,4 @@
-// DMS Window Rules - Managed by DankMaterialShell
+// DMS Window Rules - Managed by DMS
 // Do not edit manually - changes may be overwritten
 
 // @id=dms_rule_0 @name=
@@ -9,6 +9,12 @@ window-rule {
 
 // @id=dms-floating-windows @name=DMS Floating Windows
 window-rule {
-    match app-id="^com.danklinux.dms$"
+    match app-id="^(dev\\.duxlabs\\.shell|com\\.danklinux\\.dms)$"
     open-floating true
+}
+
+// @id=dms-window-opaque @name=DMS Window Opaque
+window-rule {
+    match app-id="^(dev\\.duxlabs\\.shell|com\\.danklinux\\.dms)$"
+    opacity 1.00
 }

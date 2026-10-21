@@ -1,11 +1,10 @@
-{{- /* Only tools present at apply time are included; static init scripts are embedded to skip a process per shell */ -}}
 {{- $mise := lookPath "mise" -}}
 {{- if and (not $mise) (stat (joinPath .chezmoi.homeDir ".local/bin/mise")) -}}
 {{-   $mise = joinPath .chezmoi.homeDir ".local/bin/mise" -}}
 {{- end -}}
 {{- if $mise -}}
-# mise output depends on the current PATH, so it is evaluated at runtime
-eval "$({{ $mise | quote }} activate bash)"
+{{- $activate := output $mise "activate" "bash" | regexFind "(?s)export __MISE_EXE=.*" | replace "\n_mise_hook\n" "\n" -}}
+{{ $activate | trim }}
 {{ end -}}
 
 {{- if lookPath "starship" }}
@@ -19,9 +18,5 @@ fi
 {{ end -}}
 
 {{- if lookPath "fzf" }}
-{{ output "fzf" "--bash" | trim }}
-{{ end -}}
-
-{{- if lookPath "tv" }}
-{{ output "tv" "init" "bash" | trim }}
+{{ output "fzf" "--bash" | splitList "### completion.bash ###" | first | trim }}
 {{ end -}}

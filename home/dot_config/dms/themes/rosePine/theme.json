@@ -47,11 +47,11 @@
         "light": {
           "primaryText": "#faf4ed",
           "surface": "#fffaf3",
-          "surfaceVariant": "#f2e9de",
+          "surfaceVariant": "#f2e9e1",
           "surfaceTint": "#907aa9",
           "background": "#faf4ed",
           "surfaceContainer": "#fffaf3",
-          "surfaceContainerHigh": "#f2e9de",
+          "surfaceContainerHigh": "#f2e9e1",
           "surfaceContainerHighest": "#cecacd"
         }
       },
@@ -70,12 +70,12 @@
         },
         "light": {
           "primaryText": "#faf4ed",
-          "surface": "#f2e9de",
+          "surface": "#f2e9e1",
           "surfaceVariant": "#fffaf3",
           "surfaceTint": "#907aa9",
           "background": "#faf4ed",
           "surfaceContainer": "#fffaf3",
-          "surfaceContainerHigh": "#f2e9de",
+          "surfaceContainerHigh": "#f2e9e1",
           "surfaceContainerHighest": "#cecacd"
         }
       },
@@ -95,11 +95,11 @@
         "light": {
           "primaryText": "#faf4ed",
           "surface": "#fffaf3",
-          "surfaceVariant": "#f2e9de",
+          "surfaceVariant": "#f2e9e1",
           "surfaceTint": "#907aa9",
           "background": "#faf4ed",
           "surfaceContainer": "#fffaf3",
-          "surfaceContainerHigh": "#f2e9de",
+          "surfaceContainerHigh": "#f2e9e1",
           "surfaceContainerHighest": "#dfdad9"
         }
       }

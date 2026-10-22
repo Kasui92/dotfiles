@@ -55,7 +55,13 @@
 		path = ~/.config/git/config-gitlab
 
 # Codeberg
+[url "git@codeberg.org:"]
+    insteadOf = https://codeberg.org/
+
 [includeIf "hasconfig:remote.*.url:git@codeberg.org:*/**"]
+    path = ~/.config/git/config-codeberg
+
+[includeIf "hasconfig:remote.*.url:ssh://git@codeberg.org/**"]
     path = ~/.config/git/config-codeberg
 
 [includeIf "hasconfig:remote.*.url:https://codeberg.org/**"]

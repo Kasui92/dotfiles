@@ -1,0 +1,2 @@
+# GPG TTY for pinentry
+export GPG_TTY=$(tty)

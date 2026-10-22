@@ -1,9 +1,18 @@
+// Locked-first: Ctrl g opens Normal as a leader menu, a letter picks the mode, every exit returns to Locked
 keybinds clear-defaults=true {
     locked {
         bind "Ctrl g" { SwitchToMode "Normal"; }
     }
+    normal {
+        bind "p" { SwitchToMode "Pane"; }
+        bind "t" { SwitchToMode "Tab"; }
+        bind "n" { SwitchToMode "Resize"; }
+        bind "m" { SwitchToMode "Move"; }
+        bind "s" { SwitchToMode "Scroll"; }
+        bind "o" { SwitchToMode "Session"; }
+    }
     resize {
-        bind "Ctrl n" { SwitchToMode "Normal"; }
+        bind "Ctrl n" { SwitchToMode "Locked"; }
         bind "h" "Left" { Resize "Left"; }
         bind "j" "Down" { Resize "Down"; }
         bind "k" "Up" { Resize "Up"; }
@@ -12,29 +21,31 @@ keybinds clear-defaults=true {
         bind "-" { Resize "Decrease"; }
     }
     pane {
-        bind "Ctrl p" { SwitchToMode "Normal"; }
+        bind "Ctrl p" { SwitchToMode "Locked"; }
         bind "h" "Left" { MoveFocus "Left"; }
         bind "l" "Right" { MoveFocus "Right"; }
         bind "j" "Down" { MoveFocus "Down"; }
         bind "k" "Up" { MoveFocus "Up"; }
-        bind "left" { MoveFocus "Left"; }
-        bind "down" { MoveFocus "Down"; }
-        bind "up" { MoveFocus "Up"; }
-        bind "right" { MoveFocus "Right"; }
         bind "\\" { FocusLastPane; }
-        bind "p" { SwitchFocus; }
+        bind "p" "tab" { SwitchFocus; }
         bind "n" { NewPane; SwitchToMode "Locked"; }
         bind "d" { NewPane "Down"; SwitchToMode "Locked"; }
         bind "r" { NewPane "Right"; SwitchToMode "Locked"; }
+        // Rename the focused pane to "dev", open claude below it in the same cwd and name that pane "claude"
+        bind "Shift d" {
+            SwitchToMode "RenamePane"; PaneNameInput 0; PaneNameInput 100 101 118;
+            Run "claude" { direction "Down"; }
+            SwitchToMode "RenamePane"; PaneNameInput 0; PaneNameInput 99 108 97 117 100 101;
+            SwitchToMode "Locked";
+        }
         bind "x" { CloseFocus; SwitchToMode "Locked"; }
         bind "f" { ToggleFocusFullscreen; SwitchToMode "Locked"; }
         bind "Shift f" { ToggleFocusNoUiFullscreen; SwitchToMode "Locked"; }
         bind "z" { TogglePaneFrames; SwitchToMode "Locked"; }
         bind "w" { ToggleFloatingPanes; SwitchToMode "Locked"; }
         bind "e" { TogglePaneEmbedOrFloating; SwitchToMode "Locked"; }
-        bind "c" { SwitchToMode "RenamePane"; PaneNameInput 0;}
+        bind "c" { SwitchToMode "RenamePane"; PaneNameInput 0; }
         bind "m" { SwitchToMode "Move"; }
-        bind "tab" { SwitchFocus; }
         bind "[" { PreviousSwapLayout; }
         bind "]" { NextSwapLayout; }
     }
@@ -46,7 +57,7 @@ keybinds clear-defaults=true {
         bind "l" "Right" { MovePane "Right"; }
     }
     tab {
-        bind "Ctrl t" { SwitchToMode "Normal"; }
+        bind "Ctrl t" { SwitchToMode "Locked"; }
         bind "r" { SwitchToMode "RenameTab"; TabNameInput 0; }
         bind "h" "Left" "Up" "k" { GoToPreviousTab; }
         bind "l" "Right" "Down" "j" { GoToNextTab; }
@@ -79,8 +90,8 @@ keybinds clear-defaults=true {
         // bind "Alt c" { Copy; }
     }
     search {
-        bind "Ctrl s" { SwitchToMode "Normal"; }
-        bind "Ctrl c" { ScrollToBottom; SwitchToMode "Normal"; }
+        bind "Ctrl s" { SwitchToMode "Locked"; }
+        bind "Ctrl c" { ScrollToBottom; SwitchToMode "Locked"; }
         bind "j" "Down" { ScrollDown; }
         bind "k" "Up" { ScrollUp; }
         bind "Ctrl f" "PageDown" "Right" "l" { PageScrollDown; }
@@ -93,54 +104,50 @@ keybinds clear-defaults=true {
         bind "w" { SearchToggleOption "Wrap"; }
         bind "o" { SearchToggleOption "WholeWord"; }
     }
+    // Text input modes: every other key is typed, so only Enter/Esc/Ctrl c are bound
     entersearch {
         bind "Ctrl c" "Esc" { SwitchToMode "Scroll"; }
         bind "Enter" { SwitchToMode "Search"; }
     }
     renametab {
-        bind "Ctrl c" { SwitchToMode "Normal"; }
-        bind "Esc" { UndoRenameTab; SwitchToMode "Tab"; }
+        bind "Ctrl c" "Enter" { SwitchToMode "Locked"; }
+        bind "Esc" { UndoRenameTab; SwitchToMode "Locked"; }
     }
     renamepane {
-        bind "Ctrl c" { SwitchToMode "Normal"; }
-        bind "Esc" { UndoRenamePane; SwitchToMode "Pane"; }
+        bind "Ctrl c" "Enter" { SwitchToMode "Locked"; }
+        bind "Esc" { UndoRenamePane; SwitchToMode "Locked"; }
     }
     session {
-        bind "Ctrl o" { SwitchToMode "Normal"; }
-        bind "Ctrl s" { SwitchToMode "Scroll"; }
+        bind "Ctrl o" { SwitchToMode "Locked"; }
         bind "d" { Detach; }
     }
-    tmux {
-        bind "[" { SwitchToMode "Scroll"; }
-        bind "Ctrl b" { Write 2; SwitchToMode "Normal"; }
-        bind "\"" { NewPane "Down"; SwitchToMode "Normal"; }
-        bind "%" { NewPane "Right"; SwitchToMode "Normal"; }
-        bind "z" { ToggleFocusFullscreen; SwitchToMode "Normal"; }
-        bind "c" { NewTab; SwitchToMode "Normal"; }
-        bind "," { SwitchToMode "RenameTab"; }
-        bind "p" { GoToPreviousTab; SwitchToMode "Normal"; }
-        bind "n" { GoToNextTab; SwitchToMode "Normal"; }
-        bind "Left" { MoveFocus "Left"; SwitchToMode "Normal"; }
-        bind "Right" { MoveFocus "Right"; SwitchToMode "Normal"; }
-        bind "Down" { MoveFocus "Down"; SwitchToMode "Normal"; }
-        bind "Up" { MoveFocus "Up"; SwitchToMode "Normal"; }
-        bind "h" { MoveFocus "Left"; SwitchToMode "Normal"; }
-        bind "l" { MoveFocus "Right"; SwitchToMode "Normal"; }
-        bind "j" { MoveFocus "Down"; SwitchToMode "Normal"; }
-        bind "k" { MoveFocus "Up"; SwitchToMode "Normal"; }
-        bind "o" { FocusNextPane; }
-        bind ";" { FocusLastPane; }
-        bind "d" { Detach; }
-        bind "x" { CloseFocus; SwitchToMode "Normal"; }
-    }
-    shared_except "locked" {
-        bind "Ctrl g" { SwitchToMode "Locked"; }
-        bind "Ctrl q" { Quit; }
+    // Direct shortcuts, available in every mode including Locked
+    shared {
         bind "Alt n" { NewPane; }
+        bind "Alt t" { NewTab; }
+        bind "Alt r" { SwitchToMode "RenameTab"; TabNameInput 0; }
+        bind "Alt [" { GoToPreviousTab; }
+        bind "Alt ]" { GoToNextTab; }
+        bind "Alt 1" { GoToTab 1; }
+        bind "Alt 2" { GoToTab 2; }
+        bind "Alt 3" { GoToTab 3; }
+        bind "Alt 4" { GoToTab 4; }
+        bind "Alt 5" { GoToTab 5; }
+        bind "Alt 6" { GoToTab 6; }
+        bind "Alt 7" { GoToTab 7; }
+        bind "Alt 8" { GoToTab 8; }
+        bind "Alt 9" { GoToTab 9; }
         bind "Alt =" "Alt +" { Resize "Increase"; }
         bind "Alt -" { Resize "Decrease"; }
         bind "Alt p" { TogglePaneInGroup; }
         bind "Alt Shift p" { ToggleGroupMarking; }
+        // Rename the focused pane to "dev", open claude below it in the same cwd and name that pane "claude"
+        bind "Alt d" {
+            SwitchToMode "RenamePane"; PaneNameInput 0; PaneNameInput 100 101 118;
+            Run "claude" { direction "Down"; }
+            SwitchToMode "RenamePane"; PaneNameInput 0; PaneNameInput 99 108 97 117 100 101;
+            SwitchToMode "Locked";
+        }
     }
     // Ctrl hjkl moves across zellij panes and neovim splits (zellij-nav.nvim handles the nvim side)
     shared {
@@ -181,25 +188,11 @@ keybinds clear-defaults=true {
             };
         }
     }
-    shared_except "normal" "locked" {
-        bind "Enter" "Space" "Esc" { SwitchToMode "Normal"; }
+    shared_except "locked" {
+        bind "Ctrl g" { SwitchToMode "Locked"; }
+        bind "Ctrl q" { Quit; }
     }
-    shared_except "pane" "locked" {
-        bind "Ctrl p" { SwitchToMode "Pane"; }
-    }
-    shared_except "resize" "locked" {
-        bind "Ctrl n" { SwitchToMode "Resize"; }
-    }
-    shared_except "scroll" "locked" {
-        bind "Ctrl s" { SwitchToMode "Scroll"; }
-    }
-    shared_except "session" "locked" {
-        bind "Ctrl o" { SwitchToMode "Session"; }
-    }
-    shared_except "tab" "locked" {
-        bind "Ctrl t" { SwitchToMode "Tab"; }
-    }
-    shared_except "tmux" "locked" {
-        bind "Ctrl b" { SwitchToMode "Tmux"; }
+    shared_except "locked" "entersearch" "renametab" "renamepane" {
+        bind "Enter" "Esc" { SwitchToMode "Locked"; }
     }
 }

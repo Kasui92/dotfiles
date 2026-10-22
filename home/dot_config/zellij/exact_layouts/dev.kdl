@@ -1,0 +1,13 @@
+// One tab, run from a project folder: shell on top, claude below (zellij -l dev)
+layout {
+    default_tab_template {
+        pane size=2 borderless=true {
+            plugin location="zjstatus"
+        }
+        children
+    }
+    tab name="dev" {
+        pane name="dev" focus=true
+        pane name="claude" command="claude"
+    }
+}

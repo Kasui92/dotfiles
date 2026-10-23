@@ -33,6 +33,10 @@ if command -v zoxide &> /dev/null; then
   }
 fi
 
+dupe() {
+  du -h --max-depth=1 $1 | sort -hs
+}
+
 # Browser
 open() (
   xdg-open "$@" >/dev/null 2>&1

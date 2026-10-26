@@ -16,6 +16,7 @@ gpg --batch --import <<'EOF'
 {{ (bitwarden "item" $name).notes | trim }}
 EOF
 echo "{{ $fpr }}:6:" | gpg --import-ownertrust
+gpg --check-trustdb
 {{ end -}}
 {{- end -}}
 {{- end -}}

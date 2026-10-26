@@ -37,8 +37,14 @@ window-rule {
     match app-id=r#"^blueman-manager$"#
     match app-id=r#"^org\.gnome\.Nautilus$"#
     match app-id=r#"^xdg-desktop-portal$"#
-    match app-id=r#"^Bitwarden$"#
+    match app-id=r#"^bitwarden$"#
     open-floating true
+}
+
+window-rule {
+    match app-id=r#"^bitwarden$"#
+    default-column-width { fixed 1000; }
+    default-window-height { fixed 700; }
 }
 
 window-rule {

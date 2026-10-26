@@ -1,13 +1,21 @@
 {{- if dig "bitwarden" "enabled" false . -}}
+{{- $keys := dict
+  "gpg-github" "81D3D7CFD69299301BA4A50E622A8D4069B30BC8"
+  "gpg-gitlab" "CD9F510F2D669DC296915E262B8910F55FCF38F0"
+  "gpg-codeberg" "BF7A52A31D240D4C935F1E9EC882A8FE60255731"
+  "gpg-work" "58B3F595664C03B36E8A09126C42D96D6EF0D18B" -}}
+{{- $installed := output "gpg" "--no-auto-check-trustdb" "--list-secret-keys" "--with-colons" -}}
 #!/bin/bash
-# Import GPG secret keys stored as Bitwarden secure notes
-# (notes = armored secret key, custom field "fingerprint")
+# Import GPG secret keys stored as Bitwarden secure notes (notes = armored secret key).
+# Bitwarden is queried only for keys missing from the local keyring.
 set -euo pipefail
-{{ range $name := list "gpg-github" "gpg-gitlab" "gpg-codeberg" "gpg-work" }}
+{{ range $name, $fpr := $keys }}
+{{- if not (contains $fpr $installed) }}
 # {{ $name }}
 gpg --batch --import <<'EOF'
 {{ (bitwarden "item" $name).notes | trim }}
 EOF
-echo "{{ (bitwardenFields "item" $name).fingerprint.value }}:6:" | gpg --import-ownertrust
+echo "{{ $fpr }}:6:" | gpg --import-ownertrust
 {{ end -}}
+{{- end -}}
 {{- end -}}

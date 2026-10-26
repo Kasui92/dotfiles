@@ -1,0 +1,13 @@
+# Point SSH_AUTH_SOCK to the Bitwarden desktop SSH agent, overriding the
+# gcr / OpenSSH / gpg-agent sockets that also set it on login
+[Unit]
+Description=Use Bitwarden SSH agent for SSH_AUTH_SOCK
+After=gcr-ssh-agent.socket ssh-agent.socket gpg-agent-ssh.socket
+Before=graphical-session-pre.target niri.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemctl --user set-environment SSH_AUTH_SOCK=%h/.bitwarden-ssh-agent.sock
+
+[Install]
+WantedBy=default.target

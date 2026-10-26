@@ -19,3 +19,8 @@
 .local/bin/niri-toggle-struts
 .local/state/dms
 {{ end }}
+
+{{ if not (lookPath "bitwarden") }}
+.config/systemd/user/bitwarden-ssh-auth-sock.service
+.config/systemd/user/default.target.wants/bitwarden-ssh-auth-sock.service
+{{ end }}

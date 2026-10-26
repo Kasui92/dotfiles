@@ -125,6 +125,8 @@ keybinds clear-defaults=true {
     shared {
         bind "Alt n" { NewPane; }
         bind "Alt t" { NewTab; }
+        bind "Alt x" { CloseFocus; }
+        bind "Alt Shift x" { CloseTab; }
         bind "Alt r" { SwitchToMode "RenameTab"; TabNameInput 0; }
         bind "Alt [" { GoToPreviousTab; }
         bind "Alt ]" { GoToNextTab; }

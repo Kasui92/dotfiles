@@ -1,5 +1,5 @@
 [user]
-email = {{ .git.github.email | quote }}
+email = "15154851+Kasui92@users.noreply.github.com"
 signingkey = 81D3D7CFD69299301BA4A50E622A8D4069B30BC8
 
 [commit]

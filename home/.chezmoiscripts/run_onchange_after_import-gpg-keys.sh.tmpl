@@ -1,0 +1,13 @@
+{{- if dig "bitwarden" "enabled" false . -}}
+#!/bin/bash
+# Import GPG secret keys stored as Bitwarden secure notes
+# (notes = armored secret key, custom field "fingerprint")
+set -euo pipefail
+{{ range $name := list "gpg-github" "gpg-gitlab" "gpg-codeberg" "gpg-work" }}
+# {{ $name }}
+gpg --batch --import <<'EOF'
+{{ (bitwarden "item" $name).notes | trim }}
+EOF
+echo "{{ (bitwardenFields "item" $name).fingerprint.value }}:6:" | gpg --import-ownertrust
+{{ end -}}
+{{- end -}}

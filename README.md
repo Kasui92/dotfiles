@@ -33,14 +33,3 @@ dispatcher for per-provider settings:
 [commit]
     gpgsign = true
 ```
-
-### niri outputs
-
-Get output names and modes with `niri msg outputs`, then:
-
-```kdl
-output "eDP-1" {
-    mode "2560x1600@240"
-    position x=0 y=0
-}
-```

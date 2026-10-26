@@ -12,4 +12,14 @@ jq --arg light {{ printf "%s/Pictures/Wallpapers/rose-pine.jpg" .chezmoi.homeDir
     | .wallpaperPathLight = $light
     | .wallpaperPathDark = $dark
     | .wallpaperPath = (if .isLightMode then $light else $dark end)
+    | .hiddenApps = [
+        "org.gnome.Settings",
+        "org.gnome.tweaks",
+        "com.mattjakeman.ExtensionManager",
+        "gnome-language-selector",
+        "im-config",
+        "org.freedesktop.IBus.Setup",
+        "org.gnome.Ptyxis",
+        "info"
+    ]
 ' <<<"$current" | head -c -1

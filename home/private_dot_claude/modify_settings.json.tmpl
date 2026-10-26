@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Claude Code rewrites settings.json on every change, so manage only the keys listed here.
+set -euo pipefail
+
+current=$(cat)
+[[ -n $current ]] || current='{}'
+
+jq '
+    .model = "opus"
+    | .theme = "auto"
+    | .modelSettings = ((.modelSettings // {}) * {
+        "claude-sonnet-5": {effortLevel: "medium"},
+        "claude-opus-5": {effortLevel: "medium"},
+        "claude-opus-5-5": {effortLevel: "high"},
+        "claude-sonnet-5-5": {effortLevel: "medium"}
+    })
+' <<<"$current"

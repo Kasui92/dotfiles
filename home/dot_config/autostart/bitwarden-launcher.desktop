@@ -1,7 +1,0 @@
-# Workaround: https://github.com/bitwarden/clients/issues/19313
-[Desktop Entry]
-Type=Application
-Name=Bitwarden
-Exec=/opt/Bitwarden/bitwarden --autostart
-StartupNotify=false
-Terminal=false

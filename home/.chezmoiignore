@@ -20,12 +20,6 @@
 .local/state/dms
 {{ end }}
 
-{{ if not (lookPath "bitwarden") }}
-.config/systemd/user/bitwarden-ssh-auth-sock.service
-.config/systemd/user/default.target.wants/bitwarden-ssh-auth-sock.service
-.config/autostart/bitwarden-launcher.desktop
-{{ end }}
-
 {{ if not (lookPath "claude") }}
 .claude
 {{ end }}

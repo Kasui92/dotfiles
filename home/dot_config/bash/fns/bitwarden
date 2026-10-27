@@ -1,0 +1,26 @@
+# Bitwarden CLI session and SSH keys
+if command -v bw &> /dev/null; then
+  # Unlock the vault and load its SSH keys into the agent
+  bwu() {
+    local status key
+    status=$(bw status | jq -r .status) || return 1
+
+    case "$status" in
+      unauthenticated) BW_SESSION=$(bw login --raw) || return 1 ;;
+      locked) BW_SESSION=$(bw unlock --raw) || return 1 ;;
+    esac
+    export BW_SESSION
+
+    bw sync > /dev/null || return 1
+
+    for key in $(bw list items | jq -r '.[] | select(.type == 5) | .sshKey.privateKey | @base64'); do
+      base64 -d <<< "$key" | ssh-add -q -
+    done
+    ssh-add -l
+  }
+
+  # Lock the vault
+  bwl() {
+    bw lock && unset BW_SESSION
+  }
+fi

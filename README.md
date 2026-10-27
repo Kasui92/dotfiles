@@ -13,6 +13,7 @@ These files are ignored by chezmoi and optional. Create them only where needed.
 | `~/.config/git/config-local*` | Identities, signing keys, per-provider settings |
 | `~/.config/niri/config/outputs.kdl` | Monitor layout for niri |
 | `~/.config/niri/dms/outputs.kdl` | Monitor layout for niri with DMS |
+| `~/.ssh/config` | SSH hosts |
 
 ### Git
 

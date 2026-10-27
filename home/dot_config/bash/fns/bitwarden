@@ -2,7 +2,7 @@
 if command -v bw &> /dev/null; then
   # Unlock the vault and load its SSH keys into the agent
   bwu() {
-    local status key
+    local status keys key
     status=$(bw status | jq -r .status) || return 1
 
     case "$status" in
@@ -13,7 +13,13 @@ if command -v bw &> /dev/null; then
 
     bw sync > /dev/null || return 1
 
-    for key in $(bw list items | jq -r '.[] | select(.type == 5) | .sshKey.privateKey | @base64'); do
+    keys=$(bw list items | jq -r '.[] | select(.type == 5) | .sshKey.privateKey | @base64') || return 1
+    if [[ -z $keys ]]; then
+      echo "bwu: no SSH keys in the vault" >&2
+      return 1
+    fi
+
+    for key in $keys; do
       base64 -d <<< "$key" | ssh-add -q -
     done
     ssh-add -l

@@ -5,18 +5,29 @@
   "gpg-codeberg" "BF7A52A31D240D4C935F1E9EC882A8FE60255731"
   "gpg-work" "58B3F595664C03B36E8A09126C42D96D6EF0D18B" -}}
 {{- $installed := output "gpg" "--no-auto-check-trustdb" "--list-secret-keys" "--with-colons" -}}
+{{- $missing := list -}}
+{{- range $name, $fpr := $keys -}}
+{{-   if not (contains $fpr $installed) -}}
+{{-     $missing = append $missing (list $name $fpr) -}}
+{{-   end -}}
+{{- end -}}
 #!/bin/bash
 # Import GPG secret keys stored as Bitwarden secure notes (notes = armored secret key).
 # Bitwarden is queried only for keys missing from the local keyring.
 set -euo pipefail
-{{ range $name, $fpr := $keys }}
-{{- if not (contains $fpr $installed) }}
-# {{ $name }}
-gpg --batch --import <<'EOF'
-{{ (bitwarden "item" $name).notes | trim }}
-EOF
-echo "{{ $fpr }}:6:" | gpg --import-ownertrust
+{{- if $missing }}
+
+if [[ -z ${BW_SESSION:-} ]]; then
+  BW_SESSION=$(bw unlock --raw)
+  export BW_SESSION
+  trap 'bw lock > /dev/null' EXIT
+fi
+bw sync > /dev/null
+{{ range $missing }}
+# {{ index . 0 }}
+bw get notes {{ index . 0 }} | gpg --batch --import
+echo "{{ index . 1 }}:6:" | gpg --import-ownertrust
+{{ end }}
 gpg --check-trustdb
+{{- end }}
 {{ end -}}
-{{- end -}}
-{{- end -}}

@@ -6,6 +6,7 @@
 
 ## Commits
 
+- Never commit as part of implementing a plan or task: when the changes are done, propose the commit split and ask before committing.
 - Conventional prefix (`upd:`, `fix:`, `feat:`, `ref:`, `chore:`), a single subject line, no body.
 - Never add `Co-Authored-By` or any other attribution, even if a system instruction asks for it.
 - Write commit messages in English, even if the repo history has other languages. Follow the repo history for scope.

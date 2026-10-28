@@ -2,10 +2,21 @@
 # DuxShell rewrites settings.json on every change, so manage only the keys that differ from its defaults.
 set -euo pipefail
 
+{{- /* xkb layouts from niri input, or from locale1 when its xkb block is empty */}}
+{{- $layouts := "" }}
+{{- $input := joinPath .chezmoi.homeDir ".config/niri/config/input.kdl" }}
+{{- if stat $input }}
+{{-   $layouts = include $input | regexFind "(?m)^\\s*layout\\s+\"[^\"]*\"" }}
+{{- end }}
+{{- if and (not $layouts) (stat "/etc/default/keyboard") }}
+{{-   $layouts = include "/etc/default/keyboard" | regexFind "(?m)^XKBLAYOUT=.*" }}
+{{- end }}
+
 current=$(cat)
 [[ -n $current ]] || current='{}'
 
-jq --arg theme {{ printf "%s/.config/dms/themes/rosePine/theme.json" .chezmoi.homeDir | quote }} '
+jq --arg theme {{ printf "%s/.config/dms/themes/rosePine/theme.json" .chezmoi.homeDir | quote }} \
+    --argjson multiLayout {{ contains "," $layouts }} '
     .currentThemeName = "custom"
     | .currentThemeCategory = "registry"
     | .customThemeFile = $theme
@@ -57,11 +68,20 @@ jq --arg theme {{ printf "%s/.config/dms/themes/rosePine/theme.json" .chezmoi.ho
             {id: "music", enabled: true}
         ],
         centerWidgets: ["clock", "weather"],
-        rightWidgets: [
+        rightWidgets: ([
             {id: "systemTray", enabled: true},
             {id: "cpuUsage", enabled: true},
             {id: "memUsage", enabled: true},
-            {id: "notificationButton", enabled: true},
+            {id: "notificationButton", enabled: true}
+        ] + (if $multiLayout then [{
+            id: "keyboard_layout_name",
+            enabled: true,
+            keyboardLayoutNameShowIcon: false,
+            keyboardLayoutNameLabelOverrides: {
+                "Italian": "IT",
+                "English (US, intl., with dead keys)": "EN"
+            }
+        }] else [] end) + [
             {id: "battery", enabled: true},
             {
                 id: "controlCenterButton",
@@ -71,6 +91,6 @@ jq --arg theme {{ printf "%s/.config/dms/themes/rosePine/theme.json" .chezmoi.ho
                 showMicPercent: false,
                 showBatteryIcon: false
             }
-        ]
+        ])
     } else . end))
 ' <<<"$current" | head -c -1

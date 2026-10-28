@@ -48,3 +48,8 @@ alias ...='cd ../..'
 alias ....='cd ../../..'
 
 md() { mkdir -p "$1" && cd "$1"; }
+
+# History
+hs() (
+  history | grep -i -- "$*"
+)

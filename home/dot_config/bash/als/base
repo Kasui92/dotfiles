@@ -53,3 +53,7 @@ md() { mkdir -p "$1" && cd "$1"; }
 hs() (
   history | grep -i -- "$*"
 )
+
+hff() (
+  history | sed 's/^ *[0-9]* *//' | tac | awk '!seen[$0]++' | fzf --scheme=history --query="$*"
+)

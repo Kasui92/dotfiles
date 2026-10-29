@@ -34,3 +34,19 @@ dispatcher for per-provider settings:
 [commit]
     gpgsign = true
 ```
+
+## Bitwarden
+
+With `bitwarden.enabled`, SSH and GPG keys come from the Bitwarden vault via `bw`.
+
+| Item | Type | Content |
+| --- | --- | --- |
+| any name | SSH key | Private key, loaded by `bwu` |
+| `gpg-github`, `gpg-gitlab`, `gpg-codeberg`, `gpg-work` | Secure note | Notes: output of `gpg --export-secret-keys --armor <FPR>` |
+| same `gpg-*` items | Hidden custom field `passphrase` | Key passphrase, preset into gpg-agent by `bwu` |
+
+Fingerprints are mapped in `home/.chezmoidata/gpg.toml`. Missing GPG keys are
+imported by `chezmoi apply`.
+
+- `bwu`: unlock the vault, load SSH keys and GPG passphrases, lock the vault again.
+- `bwl`: lock the vault, clear the SSH agent and the GPG passphrase cache.

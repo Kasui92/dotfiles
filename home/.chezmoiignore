@@ -3,6 +3,7 @@
 .config/niri/config/outputs.kdl
 .config/niri/config/struts.kdl
 .config/niri/dms/outputs.kdl
+.config/niri/dms/cursor.kdl
 
 {{ if not (lookPath "batcat") }}
 .local/bin/bat

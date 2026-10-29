@@ -1,3 +1,0 @@
-.config/autostart/bitwarden-launcher.desktop
-.config/systemd/user/bitwarden-ssh-auth-sock.service
-.config/systemd/user/default.target.wants/bitwarden-ssh-auth-sock.service

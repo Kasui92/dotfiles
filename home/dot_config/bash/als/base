@@ -54,6 +54,15 @@ hs() (
   history | grep -i -- "$*"
 )
 
-hff() (
-  history | sed 's/^ *[0-9]* *//' | tac | awk '!seen[$0]++' | fzf --scheme=history --query="$*"
-)
+hff() {
+  local out key cmd
+  out=$(history | sed 's/^ *[0-9]* *//' | tac | awk '!seen[$0]++' | fzf --scheme=history --query="$*" --expect=alt-enter --header='alt-enter: run') || return
+  key=${out%%$'\n'*}
+  cmd=${out#*$'\n'}
+  if [[ $key == alt-enter ]]; then
+    history -s "$cmd"
+    eval "$cmd"
+  else
+    printf '%s\n' "$cmd"
+  fi
+}

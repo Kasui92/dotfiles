@@ -22,4 +22,5 @@ jq --arg light {{ printf "%s/Pictures/Wallpapers/rose-pine.jpg" .chezmoi.homeDir
         "org.gnome.Ptyxis",
         "info"
     ]
+    | .hiddenTrayIds = ["unattended-upgrade", "software-update-available"]
 ' <<<"$current" | head -c -1

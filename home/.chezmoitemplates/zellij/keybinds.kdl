@@ -141,6 +141,8 @@ keybinds clear-defaults=true {
         bind "Alt 9" { GoToTab 9; }
         bind "Alt =" "Alt +" { Resize "Increase"; }
         bind "Alt -" { Resize "Decrease"; }
+        bind "Alt s" { NextSwapLayout; }
+        bind "Alt Shift s" { PreviousSwapLayout; }
         bind "Alt p" { TogglePaneInGroup; }
         bind "Alt Shift p" { ToggleGroupMarking; }
         // Rename the focused pane to "dev", open claude below it in the same cwd and name that pane "claude"

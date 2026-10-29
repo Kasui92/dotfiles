@@ -1,12 +1,7 @@
 {{- if dig "bitwarden" "enabled" false . -}}
-{{- $keys := dict
-  "gpg-github" "81D3D7CFD69299301BA4A50E622A8D4069B30BC8"
-  "gpg-gitlab" "CD9F510F2D669DC296915E262B8910F55FCF38F0"
-  "gpg-codeberg" "BF7A52A31D240D4C935F1E9EC882A8FE60255731"
-  "gpg-work" "58B3F595664C03B36E8A09126C42D96D6EF0D18B" -}}
 {{- $installed := output "gpg" "--no-auto-check-trustdb" "--list-secret-keys" "--with-colons" -}}
 {{- $missing := list -}}
-{{- range $name, $fpr := $keys -}}
+{{- range $name, $fpr := .gpg.keys -}}
 {{-   if not (contains $fpr $installed) -}}
 {{-     $missing = append $missing (list $name $fpr) -}}
 {{-   end -}}
@@ -17,15 +12,19 @@
 set -euo pipefail
 {{- if $missing }}
 
-if [[ -z ${BW_SESSION:-} ]]; then
-  BW_SESSION=$(bw unlock --raw)
+if [[ -z ${BW_SESSION:-} ]] || ! bw unlock --check &> /dev/null; then
+  if ! BW_SESSION=$(bw unlock --raw); then
+    bw login --check &> /dev/null && exit 1
+    BW_SESSION=$(bw login --raw)
+  fi
   export BW_SESSION
   trap 'bw lock > /dev/null' EXIT
 fi
 bw sync > /dev/null
+items=$(bw list items --search gpg-)
 {{ range $missing }}
 # {{ index . 0 }}
-bw get notes {{ index . 0 }} | gpg --batch --import
+jq -r --arg n {{ index . 0 | quote }} 'first(.[] | select(.name == $n) | .notes) // empty' <<< "$items" | gpg --batch --import
 echo "{{ index . 1 }}:6:" | gpg --import-ownertrust
 {{ end }}
 gpg --check-trustdb

@@ -8,9 +8,20 @@ if [[ -n $SSH_CLIENT || -n $SSH_TTY ]]; then
     _ps_ssh=$' \001\e[1;36m\002ssh:(\001\e[0;38;5;107m\002'"$USER@$HOSTNAME"$'\001\e[1;36m\002)\001\e[0m\002 '
 fi
 
+# Lock segment only where the Bitwarden CLI loads the SSH keys
+_ps_bw=0
+command -v bw &> /dev/null && _ps_bw=1
+
 __prompt() {
     local status=$? out gitdir top head branch rel name len
     local -a parts
+
+    # Lock while the SSH agent is reachable but holds no keys
+    _ps_lock=
+    if (( _ps_bw )); then
+        ssh-add -l &> /dev/null
+        (( $? == 1 )) && _ps_lock=$'\001\e[1;33m\002\001\e[0m\002 '
+    fi
 
     # Git dir and work tree root in one call; inside .git only the dir is printed
     out=$(git rev-parse --absolute-git-dir --show-toplevel 2> /dev/null)
@@ -75,4 +86,4 @@ __prompt() {
 }
 
 PROMPT_COMMAND=__prompt
-PS1='${_ps_ssh}${_ps_path}${_ps_git} ${_ps_cursor}'
+PS1='${_ps_lock}${_ps_ssh}${_ps_path}${_ps_git} ${_ps_cursor}'

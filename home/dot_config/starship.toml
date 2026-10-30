@@ -1,6 +1,14 @@
 add_newline = false
 command_timeout = 200
-format = "[$directory$git_branch$git_status]($style)$character"
+format = "${custom.bwlock}[$directory$git_branch$git_status]($style)$character"
+
+# Lock while the SSH agent is reachable but holds no keys
+[custom.bwlock]
+when = 'command -v bw >/dev/null && { ssh-add -l >/dev/null 2>&1; [ $? -eq 1 ]; }'
+shell = ["bash", "--noprofile", "--norc"]
+symbol = ""
+format = "[$symbol ]($style)"
+style = "bold yellow"
 
 [character]
 error_symbol = "[✗](bold cyan)"

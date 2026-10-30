@@ -1,81 +1,78 @@
-# Prompt configuration
+# Prompt configuration: segments are computed by __prompt before each prompt
 force_color_prompt=yes
 color_prompt=yes
 
 # SSH user (e.g. ssh:(localuser@remotehost))
-ssh_user() {
-    if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
-        printf " \001\e[1;36m\002ssh:(\001\e[0;38;5;107m\002${USER}@${HOSTNAME}\001\e[1;36m\002)\001\e[0m\002 "
+_ps_ssh=
+if [[ -n $SSH_CLIENT || -n $SSH_TTY ]]; then
+    _ps_ssh=$' \001\e[1;36m\002ssh:(\001\e[0;38;5;107m\002'"$USER@$HOSTNAME"$'\001\e[1;36m\002)\001\e[0m\002 '
+fi
+
+__prompt() {
+    local status=$? out gitdir top head branch rel name len
+    local -a parts
+
+    # Git dir and work tree root in one call; inside .git only the dir is printed
+    out=$(git rev-parse --absolute-git-dir --show-toplevel 2> /dev/null)
+    gitdir=${out%%$'\n'*}
+    top=
+    [[ $out == *$'\n'* ]] && top=${out#*$'\n'}
+
+    # Current branch, empty on detached HEAD
+    _ps_git=
+    if [[ -n $gitdir ]]; then
+        head=
+        { read -r head < "$gitdir/HEAD"; } 2> /dev/null
+        branch=
+        [[ $head == "ref: refs/heads/"* ]] && branch=${head#ref: refs/heads/}
+        [[ $branch == .invalid ]] && branch=$(git symbolic-ref --short -q HEAD)
+        [[ -n $branch ]] && _ps_git=$' \001\e[1;36m\002git:(\001\e[0;38;5;107m\002'"$branch"$'\001\e[1;36m\002)\001\e[0m\002'
     fi
-}
 
-# Current Git Branch
-git_branch() {
-    local branch
-    branch=$(git symbolic-ref --short HEAD 2>/dev/null)
-    if [ -n "$branch" ]; then
-        printf " \001\e[1;36m\002git:(\001\e[0;38;5;107m\002${branch}\001\e[1;36m\002)\001\e[0m\002"
-    fi
-}
-
-# Short PWD
-short_pwd() {
-    local path="$PWD" home="$HOME" rel_path display_path git_root
-
-    # Find git repository root if exists
-    git_root=$(git rev-parse --show-toplevel 2>/dev/null)
-
-    if [[ -n "$git_root" ]]; then
-        # In a git repository: calculate relative path from git root
-        rel_path="${path#$git_root}"
-        rel_path="${rel_path#/}"
-        local IFS="/"; read -ra parts <<< "$rel_path"
-        local len=${#parts[@]}
-        local git_name=$(basename "$git_root")
-
-        if [[ -z "$rel_path" ]]; then
-            display_path="$git_name"
-        elif [ $len -le 1 ]; then
-            display_path="$git_name/$rel_path"
+    # Short PWD: repo name, ~ or absolute path, then the last two components
+    if [[ -n $top ]]; then
+        rel=${PWD#"$top"}
+        rel=${rel#/}
+        name=${top##*/}
+        IFS=/ read -ra parts <<< "$rel"
+        len=${#parts[@]}
+        if [[ -z $rel ]]; then
+            _ps_path=$name
+        elif (( len <= 1 )); then
+            _ps_path=$name/$rel
         else
-            display_path="…/${parts[$((len-2))]}/${parts[$((len-1))]}"
+            _ps_path=…/${parts[len-2]}/${parts[len-1]}
         fi
-    elif [[ "$path" == "$home"* ]]; then
-        # In home but not git: normal behavior with tilde
-        rel_path="${path#$home}"
-        rel_path="${rel_path#/}"
-        local IFS="/"; read -ra parts <<< "$rel_path"
-        local len=${#parts[@]}
-
-        if [[ -z "$rel_path" ]]; then
-            display_path="~"
-        elif [ $len -le 2 ]; then
-            display_path="~/$rel_path"
+    elif [[ $PWD == "$HOME"* ]]; then
+        rel=${PWD#"$HOME"}
+        rel=${rel#/}
+        IFS=/ read -ra parts <<< "$rel"
+        len=${#parts[@]}
+        if [[ -z $rel ]]; then
+            _ps_path='~'
+        elif (( len <= 2 )); then
+            _ps_path=\~/$rel
         else
-            display_path="…/${parts[$((len-2))]}/${parts[$((len-1))]}"
+            _ps_path=…/${parts[len-2]}/${parts[len-1]}
         fi
     else
-        # Absolute path: normal behavior
-        local IFS="/"; read -ra parts <<< "$path"
-        local len=${#parts[@]}
-        if [ $len -le 2 ]; then
-            display_path="$path"
+        IFS=/ read -ra parts <<< "$PWD"
+        len=${#parts[@]}
+        if (( len <= 2 )); then
+            _ps_path=$PWD
         else
-            display_path="…/${parts[$((len-2))]}/${parts[$((len-1))]}"
+            _ps_path=…/${parts[len-2]}/${parts[len-1]}
         fi
     fi
-    printf "\001\e[31m\002$display_path\001\e[0m\002"
-}
+    _ps_path=$'\001\e[31m\002'"$_ps_path"$'\001\e[0m\002'
 
-# Cursor
-cursor() {
-    if [ "$EXIT_STATUS" -ne 0 ]; then
-        printf "\001\e[31m\002✗\001\e[0m\002 "
+    # Cursor, red cross after a failed command
+    if (( status )); then
+        _ps_cursor=$'\001\e[31m\002✗\001\e[0m\002 '
     else
-        printf "\001\e[31m\002❯\001\e[0m\002 "
+        _ps_cursor=$'\001\e[31m\002❯\001\e[0m\002 '
     fi
 }
 
-# Build Prompt
-PROMPT_COMMAND='EXIT_STATUS=$?'
-PS1='$(ssh_user)$(short_pwd)$(git_branch) $(cursor)'
+PROMPT_COMMAND=__prompt
+PS1='${_ps_ssh}${_ps_path}${_ps_git} ${_ps_cursor}'

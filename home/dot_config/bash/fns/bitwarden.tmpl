@@ -13,7 +13,7 @@ if command -v bw &> /dev/null; then
   # Unlock the vault, load SSH keys and GPG passphrases, then lock it again
   bwu() {
     local -x BW_SESSION=${BW_SESSION:-}
-    local items key relock=0 ssh=0 gpg=0
+    local items key relock=0 ssh=0 gpg=0 ttl=12h
 
     if [[ -z $BW_SESSION ]] || ! bw unlock --check &> /dev/null; then
       if ! BW_SESSION=$(bw unlock --raw); then
@@ -32,7 +32,7 @@ if command -v bw &> /dev/null; then
     (( relock )) && ( (bw sync && bw lock) &> /dev/null & )
 
     while IFS= read -r key; do
-      base64 -d <<< "$key" | ssh-add -q - && ssh=$((ssh + 1))
+      base64 -d <<< "$key" | ssh-add -q -t "$ttl" - && ssh=$((ssh + 1))
     done < <(jq -r '.[] | select(.type == 5) | .sshKey.privateKey | @base64' <<< "$items")
 {{ range $name, $fpr := .gpg.keys }}
     _bwu_gpg_preset {{ $name }} {{ $fpr }} && gpg=$((gpg + 1))
@@ -41,7 +41,7 @@ if command -v bw &> /dev/null; then
     if (( ssh == 0 )); then
       echo "bwu: no SSH keys in the vault" >&2
     else
-      ssh-add -l
+      echo "bwu: $ssh SSH key(s) loaded for $ttl"
     fi
     echo "bwu: $gpg GPG passphrase(s) preset"
     (( ssh > 0 ))

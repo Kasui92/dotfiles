@@ -11,13 +11,13 @@
 
 {{ if not (lookPath "niri") }}
 .config/niri
+.local/bin/niri-toggle-struts
 {{ else if not (lookPath "dms") }}
 .config/niri/dms
 {{ end }}
 
 {{ if not (lookPath "dms") }}
 .config/dms
-.local/bin/niri-toggle-struts
 .local/state/dms
 {{ end }}
 

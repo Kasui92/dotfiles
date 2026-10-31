@@ -83,6 +83,7 @@ binds {
     Mod+Shift+Up { move-window-up; }
 
     // Layout and state
+    Mod+Alt+B hotkey-overlay-title="Toggle Focus Struts" { spawn "~/.local/bin/niri-toggle-struts"; }
     Mod+Alt+F { fullscreen-window; }
     Mod+Alt+T { switch-focus-between-floating-and-tiling; }
     Mod+BracketLeft { consume-or-expel-window-left; }

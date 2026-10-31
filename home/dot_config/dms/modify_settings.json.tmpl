@@ -40,7 +40,7 @@ jq --arg theme {{ printf "%s/.config/dms/themes/rosePine/theme.json" .chezmoi.ho
         {id: "notifications", enabled: false}
     ]
     | .dashTabsEvenlySpaced = false
-    | .dashOptions = {overview: {panelRows: 4}, weather: {city: true}}
+    | .dashOptions = {overview: {panelRows: 4, panelColumns: 5}, weather: {city: true}}
     | .dashCards = [
         {id: "clock", col: 0, row: 0, w: 3, h: 1},
         {id: "weather", col: 3, row: 0, w: 2, h: 1},

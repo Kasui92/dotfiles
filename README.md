@@ -1,7 +1,8 @@
 # dotfiles
 
-> [!WARNING]
-> I am starting to adopt [`chezmoi`](https://www.chezmoi.io) instead of custom scripts. For this reason, the repository has been reset and [the previous content moved to Codeberg](https://codeberg.org/Kasui92/dotfiles).
+> What are we, if not the sum of our dotfiles?
+
+My personal dotfiles are managed entirely through [chezmoi](https://www.chezmoi.io).
 
 ## Machine-local configuration
 

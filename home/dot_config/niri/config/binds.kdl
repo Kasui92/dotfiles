@@ -154,4 +154,5 @@ binds {
     Mod+Shift+E { quit; }
     Mod+Shift+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
     Mod+Shift+P { power-off-monitors; }
+    Mod+Alt+Space hotkey-overlay-title="Switch Keyboard Layout" { switch-layout "next"; }
 }

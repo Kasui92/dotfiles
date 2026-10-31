@@ -6,8 +6,8 @@ format = "${custom.bwlock}[$directory$git_branch$git_status]($style)$character"
 [custom.bwlock]
 when = 'command -v bw >/dev/null && { ssh-add -l >/dev/null 2>&1; [ $? -eq 1 ]; }'
 shell = ["bash", "--noprofile", "--norc"]
-symbol = ""
-format = "[$symbol ]($style)"
+symbol = "\uf023"
+format = "[$symbol  ]($style)"
 style = "bold yellow"
 
 [character]

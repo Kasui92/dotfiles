@@ -20,7 +20,7 @@ __prompt() {
     _ps_lock=
     if (( _ps_bw )); then
         ssh-add -l &> /dev/null
-        (( $? == 1 )) && _ps_lock=$'\001\e[1;33m\002\001\e[0m\002 '
+        (( $? == 1 )) && _ps_lock=$'\001\e[1;33m\002\uf023\001\e[0m\002  '
     fi
 
     # Git dir and work tree root in one call; inside .git only the dir is printed

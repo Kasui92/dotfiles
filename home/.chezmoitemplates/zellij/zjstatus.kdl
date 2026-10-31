@@ -25,7 +25,6 @@ zjstatus location="file:{{ .chezmoi.homeDir }}/.config/zellij/plugins/zjstatus.w
     mode_pane         "#[fg=magenta,bold]PANE"
     mode_tab          "#[fg=cyan,bold]TAB"
     mode_resize       "#[fg=red,bold]RESIZE"
-    mode_move         "#[fg=yellow,bold]MOVE"
     mode_scroll       "#[fg=yellow,bold]SCROLL"
     mode_enter_search "#[fg=green,bold]SEARCH"
     mode_search       "#[fg=green,bold]SEARCH"

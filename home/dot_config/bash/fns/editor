@@ -1,0 +1,11 @@
+# VS Code
+c() {
+  if (( $# )); then cd "$1" || return; fi
+  code .
+}
+
+# Neovim
+n() {
+  if (( $# )); then cd "$1" || return; fi
+  command nvim .
+}

@@ -1,0 +1,4 @@
+# History grep
+hs() (
+  history | grep -i -- "$*"
+)

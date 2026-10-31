@@ -13,3 +13,16 @@ ssh-keyput() {
 
   cat "$SSH_KEY" | ssh "$1" "mkdir -p ~/.ssh && chmod 700 ~/.ssh && cat >>  ~/.ssh/authorized_keys";
 }
+
+# Copy a file picked with fzf, newest first, to an scp destination
+if command -v fzf &> /dev/null; then
+  sff() {
+    if (( $# == 0 )); then
+      echo "Usage: sff <destination> (e.g. sff host:/tmp/)"
+      return 1
+    fi
+
+    local file
+    file=$(find . -type f -printf '%T@\t%p\n' | sort -rn | cut -f2- | ff) && [[ -n $file ]] && scp "$file" "$1"
+  }
+fi

@@ -1,5 +1,10 @@
 # Update system function
 update-system() {
+  if ! command -v apt-get &> /dev/null; then
+    echo "Error: apt-get is not installed" >&2
+    return 127
+  fi
+
   sudo apt-get update
   sudo apt-get -y upgrade
   sudo apt-get -y dist-upgrade

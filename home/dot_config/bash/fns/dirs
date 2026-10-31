@@ -1,0 +1,33 @@
+# Zoxide-backed cd
+if command -v zoxide &> /dev/null; then
+  alias cd="zd"
+  zd() {
+    if (( $# == 0 )); then
+      builtin cd ~ || return
+    elif [[ -d $1 ]]; then
+      builtin cd "$1" || return
+    else
+      if ! z "$@"; then
+        echo "Error: Directory not found"
+        return 1
+      fi
+
+      printf "\U000F17A9 "
+      pwd
+    fi
+  }
+fi
+
+md() { mkdir -p "$1" && cd "$1"; }
+
+# Disk usage of the first-level entries
+if command -v dust &> /dev/null; then
+  alias dupe='dust -d 1 -x -b'
+else
+  dupe() { du -h --max-depth=1 "${1:-.}" | sort -hs; }
+fi
+
+# Browser
+open() (
+  xdg-open "$@" >/dev/null 2>&1
+)

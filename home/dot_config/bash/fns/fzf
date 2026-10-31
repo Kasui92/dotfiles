@@ -1,0 +1,18 @@
+# Fzf helpers
+if command -v fzf &> /dev/null; then
+  ff() { fzf --preview 'bat --style=numbers --color=always {}' "$@"; }
+
+  # Fuzzy history search: print the selected command, run it on alt-enter
+  hff() {
+    local out key cmd
+    out=$(history | sed 's/^ *[0-9]* *//' | tac | awk '!seen[$0]++' | fzf --scheme=history --query="$*" --expect=alt-enter --header='alt-enter: run') || return
+    key=${out%%$'\n'*}
+    cmd=${out#*$'\n'}
+    if [[ $key == alt-enter ]]; then
+      history -s "$cmd"
+      eval "$cmd"
+    else
+      printf '%s\n' "$cmd"
+    fi
+  }
+fi

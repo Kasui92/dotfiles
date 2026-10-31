@@ -10,59 +10,11 @@ if command -v eza &> /dev/null; then
   alias lta='lt -a'
 fi
 
-alias fd='fdfind'
-alias ff="fzf --preview 'bat --style=numbers --color=always {}'"
-sff() { if [ $# -eq 0 ]; then echo "Usage: sff <destination> (e.g. sff host:/tmp/)"; return 1; fi; local file; file=$(find . -type f -printf '%T@\t%p\n' | sort -rn | cut -f2- | ff) && [ -n "$file" ] && scp "$file" "$1"; }
-
-if command -v zoxide &> /dev/null; then
-  alias cd="zd"
-  zd() {
-    if (( $# == 0 )); then
-      builtin cd ~ || return
-    elif [[ -d $1 ]]; then
-      builtin cd "$1" || return
-    else
-      if ! z "$@"; then
-        echo "Error: Directory not found"
-        return 1
-      fi
-
-      printf "\U000F17A9 "
-      pwd
-    fi
-  }
+if command -v fdfind &> /dev/null && ! command -v fd &> /dev/null; then
+  alias fd='fdfind'
 fi
-
-dupe() {
-  du -h --max-depth=1 $1 | sort -hs
-}
-
-# Browser
-open() (
-  xdg-open "$@" >/dev/null 2>&1
-)
 
 # Directories
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
-
-md() { mkdir -p "$1" && cd "$1"; }
-
-# History
-hs() (
-  history | grep -i -- "$*"
-)
-
-hff() {
-  local out key cmd
-  out=$(history | sed 's/^ *[0-9]* *//' | tac | awk '!seen[$0]++' | fzf --scheme=history --query="$*" --expect=alt-enter --header='alt-enter: run') || return
-  key=${out%%$'\n'*}
-  cmd=${out#*$'\n'}
-  if [[ $key == alt-enter ]]; then
-    history -s "$cmd"
-    eval "$cmd"
-  else
-    printf '%s\n' "$cmd"
-  fi
-}

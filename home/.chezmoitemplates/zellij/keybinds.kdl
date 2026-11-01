@@ -113,6 +113,7 @@ keybinds clear-defaults=true {
     // Direct shortcuts, available in every mode including Locked
     shared {
         bind "Alt n" { NewPane; }
+        bind "Alt Shift n" { NewPane "Down"; }
         bind "Alt t" { NewTab; }
         bind "Alt x" { CloseFocus; }
         bind "Alt Shift x" { CloseTab; }

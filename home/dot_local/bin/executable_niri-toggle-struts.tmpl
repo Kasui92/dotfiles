@@ -1,17 +1,43 @@
 #!/usr/bin/env bash
-# Toggle a focus layout: wider niri struts and, with DMS, hidden bar.
-# Pressing it again empties the override and restores the struts from layout.kdl.
+# Toggle focus mode: wider niri struts{{ if lookPath "dms" }} and hidden DMS bar{{ end }}.
+{{- if lookPath "dms" }}
+# The override's first line records the bar action that restores it on exit.
+{{- end }}
 set -euo pipefail
 
 override="${XDG_CONFIG_HOME:-$HOME/.config}/niri/config/struts.kdl"
 
 if [[ -s $override ]]; then
-    : >"$override"
 {{- if lookPath "dms" }}
-    dms ipc call bar reveal index 0 > /dev/null
+    restore=$(sed -n '1s|^// bar: ||p' "$override")
 {{- end }}
+    : >"$override"
+    niri msg action load-config-file
+{{- if lookPath "dms" }}
+    if [[ -n $restore ]]; then
+        dms ipc call bar "$restore" index 0 >/dev/null
+    fi
+{{- end }}
+
+    # Re-snap the view to the default struts
+    col=$(niri msg -j focused-window | jq -r '.layout.pos_in_scrolling_layout[0] // empty')
+    if [[ -n $col ]]; then
+        if ((col == 1)); then
+            niri msg action focus-column-last
+        else
+            niri msg action focus-column-first
+        fi
+        niri msg action focus-column "$col"
+    fi
 else
-    cat >"$override" <<'KDL'
+{{- if lookPath "dms" }}
+    if [[ $(dms ipc call bar status index 0) == visible ]]; then
+        printf '// bar: reveal\n' >"$override"
+    else
+        printf '// bar: hide\n' >"$override"
+    fi
+{{- end }}
+    cat >>"$override" <<'KDL'
 layout {
     struts {
         left 50
@@ -22,20 +48,7 @@ layout {
 }
 KDL
 {{- if lookPath "dms" }}
-    dms ipc call bar hide index 0 > /dev/null
+    dms ipc call bar hide index 0 >/dev/null
 {{- end }}
-fi
-
-niri msg action load-config-file
-
-if [[ ! -s $override ]]; then
-    col=$(niri msg -j focused-window | jq -r '.layout.pos_in_scrolling_layout[0] // empty')
-    if [[ -n $col ]]; then
-        if ((col == 1)); then
-            niri msg action focus-column-last
-        else
-            niri msg action focus-column-first
-        fi
-        niri msg action focus-column "$col"
-    fi
+    niri msg action load-config-file
 fi

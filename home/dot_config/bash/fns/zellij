@@ -1,0 +1,8 @@
+# Alt+Shift+d: rename this pane to "dev" and open claude below it in $PWD
+if [[ -n $ZELLIJ ]]; then
+  zdev() {
+    zellij action rename-pane -p "$ZELLIJ_PANE_ID" dev
+    zellij run -d down -n claude --cwd "$PWD" -- claude >/dev/null
+  }
+  [[ $- == *i* ]] && bind -x '"\eD": zdev'
+fi

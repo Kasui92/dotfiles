@@ -137,13 +137,6 @@ keybinds clear-defaults=true {
         bind "Alt Shift l" { MovePane "Right"; }
         bind "Alt p" { TogglePaneInGroup; }
         bind "Alt Shift p" { ToggleGroupMarking; }
-        // Rename the focused pane to "dev", open claude below it in the same cwd and name that pane "claude"
-        bind "Alt d" {
-            SwitchToMode "RenamePane"; PaneNameInput 0; PaneNameInput 100 101 118;
-            Run "claude" { direction "Down"; }
-            SwitchToMode "RenamePane"; PaneNameInput 0; PaneNameInput 99 108 97 117 100 101;
-            SwitchToMode "Locked";
-        }
     }
     // Alt hjkl moves across zellij panes and neovim splits (zellij-nav.nvim handles the nvim side)
     shared {

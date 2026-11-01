@@ -7,7 +7,9 @@ override="${XDG_CONFIG_HOME:-$HOME/.config}/niri/config/struts.kdl"
 
 if [[ -s $override ]]; then
     : >"$override"
-    if command -v dms &> /dev/null; then dms ipc call bar reveal index 0 > /dev/null; fi
+{{- if lookPath "dms" }}
+    dms ipc call bar reveal index 0 > /dev/null
+{{- end }}
 else
     cat >"$override" <<'KDL'
 layout {
@@ -19,7 +21,9 @@ layout {
     }
 }
 KDL
-    if command -v dms &> /dev/null; then dms ipc call bar hide index 0 > /dev/null; fi
+{{- if lookPath "dms" }}
+    dms ipc call bar hide index 0 > /dev/null
+{{- end }}
 fi
 
 niri msg action load-config-file

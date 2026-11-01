@@ -145,40 +145,40 @@ keybinds clear-defaults=true {
             SwitchToMode "Locked";
         }
     }
-    // Ctrl hjkl moves across zellij panes and neovim splits (zellij-nav.nvim handles the nvim side)
+    // Alt hjkl moves across zellij panes and neovim splits (zellij-nav.nvim handles the nvim side)
     shared {
-        bind "Ctrl h" {
+        bind "Alt h" {
             MessagePlugin "https://github.com/hiasr/vim-zellij-navigator/releases/download/0.3.0/vim-zellij-navigator.wasm" {
                 name "move_focus_or_tab";
                 payload "left";
-                move_mod "ctrl";
+                move_mod "alt";
                 use_arrow_keys "false";
                 floating true;
             };
         }
-        bind "Ctrl j" {
+        bind "Alt j" {
             MessagePlugin "https://github.com/hiasr/vim-zellij-navigator/releases/download/0.3.0/vim-zellij-navigator.wasm" {
                 name "move_focus";
                 payload "down";
-                move_mod "ctrl";
+                move_mod "alt";
                 use_arrow_keys "false";
                 floating true;
             };
         }
-        bind "Ctrl k" {
+        bind "Alt k" {
             MessagePlugin "https://github.com/hiasr/vim-zellij-navigator/releases/download/0.3.0/vim-zellij-navigator.wasm" {
                 name "move_focus";
                 payload "up";
-                move_mod "ctrl";
+                move_mod "alt";
                 use_arrow_keys "false";
                 floating true;
             };
         }
-        bind "Ctrl l" {
+        bind "Alt l" {
             MessagePlugin "https://github.com/hiasr/vim-zellij-navigator/releases/download/0.3.0/vim-zellij-navigator.wasm" {
                 name "move_focus_or_tab";
                 payload "right";
-                move_mod "ctrl";
+                move_mod "alt";
                 use_arrow_keys "false";
                 floating true;
             };

@@ -114,6 +114,9 @@ keybinds clear-defaults=true {
     shared {
         bind "Alt n" { NewPane; }
         bind "Alt Shift n" { NewPane "Down"; }
+        bind "Alt f" { ToggleFloatingPanes; }
+        bind "Alt Shift f" { TogglePaneEmbedOrFloating; }
+        bind "Alt z" { ToggleFocusFullscreen; }
         bind "Alt t" { NewTab; }
         bind "Alt x" { CloseFocus; }
         bind "Alt Shift x" { CloseTab; }

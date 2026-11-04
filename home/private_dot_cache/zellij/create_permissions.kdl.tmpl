@@ -1,10 +1,20 @@
-"{{ .chezmoi.homeDir }}/.config/zellij/plugins/zjstatus.wasm" {
+{{- $plugins := printf "%s/.config/zellij/plugins" .chezmoi.homeDir -}}
+"{{ $plugins }}/zjstatus.wasm" {
     ReadApplicationState
     ChangeApplicationState
     RunCommands
 }
-"https://github.com/hiasr/vim-zellij-navigator/releases/download/0.3.0/vim-zellij-navigator.wasm" {
+"{{ $plugins }}/vim-zellij-navigator.wasm" {
     ReadApplicationState
     WriteToStdin
     ChangeApplicationState
+}
+"{{ $plugins }}/zellij-forgot.wasm" {
+    ReadApplicationState
+    ChangeApplicationState
+}
+"{{ $plugins }}/zellij-sessionizer.wasm" {
+    ReadApplicationState
+    ChangeApplicationState
+    RunCommands
 }

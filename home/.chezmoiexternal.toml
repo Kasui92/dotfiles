@@ -1,3 +1,15 @@
 [".config/zellij/plugins/zjstatus.wasm"]
     type = "file"
     url = "https://github.com/dj95/zjstatus/releases/download/v0.25.0/zjstatus.wasm"
+
+[".config/zellij/plugins/vim-zellij-navigator.wasm"]
+    type = "file"
+    url = "https://github.com/hiasr/vim-zellij-navigator/releases/download/0.3.0/vim-zellij-navigator.wasm"
+
+[".config/zellij/plugins/zellij-forgot.wasm"]
+    type = "file"
+    url = "https://github.com/karimould/zellij-forgot/releases/download/0.4.2/zellij_forgot.wasm"
+
+[".config/zellij/plugins/zellij-sessionizer.wasm"]
+    type = "file"
+    url = "https://github.com/laperlej/zellij-sessionizer/releases/download/v0.5.0/zellij-sessionizer.wasm"

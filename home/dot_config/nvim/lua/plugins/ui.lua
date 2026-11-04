@@ -5,6 +5,14 @@ return {
     priority = 1000,
     opts = {
       styles = { transparency = true },
+      -- Tabline colors matching the zjstatus tabs
+      highlight_groups = {
+        TabLine = { fg = "text", bg = "overlay" },
+        TabLineEdge = { fg = "overlay", bg = "NONE" },
+        TabLineSel = { fg = "base", bg = "iris", bold = true },
+        TabLineSelEdge = { fg = "iris", bg = "NONE" },
+        TabLineFill = { bg = "NONE" },
+      },
     },
   },
   { "folke/tokyonight.nvim", enabled = false },

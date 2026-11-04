@@ -14,7 +14,30 @@ return {
   -- No file tree: oil and the picker instead
   {
     "folke/snacks.nvim",
-    opts = { explorer = { enabled = false } },
+    opts = {
+      explorer = { enabled = false },
+      -- Toggles moved off the keys zellij binds (Alt h/f/p/r, Ctrl g)
+      picker = {
+        win = {
+          input = {
+            keys = {
+              ["<a-.>"] = { "toggle_hidden", mode = { "i", "n" } },
+              ["<a-s>"] = { "toggle_follow", mode = { "i", "n" } },
+              ["<a-v>"] = { "toggle_preview", mode = { "i", "n" } },
+              ["<a-e>"] = { "toggle_regex", mode = { "i", "n" } },
+              ["<c-l>"] = { "toggle_live", mode = { "i", "n" } },
+            },
+          },
+          list = {
+            keys = {
+              ["<a-.>"] = "toggle_hidden",
+              ["<a-s>"] = "toggle_follow",
+              ["<a-v>"] = "toggle_preview",
+            },
+          },
+        },
+      },
+    },
     keys = {
       { "<leader>e", false },
       { "<leader>E", false },

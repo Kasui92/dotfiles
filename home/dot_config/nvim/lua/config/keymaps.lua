@@ -33,3 +33,14 @@ map("x", "<leader>yc", function()
   vim.api.nvim_feedkeys(vim.keycode("<Esc>"), "n", false)
   vim.notify(("Yanked %d lines as code block"):format(last - first + 1), vim.log.levels.INFO)
 end, { desc = "Yank as code block" })
+
+-- Floating zellij pane in the project root or cwd
+if vim.env.ZELLIJ then
+  local zellij = require("config.zellij")
+  map("n", "<leader>fz", function()
+    zellij.float(LazyVim.root())
+  end, { desc = "Zellij float (Root Dir)" })
+  map("n", "<leader>fZ", function()
+    zellij.float(vim.fn.getcwd())
+  end, { desc = "Zellij float (cwd)" })
+end

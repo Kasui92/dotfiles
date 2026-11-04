@@ -1,6 +1,5 @@
 [user]
 email = "Kasui92@noreply.codeberg.org"
-signingkey = BF7A52A31D240D4C935F1E9EC882A8FE60255731
 
 [commit]
 gpgsign = true

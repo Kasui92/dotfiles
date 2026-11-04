@@ -1,0 +1,76 @@
+# Bitwarden CLI: SSH keys, GPG keys and passphrases
+if command -v bw &> /dev/null; then
+  # Import the armored secret key $1 if missing from the keyring, then preset passphrase $2 on all its keygrips
+  _bwu_gpg() {
+    local fpr grip ok=1
+    fpr=$(gpg --batch --with-colons --import-options show-only --import <<< "$1" 2> /dev/null | awk -F: '$1 == "fpr" { print $10; exit }')
+    [[ -n $fpr ]] || return 1
+
+    if ! gpg --no-auto-check-trustdb --list-secret-keys "$fpr" &> /dev/null; then
+      gpg --batch --import <<< "$1" 2> /dev/null || return 1
+      echo "$fpr:6:" | gpg --import-ownertrust 2> /dev/null
+      imported=$((imported + 1))
+    fi
+
+    [[ -n $2 ]] || return 0
+    while IFS= read -r grip; do
+      printf '%s' "$2" | "$(gpgconf --list-dirs libexecdir)/gpg-preset-passphrase" --preset "$grip" || ok=0
+    done < <(gpg --no-auto-check-trustdb --list-secret-keys --with-colons --with-keygrip "$fpr" 2> /dev/null | awk -F: '$1 == "grp" { print $10 }')
+    (( ok )) && preset=$((preset + 1))
+  }
+
+  # Unlock the vault, load SSH keys, import GPG keys and preset their passphrases, then lock it again
+  bwu() {
+    local -x BW_SESSION=${BW_SESSION:-}
+    local items item key relock=0 ssh=0 notes=0 imported=0 preset=0 ttl=12h
+
+    if [[ -z $BW_SESSION ]] || ! bw unlock --check &> /dev/null; then
+      if ! BW_SESSION=$(bw unlock --raw); then
+        bw login --check &> /dev/null && return 1
+        BW_SESSION=$(bw login --raw) || return 1
+      fi
+      relock=1
+    fi
+
+    if ! items=$(bw list items); then
+      (( relock )) && bw lock > /dev/null
+      return 1
+    fi
+
+    # Sync the local cache for the next run, then lock, in the background
+    (( relock )) && ( (bw sync && bw lock) &> /dev/null & )
+
+    while IFS= read -r key; do
+      base64 -d <<< "$key" | ssh-add -q -t "$ttl" - && ssh=$((ssh + 1))
+    done < <(jq -r '.[] | select(.type == 5) | .sshKey.privateKey | @base64' <<< "$items")
+
+    # Secure notes named gpg-*: notes = armored secret key, hidden field "passphrase"
+    while IFS= read -r item; do
+      notes=$((notes + 1))
+      _bwu_gpg "$(jq -r '.notes // empty' <<< "$item")" \
+        "$(jq -r 'first(.fields[]? | select(.name == "passphrase") | .value) // empty' <<< "$item")" ||
+        echo "bwu: $(jq -r .name <<< "$item"): not a valid GPG secret key" >&2
+    done < <(jq -c '.[] | select(.name | startswith("gpg-"))' <<< "$items")
+
+    if (( ssh == 0 )); then
+      echo "bwu: no SSH keys in the vault" >&2
+    else
+      echo "bwu: $ssh SSH key(s) loaded for $ttl"
+    fi
+    if (( notes == 0 )); then
+      echo "bwu: no gpg-* items in the vault, commit signing has no keys" >&2
+    else
+      echo "bwu: $notes GPG key(s), $imported imported, $preset passphrase(s) preset"
+    fi
+    (( ssh > 0 ))
+  }
+
+  # Lock the vault and clear the SSH agent and GPG passphrase cache
+  bwl() {
+    ssh-add -D &> /dev/null
+    gpg-connect-agent reloadagent /bye > /dev/null
+    bw lock > /dev/null
+    unset BW_SESSION
+    echo "bwl: vault locked, SSH agent and GPG cache cleared"
+  }
+fi

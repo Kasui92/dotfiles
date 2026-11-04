@@ -34,6 +34,13 @@ map("x", "<leader>yc", function()
   vim.notify(("Yanked %d lines as code block"):format(last - first + 1), vim.log.levels.INFO)
 end, { desc = "Yank as code block" })
 
+-- Tabpage keys with the same letters as the zellij Alt tab keys
+map("n", "<leader><tab>t", "<cmd>tabnew<cr>", { desc = "New Tab" })
+map("n", "<leader><tab>x", "<cmd>tabclose<cr>", { desc = "Close Tab" })
+for i = 1, 9 do
+  map("n", "<leader><tab>" .. i, "<cmd>tabnext " .. i .. "<cr>", { desc = "Tab " .. i })
+end
+
 -- Floating zellij pane in the project root or cwd
 if vim.env.ZELLIJ then
   local zellij = require("config.zellij")

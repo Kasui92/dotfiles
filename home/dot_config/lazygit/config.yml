@@ -1,0 +1,6 @@
+git:
+  # Cycle with |
+  diffRenderers:
+    - command: delta --{{colorScheme}} --paging=never
+    - command: delta --{{colorScheme}} --paging=never --side-by-side --width={{width}}
+      name: delta side-by-side

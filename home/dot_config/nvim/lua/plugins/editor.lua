@@ -10,4 +10,42 @@ return {
     },
     opts = {},
   },
+
+  -- Edit the filesystem as a buffer
+  {
+    "stevearc/oil.nvim",
+    cmd = "Oil",
+    keys = {
+      {
+        "-",
+        function()
+          require("oil").open_float(nil, { preview = {} })
+        end,
+        desc = "Oil (parent dir)",
+      },
+    },
+    opts = {
+      columns = { "icon" },
+      keymaps = {
+        ["h"] = { "actions.parent", mode = "n" },
+        ["q"] = { "actions.close", mode = "n" },
+      },
+      view_options = { show_hidden = true },
+      float = { max_width = 160 },
+      preview_win = { update_on_cursor_moved = true },
+      -- Renames and moves update imports through the LSP
+      lsp_file_methods = { enabled = true, timeout_ms = 1000, autosave_changes = true },
+    },
+  },
+
+  -- Side-by-side git diff with a file explorer and history
+  {
+    "esmuellert/codediff.nvim",
+    cmd = "CodeDiff",
+    keys = {
+      { "<leader>gv", "<cmd>CodeDiff<cr>", desc = "CodeDiff (changes)" },
+      { "<leader>gV", "<cmd>CodeDiff history %<cr>", desc = "CodeDiff (file history)" },
+    },
+    opts = {},
+  },
 }

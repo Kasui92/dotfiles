@@ -43,4 +43,10 @@ if vim.env.ZELLIJ then
   map("n", "<leader>fZ", function()
     zellij.float(vim.fn.getcwd())
   end, { desc = "Zellij float (cwd)" })
+
+  -- Alt hjkl navigate in insert mode too; visual keeps moving lines
+  map("i", "<M-h>", "<cmd>ZellijNavigateLeftTab<cr>", { desc = "Navigate left or tab" })
+  map("i", "<M-j>", "<cmd>ZellijNavigateDown<cr>", { desc = "Navigate down" })
+  map("i", "<M-k>", "<cmd>ZellijNavigateUp<cr>", { desc = "Navigate up" })
+  map("i", "<M-l>", "<cmd>ZellijNavigateRightTab<cr>", { desc = "Navigate right or tab" })
 end

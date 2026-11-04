@@ -11,10 +11,23 @@ return {
     opts = {},
   },
 
+  -- No file tree: oil and the picker instead
+  {
+    "folke/snacks.nvim",
+    opts = { explorer = { enabled = false } },
+    keys = {
+      { "<leader>e", false },
+      { "<leader>E", false },
+      { "<leader>fe", false },
+      { "<leader>fE", false },
+    },
+  },
+
   -- Edit the filesystem as a buffer
   {
     "stevearc/oil.nvim",
-    cmd = "Oil",
+    -- Loaded at startup so `nvim <dir>` opens oil
+    lazy = false,
     keys = {
       {
         "-",
@@ -22,6 +35,20 @@ return {
           require("oil").open_float(nil, { preview = {} })
         end,
         desc = "Oil (parent dir)",
+      },
+      {
+        "<leader>e",
+        function()
+          require("oil").open_float(LazyVim.root(), { preview = {} })
+        end,
+        desc = "Oil (root dir)",
+      },
+      {
+        "<leader>E",
+        function()
+          require("oil").open_float(vim.fn.getcwd(), { preview = {} })
+        end,
+        desc = "Oil (cwd)",
       },
     },
     opts = {

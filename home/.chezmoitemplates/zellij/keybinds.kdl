@@ -18,10 +18,6 @@ keybinds clear-defaults=true {
         bind "-" { Resize "Decrease"; }
     }
     pane {
-        bind "h" "Left" { MoveFocus "Left"; }
-        bind "l" "Right" { MoveFocus "Right"; }
-        bind "j" "Down" { MoveFocus "Down"; }
-        bind "k" "Up" { MoveFocus "Up"; }
         bind "r" { NewPane "Right"; SwitchToMode "Locked"; }
         bind "Shift f" { ToggleFocusNoUiFullscreen; SwitchToMode "Locked"; }
         bind "z" { TogglePaneFrames; SwitchToMode "Locked"; }

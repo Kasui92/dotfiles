@@ -13,17 +13,15 @@ zjstatus location="file:{{ .chezmoi.homeDir }}/.config/zellij/plugins/zjstatus.w
     border_format   "#[fg=black]{char}"
     border_position "bottom"
 
-    tab_normal    "#[fg=black]#[fg=white,bg=black] {name}{fullscreen_indicator}{floating_indicator}{sync_indicator} #[fg=black]"
-    tab_active    "#[fg=magenta]#[fg=black,bg=magenta,bold] {name}{fullscreen_indicator}{floating_indicator}{sync_indicator} #[fg=magenta]"
+    tab_normal    "#[fg=black]#[fg=white,bg=black] {name}{fullscreen_indicator}{floating_indicator} #[fg=black]"
+    tab_active    "#[fg=magenta]#[fg=black,bg=magenta,bold] {name}{fullscreen_indicator}{floating_indicator} #[fg=magenta]"
     tab_separator " "
     tab_fullscreen_indicator " □"
     tab_floating_indicator   " 󰉈"
-    tab_sync_indicator       " "
 
     mode_locked       "#[fg=blue,bold]LOCKED"
     mode_normal       "#[fg=green,bold]NORMAL"
     mode_pane         "#[fg=magenta,bold]PANE"
-    mode_tab          "#[fg=cyan,bold]TAB"
     mode_resize       "#[fg=red,bold]RESIZE"
     mode_scroll       "#[fg=yellow,bold]SCROLL"
     mode_enter_search "#[fg=green,bold]SEARCH"
@@ -31,6 +29,4 @@ zjstatus location="file:{{ .chezmoi.homeDir }}/.config/zellij/plugins/zjstatus.w
     mode_rename_tab   "#[fg=cyan,bold]RENAME"
     mode_rename_pane  "#[fg=magenta,bold]RENAME"
     mode_session      "#[fg=blue,bold]SESSION"
-    mode_tmux         "#[fg=yellow,bold]TMUX"
-    mode_prompt       "#[fg=green,bold]PROMPT"
 }

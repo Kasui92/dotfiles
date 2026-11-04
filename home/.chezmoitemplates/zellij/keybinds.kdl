@@ -66,16 +66,41 @@ keybinds clear-defaults=true {
     session {
         bind "d" { Detach; }
     }
-    // Direct shortcuts, available in every mode including Locked
+    // Direct shortcuts, available in every mode including Locked: the letter picks the object, Shift the wider variant
     shared {
+        // Focus across zellij panes and neovim splits (zellij-nav.nvim handles the nvim side), Shift moves the pane
+        bind "Alt h" {
+            MessagePlugin "vim-nav" { name "move_focus_or_tab"; payload "left"; move_mod "alt"; use_arrow_keys "false"; floating true; };
+        }
+        bind "Alt j" {
+            MessagePlugin "vim-nav" { name "move_focus"; payload "down"; move_mod "alt"; use_arrow_keys "false"; floating true; };
+        }
+        bind "Alt k" {
+            MessagePlugin "vim-nav" { name "move_focus"; payload "up"; move_mod "alt"; use_arrow_keys "false"; floating true; };
+        }
+        bind "Alt l" {
+            MessagePlugin "vim-nav" { name "move_focus_or_tab"; payload "right"; move_mod "alt"; use_arrow_keys "false"; floating true; };
+        }
+        bind "Alt Shift h" { MovePane "Left"; }
+        bind "Alt Shift j" { MovePane "Down"; }
+        bind "Alt Shift k" { MovePane "Up"; }
+        bind "Alt Shift l" { MovePane "Right"; }
+
+        // Panes
         bind "Alt n" { NewPane; }
         bind "Alt Shift n" { NewPane "Down"; }
+        bind "Alt x" { CloseFocus; }
+        bind "Alt Shift x" { CloseTab; }
         bind "Alt f" { ToggleFloatingPanes; }
         bind "Alt Shift f" { TogglePaneEmbedOrFloating; }
         bind "Alt z" { ToggleFocusFullscreen; }
+        bind "Alt p" { TogglePaneInGroup; }
+        bind "Alt Shift p" { ToggleGroupMarking; }
+        bind "Alt =" "Alt +" { Resize "Increase"; }
+        bind "Alt -" { Resize "Decrease"; }
+
+        // Tabs
         bind "Alt t" { NewTab; }
-        bind "Alt x" { CloseFocus; }
-        bind "Alt Shift x" { CloseTab; }
         bind "Alt r" { SwitchToMode "RenameTab"; TabNameInput 0; }
         bind "Alt [" { GoToPreviousTab; }
         bind "Alt ]" { GoToNextTab; }
@@ -88,54 +113,12 @@ keybinds clear-defaults=true {
         bind "Alt 7" { GoToTab 7; }
         bind "Alt 8" { GoToTab 8; }
         bind "Alt 9" { GoToTab 9; }
-        bind "Alt =" "Alt +" { Resize "Increase"; }
-        bind "Alt -" { Resize "Decrease"; }
-        bind "Alt Shift s" { NextSwapLayout; }
-        bind "Alt Shift h" { MovePane "Left"; }
-        bind "Alt Shift j" { MovePane "Down"; }
-        bind "Alt Shift k" { MovePane "Up"; }
-        bind "Alt Shift l" { MovePane "Right"; }
-        bind "Alt p" { TogglePaneInGroup; }
-        bind "Alt Shift p" { ToggleGroupMarking; }
-    }
-    // Alt hjkl moves across zellij panes and neovim splits (zellij-nav.nvim handles the nvim side)
-    shared {
-        bind "Alt h" {
-            MessagePlugin "https://github.com/hiasr/vim-zellij-navigator/releases/download/0.3.0/vim-zellij-navigator.wasm" {
-                name "move_focus_or_tab";
-                payload "left";
-                move_mod "alt";
-                use_arrow_keys "false";
-                floating true;
-            };
-        }
-        bind "Alt j" {
-            MessagePlugin "https://github.com/hiasr/vim-zellij-navigator/releases/download/0.3.0/vim-zellij-navigator.wasm" {
-                name "move_focus";
-                payload "down";
-                move_mod "alt";
-                use_arrow_keys "false";
-                floating true;
-            };
-        }
-        bind "Alt k" {
-            MessagePlugin "https://github.com/hiasr/vim-zellij-navigator/releases/download/0.3.0/vim-zellij-navigator.wasm" {
-                name "move_focus";
-                payload "up";
-                move_mod "alt";
-                use_arrow_keys "false";
-                floating true;
-            };
-        }
-        bind "Alt l" {
-            MessagePlugin "https://github.com/hiasr/vim-zellij-navigator/releases/download/0.3.0/vim-zellij-navigator.wasm" {
-                name "move_focus_or_tab";
-                payload "right";
-                move_mod "alt";
-                use_arrow_keys "false";
-                floating true;
-            };
-        }
+
+        // Layout, sessions, help
+        bind "Alt Space" { NextSwapLayout; }
+        bind "Alt o" { LaunchOrFocusPlugin "sessionizer" { floating true; move_to_focused_tab true; }; }
+        bind "Alt Shift o" { LaunchOrFocusPlugin "zellij:session-manager" { floating true; move_to_focused_tab true; }; }
+        bind "Alt /" "Alt ?" { LaunchOrFocusPlugin "forgot" { floating true; }; }
     }
     shared_except "locked" {
         bind "Ctrl g" { SwitchToMode "Locked"; }

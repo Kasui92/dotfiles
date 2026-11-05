@@ -1,5 +1,4 @@
 vim.opt.relativenumber = false
-vim.g.autoformat = false
 vim.o.winborder = "rounded"
 
 -- Tabpages instead of a buffer line, shown only with 2+ tabs

@@ -71,6 +71,12 @@ return {
       opts.servers.tailwindcss = opts.servers.tailwindcss or {}
       opts.servers.tailwindcss.filetypes_exclude = { "markdown", "php" }
 
+      opts.servers.cssls = {}
+      opts.servers.html = {}
+      opts.servers.emmet_language_server = {
+        filetypes = { "html", "css", "scss", "php", "astro", "javascriptreact", "typescriptreact" },
+      }
+
       -- Show which tool and rule raised each diagnostic
       opts.diagnostics.virtual_text.source = false
       opts.diagnostics.virtual_text.format = function(d)

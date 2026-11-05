@@ -11,6 +11,21 @@ return {
     opts = {},
   },
 
+  -- Function signature while typing the arguments
+  {
+    "saghen/blink.cmp",
+    opts = { signature = { enabled = true } },
+  },
+
+  -- Quotes become backticks when typing ${
+  {
+    "axelvc/template-string.nvim",
+    ft = { "javascript", "typescript", "javascriptreact", "typescriptreact", "astro" },
+    opts = {
+      filetypes = { "javascript", "typescript", "javascriptreact", "typescriptreact", "astro" },
+    },
+  },
+
   -- No file tree: oil and the picker instead
   {
     "folke/snacks.nvim",

@@ -77,6 +77,17 @@ return {
         filetypes = { "html", "css", "scss", "php", "astro", "javascriptreact", "typescriptreact" },
       }
 
+      -- Root at the oxlint config, oxlint.config.mts included
+      opts.servers.oxlint = opts.servers.oxlint or {}
+      opts.servers.oxlint.root_dir = function(bufnr, on_dir)
+        local markers = { ".oxlintrc.json", ".oxlintrc.jsonc", "oxlint.config.ts", "oxlint.config.mts" }
+        local git = vim.fs.root(bufnr, ".git")
+        local root = git and vim.fs.root(git, markers) or vim.fs.root(bufnr, markers)
+        if root then
+          on_dir(root)
+        end
+      end
+
       -- Show which tool and rule raised each diagnostic
       opts.diagnostics.virtual_text.source = false
       opts.diagnostics.virtual_text.format = function(d)

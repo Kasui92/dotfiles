@@ -95,12 +95,33 @@ return {
         ["h"] = { "actions.parent", mode = "n" },
         ["q"] = { "actions.close", mode = "n" },
       },
-      view_options = { show_hidden = true },
+      view_options = {
+        show_hidden = true,
+        is_always_hidden = function(name)
+          return name == ".."
+        end,
+      },
       float = { max_width = 160 },
       preview_win = { update_on_cursor_moved = true },
       -- Renames and moves update imports through the LSP
       lsp_file_methods = { enabled = true, timeout_ms = 1000, autosave_changes = true },
     },
+    config = function(_, opts)
+      require("oil").setup(opts)
+      -- Closes the preview of a closed oil float
+      vim.api.nvim_create_autocmd("WinClosed", {
+        callback = function(args)
+          local closed = tonumber(args.match)
+          for _, win in ipairs(vim.api.nvim_list_wins()) do
+            if vim.w[win].oil_preview and vim.w[win].oil_source_win == closed then
+              vim.schedule(function()
+                pcall(vim.api.nvim_win_close, win, true)
+              end)
+            end
+          end
+        end,
+      })
+    end,
   },
 
   -- Side-by-side git diff with a file explorer and history

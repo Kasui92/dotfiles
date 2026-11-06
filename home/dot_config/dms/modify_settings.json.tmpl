@@ -61,6 +61,26 @@ jq --arg theme {{ printf "%s/.config/dms/themes/rosePine/theme.json" .chezmoi.ho
     ]
     | .notificationCompactMode = true
     | .dankLauncherV2ShowFooter = false
+    | .muxType = "zellij"
+    | .density = "dense"
+    | .blurBorderEnabled = true
+    | .builtInPluginSettings = ((.builtInPluginSettings // {}) * {
+        dms_settings_search: {trigger: "?"},
+        dms_clipboard_search: {trigger: "cb"},
+        dms_power: {trigger: "pw"},
+        dms_qr_generator: {trigger: "qrg"},
+        dms_settings: {enabled: false},
+        dms_notepad: {enabled: false},
+        dms_sysmon: {enabled: false},
+        dms_colorpicker: {enabled: false}
+    })
+    | .launcherPluginVisibility = ((.launcherPluginVisibility // {}) * {
+        dms_power: {allowWithoutTrigger: false},
+        dms_vpn: {allowWithoutTrigger: false},
+        dms_qr_generator: {allowWithoutTrigger: false},
+        dms_settings_search: {allowWithoutTrigger: false},
+        dms_clipboard_search: {allowWithoutTrigger: false}
+    })
     | .barConfigs = ((.barConfigs // [{
         id: "default",
         name: "Main Bar",

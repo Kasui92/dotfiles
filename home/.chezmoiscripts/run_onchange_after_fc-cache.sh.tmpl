@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Rebuilds the user font cache when a managed font changes
+# kasui92-tab-caps.ttf: {{ include "dot_local/private_share/fonts/kasui92-tab-caps.ttf" | sha256sum }}
+set -euo pipefail
+fc-cache -f "$HOME/.local/share/fonts"

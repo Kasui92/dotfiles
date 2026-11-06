@@ -15,13 +15,13 @@ local function label(tabnr)
   return (" %s%s %s "):format(modified, icon, name)
 end
 
--- Rounded pill per tab, like the zjstatus tabs
+-- Tab with the rounded ends of the Kasui92 Tab Caps font, like the zjstatus tabs
 function M.render()
   local parts = {}
   local current = vim.fn.tabpagenr()
   for tabnr = 1, vim.fn.tabpagenr("$") do
     local hl = tabnr == current and "TabLineSel" or "TabLine"
-    parts[#parts + 1] = ("%%%dT%%#%sEdge#\u{e0b6}%%#%s#%s%%#%sEdge#\u{e0b4}"):format(tabnr, hl, hl, label(tabnr), hl)
+    parts[#parts + 1] = ("%%%dT%%#%sEdge#\u{100000}%%#%s#%s%%#%sEdge#\u{100001}"):format(tabnr, hl, hl, label(tabnr), hl)
   end
   return table.concat(parts, "%#TabLineFill# ") .. "%#TabLineFill#%T"
 end

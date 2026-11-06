@@ -35,6 +35,9 @@ end
 
 -- Shows the tab's claude float, or starts one in the project root connected to this nvim
 function M.claude(args)
+  if not vim.env.ZELLIJ then
+    return vim.notify("Claude opens in a zellij floating pane: not inside zellij", vim.log.levels.WARN)
+  end
   local id = claude_pane()
   if id then
     action({ "show-floating-panes" }):wait()
@@ -48,7 +51,7 @@ function M.claude(args)
   end
   cmd[#cmd + 1] = "claude"
   vim.list_extend(cmd, args or {})
-  M.float(LazyVim.root(), cmd, {
+  M.float(Kasui92.root(), cmd, {
     "--name",
     "claude",
     "--close-on-exit",

@@ -1,0 +1,104 @@
+require("blink.cmp").setup({
+  keymap = { preset = "enter", ["<C-y>"] = { "select_and_accept" } },
+  completion = {
+    accept = { auto_brackets = { enabled = true } },
+    menu = { draw = { treesitter = { "lsp" } } },
+    documentation = { auto_show = true, auto_show_delay_ms = 200 },
+  },
+  -- Function signature while typing the arguments
+  signature = { enabled = true },
+  cmdline = {
+    keymap = { preset = "cmdline", ["<Right>"] = false, ["<Left>"] = false },
+    completion = {
+      list = { selection = { preselect = false } },
+      menu = {
+        auto_show = function()
+          return vim.fn.getcmdtype() == ":"
+        end,
+      },
+    },
+  },
+})
+
+require("mini.pairs").setup({ modes = { insert = true, command = true, terminal = false } })
+require("nvim-ts-autotag").setup()
+
+-- Quotes become backticks when typing ${
+require("template-string").setup({
+  filetypes = { "javascript", "typescript", "javascriptreact", "typescriptreact", "astro" },
+})
+
+require("gitsigns").setup()
+
+-- Side-by-side git diff with a file explorer and history
+require("codediff").setup({})
+
+-- eslint fixes before conform formats
+vim.api.nvim_create_autocmd("BufWritePre", {
+  group = vim.api.nvim_create_augroup("kasui92_eslint_fix", { clear = true }),
+  callback = function(ev)
+    if Kasui92.format.enabled(ev.buf) and #vim.lsp.get_clients({ bufnr = ev.buf, name = "eslint" }) > 0 then
+      pcall(vim.cmd, "LspEslintFixAll")
+    end
+  end,
+})
+
+-- oxfmt where the project has an oxfmt config, prettier where it has a prettier config, otherwise nothing
+local js = { "oxfmt", "prettier", stop_after_first = true }
+require("conform").setup({
+  default_format_opts = { lsp_format = "never" },
+  formatters_by_ft = {
+    javascript = js,
+    javascriptreact = js,
+    typescript = js,
+    typescriptreact = js,
+    astro = js,
+    json = js,
+    jsonc = js,
+    css = { "prettier" },
+    scss = { "prettier" },
+    html = { "prettier" },
+    yaml = { "prettier" },
+    markdown = { "prettier", "markdown-toc" },
+    ["markdown.mdx"] = { "prettier", "markdown-toc" },
+    lua = { "stylua" },
+    sh = { "shfmt" },
+  },
+  formatters = {
+    oxfmt = {
+      require_cwd = true,
+      cwd = require("conform.util").root_file({
+        ".oxfmtrc.json",
+        ".oxfmtrc.jsonc",
+        "oxfmt.config.ts",
+        "oxfmt.config.mts",
+      }),
+    },
+    prettier = { condition = Kasui92.format.prettier_has_config },
+    -- Only files with a <!-- toc --> marker
+    ["markdown-toc"] = {
+      condition = function(_, ctx)
+        for _, line in ipairs(vim.api.nvim_buf_get_lines(ctx.buf, 0, -1, false)) do
+          if line:find("<!%-%- toc %-%->") then
+            return true
+          end
+        end
+        return false
+      end,
+    },
+  },
+  format_on_save = function(bufnr)
+    if Kasui92.format.enabled(bufnr) then
+      return { timeout_ms = 3000 }
+    end
+  end,
+})
+
+local lint = require("lint")
+lint.linters_by_ft = { dockerfile = { "hadolint" } }
+vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost", "InsertLeave" }, {
+  group = vim.api.nvim_create_augroup("kasui92_lint", { clear = true }),
+  callback = function()
+    lint.try_lint()
+  end,
+})

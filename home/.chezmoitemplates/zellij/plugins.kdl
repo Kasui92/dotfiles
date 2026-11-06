@@ -44,7 +44,7 @@ plugins {
     sessionizer location="{{ $plugins }}/zellij-sessionizer.wasm" {
         cwd "/"
         root_dirs "{{ .chezmoi.homeDir }}/Work/projects"
-        individual_dirs "{{ .chezmoi.homeDir }}/.local/share/chezmoi"
+        individual_dirs "{{ .chezmoi.homeDir }}/.local/share/chezmoi;{{ .chezmoi.homeDir }}"
         session_layout "{{ .chezmoi.homeDir }}/.config/zellij/layouts/default.kdl"
     }
 }

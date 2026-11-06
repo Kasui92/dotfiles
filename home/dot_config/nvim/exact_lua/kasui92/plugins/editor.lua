@@ -28,6 +28,15 @@ require("template-string").setup({
   filetypes = { "javascript", "typescript", "javascriptreact", "typescriptreact", "astro" },
 })
 
+-- gc with the comment syntax of the language at the cursor (JSX, Astro, Vue)
+require("ts-comments").setup()
+
+-- TODO, FIXME, HACK, NOTE... highlighted and searchable
+require("todo-comments").setup()
+
+-- Project-wide search and replace with preview
+require("grug-far").setup({ headerMaxWidth = 80 })
+
 require("gitsigns").setup()
 
 -- Side-by-side git diff with a file explorer and history

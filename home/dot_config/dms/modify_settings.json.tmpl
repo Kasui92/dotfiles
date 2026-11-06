@@ -21,9 +21,10 @@ jq --arg theme {{ printf "%s/.config/dms/themes/rosePine/theme.json" .chezmoi.ho
     | .currentThemeCategory = "registry"
     | .customThemeFile = $theme
     | .registryThemeVariants.rosePine = "rosePine"
-    | .radiusStrength = 38
+    | .radiusStrength = 20
     | .niriLayoutGapsOverride = 8
-    | .niriLayoutRadiusOverride = 16
+    # Window radius follows radiusStrength
+    | .niriLayoutRadiusOverride = -1
     | .clockFormat = "24h"
     | .barElevationEnabled = false
     | .blurWallpaperOnOverview = true
@@ -40,12 +41,9 @@ jq --arg theme {{ printf "%s/.config/dms/themes/rosePine/theme.json" .chezmoi.ho
         {id: "notifications", enabled: false}
     ]
     | .dashTabsEvenlySpaced = false
-    | .dashOptions = {overview: {panelRows: 4, panelColumns: 5}, weather: {city: true}}
-    | .dashCards = [
-        {id: "clock", col: 0, row: 0, w: 3, h: 1},
-        {id: "weather", col: 3, row: 0, w: 2, h: 1},
-        {id: "calendar", col: 0, row: 1, w: 5, h: 3}
-    ]
+    | .dashOptions.overview = {panelRows: 4, panelColumns: 5}
+    | .dashOptions.weather.city = true
+    | .dashCards = [{id: "calendar", col: 0, row: 0, w: 5, h: 4}]
     | .controlCenterWidgets = [
         {id: "user", enabled: true, col: 0, row: 0, w: 4, h: 1, background: true, compositor: false, hostname: false},
         {id: "settings", enabled: true, col: 5, row: 0, w: 1, h: 1, small: true},
@@ -83,19 +81,28 @@ jq --arg theme {{ printf "%s/.config/dms/themes/rosePine/theme.json" .chezmoi.ho
                 id: "workspaceSwitcher",
                 enabled: true,
                 showWorkspaceIndex: true,
-                workspaceIndicatorStyle: "pills",
+                workspaceIndicatorStyle: "dots",
                 workspaceIndicatorCompact: false,
                 workspaceIndicatorRoundness: -1
             },
             {id: "music", enabled: true}
         ],
-        centerWidgets: ["clock", "weather"],
+        centerWidgets: [
+            {id: "notificationButton", enabled: true},
+            {
+                id: "clock",
+                enabled: true,
+                clockCompactMode: true,
+                clockNotificationBadge: false,
+                clockDateOrder: "dateFirst"
+            },
+            {id: "weather", enabled: true}
+        ],
         rightWidgets: ([
             {id: "systemTray", enabled: true},
             {id: "cpuUsage", enabled: true},
-            {id: "memUsage", enabled: true},
-            {id: "notificationButton", enabled: true}
-        ] + (if $multiLayout then [{
+            {id: "memUsage", enabled: true}
+        ] +(if $multiLayout then [{
             id: "keyboard_layout_name",
             enabled: true,
             keyboardLayoutNameShowIcon: false,
@@ -104,7 +111,14 @@ jq --arg theme {{ printf "%s/.config/dms/themes/rosePine/theme.json" .chezmoi.ho
                 "English (US, intl., with dead keys)": "EN"
             }
         }] else [] end) + [
-            {id: "battery", enabled: true},
+            {
+                id: "battery",
+                enabled: true,
+                showBatteryPercent: false,
+                showBatteryTime: false,
+                showBatteryPowerCharging: false,
+                batteryStyle: "icon"
+            },
             {
                 id: "controlCenterButton",
                 enabled: true,

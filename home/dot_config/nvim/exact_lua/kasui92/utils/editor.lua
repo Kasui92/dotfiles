@@ -30,4 +30,22 @@ function M.yank_code_block()
   vim.notify(("Yanked %d lines as code block"):format(last - first + 1), vim.log.levels.INFO)
 end
 
+-- package.json of the project root in a float, q closes it
+function M.open_package_json()
+  local path = Kasui92.root() .. "/package.json"
+  if vim.fn.filereadable(path) == 0 then
+    return vim.notify("No package.json in " .. Kasui92.root(), vim.log.levels.WARN)
+  end
+  Snacks.win({
+    file = path,
+    width = 0.8,
+    height = 0.8,
+    title = " package.json ",
+    title_pos = "center",
+    border = true,
+    wo = { cursorline = true, number = true },
+    keys = { q = "close" },
+  })
+end
+
 return M

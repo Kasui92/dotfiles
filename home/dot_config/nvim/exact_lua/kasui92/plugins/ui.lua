@@ -58,6 +58,52 @@ require("snacks").setup({
     lazygit = { border = true },
     terminal = { border = true },
   },
+  gitbrowse = {
+    url_patterns = {
+      -- Self-hosted GitLab instances
+      ["gitlab%."] = {
+        branch = "/-/tree/{branch}",
+        file = "/-/blob/{branch}/{file}#L{line_start}-{line_end}",
+        permalink = "/-/blob/{commit}/{file}#L{line_start}-{line_end}",
+        commit = "/-/commit/{commit}",
+      },
+      ["codeberg%.org"] = {
+        branch = "/src/branch/{branch}",
+        file = "/src/branch/{branch}/{file}#L{line_start}-L{line_end}",
+        permalink = "/src/commit/{commit}/{file}#L{line_start}-L{line_end}",
+        commit = "/commit/{commit}",
+      },
+    },
+  },
+})
+
+-- File name at the top right of each window
+require("incline").setup({
+  window = { margin = { vertical = 0, horizontal = 1 }, zindex = 10 },
+  hide = { cursorline = "smart" },
+  render = function(props)
+    local name = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ":t")
+    if name == "" then
+      name = "[No Name]"
+    end
+    if vim.bo[props.buf].modified then
+      name = "[+] " .. name
+    end
+    local icon, hl = MiniIcons.get("file", name)
+    return { { icon, group = hl }, { " " }, { name } }
+  end,
+})
+
+-- Colors behind #hex, rgb(), hsl(), CSS variables and Tailwind classes, in any file
+vim.lsp.document_color.enable(false)
+require("nvim-highlight-colors").setup({
+  render = "background",
+  enable_hex = true,
+  enable_short_hex = true,
+  enable_rgb = true,
+  enable_hsl = true,
+  enable_var_usage = true,
+  enable_tailwind = true,
 })
 
 require("lualine").setup({

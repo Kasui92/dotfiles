@@ -6,6 +6,7 @@ wk.add({
   { "<leader>c", group = "code" },
   { "<leader>d", group = "diff" },
   { "<leader>g", group = "git" },
+  { "<leader>q", group = "session" },
   { "<leader>u", group = "toggle" },
   { "<leader>y", group = "yank" },
   { "<leader><tab>", group = "tabs" },

@@ -37,7 +37,18 @@ require("todo-comments").setup()
 -- Project-wide search and replace with preview
 require("grug-far").setup({ headerMaxWidth = 80 })
 
-require("gitsigns").setup()
+-- ys/cs/ds add, change or delete quotes, brackets and tags around text
+require("nvim-surround").setup()
+
+-- a/i text objects for arguments, calls, tags, quotes and brackets
+require("mini.ai").setup({ n_lines = 500 })
+
+-- Session per cwd, saved on exit
+require("persistence").setup()
+
+-- Change signs, hunk navigation (]h [h) and overlay; gitsigns keeps blame and stage
+require("mini.diff").setup()
+require("gitsigns").setup({ signcolumn = false })
 
 -- Side-by-side git diff with a file explorer and history
 require("codediff").setup({})

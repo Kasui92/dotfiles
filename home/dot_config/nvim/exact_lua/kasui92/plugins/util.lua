@@ -4,7 +4,21 @@ require("oil").setup({
   keymaps = {
     ["h"] = { "actions.parent", mode = "n" },
     ["l"] = { "actions.select", mode = "n" },
-    ["q"] = { "actions.close", mode = "n" },
+    -- No-op when oil is the only buffer
+    ["q"] = {
+      callback = function()
+        local orig = vim.w.oil_original_buffer
+        if
+          vim.w.is_oil_win
+          or (orig and vim.api.nvim_buf_is_valid(orig))
+          or #vim.fn.getbufinfo({ buflisted = 1 }) > 1
+        then
+          require("oil").close()
+        end
+      end,
+      mode = "n",
+      desc = "Close oil",
+    },
   },
   view_options = {
     show_hidden = true,

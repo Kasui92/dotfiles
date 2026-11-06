@@ -105,6 +105,13 @@ keybinds clear-defaults=true {
         // Tabs
         bind "Alt t" { NewTab; }
         bind "Alt r" { SwitchToMode "RenameTab"; TabNameInput 0; }
+        // Session name asked in a one-row floating pane
+        bind "Alt Shift r" {
+            Run "bash" "-c" r#"read -rp 'Session name: ' n && [ -n "$n" ] && zellij action rename-session "$n""# {
+                floating true; close_on_exit true; name "rename session";
+                width "40"; height "3"; x "30%"; y "40%";
+            };
+        }
         bind "Alt [" { GoToPreviousTab; }
         bind "Alt ]" { GoToNextTab; }
         bind "Alt Shift [" "Alt {" { MoveTab "Left"; }

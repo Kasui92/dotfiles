@@ -22,6 +22,11 @@ plugins {
         tab_fullscreen_indicator " □"
         tab_floating_indicator   " 󰉈"
 
+        // Tabs that do not fit scroll around the active one, keeping format_right visible
+        tab_fit_width "true"
+        tab_truncate_start_format "#[fg=bright_black]‹{count} "
+        tab_truncate_end_format   "#[fg=bright_black] {count}›"
+
         mode_locked       "#[fg=blue,bold]LOCKED"
         mode_normal       "#[fg=green,bold]NORMAL"
         mode_pane         "#[fg=magenta,bold]PANE"

@@ -1,6 +1,6 @@
 [".config/zellij/plugins/zjstatus.wasm"]
     type = "file"
-    url = "https://github.com/dj95/zjstatus/releases/download/v0.25.0/zjstatus.wasm"
+    url = "https://github.com/Kasui92/zjstatus/releases/download/v0.25.0-kasui.1/zjstatus.wasm"
 
 [".config/zellij/plugins/vim-zellij-navigator.wasm"]
     type = "file"

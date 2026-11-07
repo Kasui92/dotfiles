@@ -1,0 +1,10 @@
+# Claude Code: after exit, set the pane title to the tab name, which zjstatus shows in place of the cleared title
+if [[ -n $ZELLIJ ]] && command -v claude &> /dev/null && command -v jq &> /dev/null; then
+  claude() {
+    local rc
+    command claude "$@"
+    rc=$?
+    printf '\e]2;%s\a' "$(zellij action current-tab-info -j 2> /dev/null | jq -r '.name // empty')"
+    return $rc
+  }
+fi

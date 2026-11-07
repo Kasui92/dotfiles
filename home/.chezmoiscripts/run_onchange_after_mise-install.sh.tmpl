@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Installs the mise tools when the mise config changes
+# config.toml: {{ include "dot_config/mise/config.toml" | sha256sum }}
+set -euo pipefail
+mise=$(command -v mise || echo "$HOME/.local/bin/mise")
+[[ -x $mise ]] || exit 0
+"$mise" install --yes

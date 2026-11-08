@@ -19,6 +19,7 @@
 
 {{ if not (lookPath "dms") }}
 .config/dms
+.config/systemd/user/dms.service.d
 .local/state/dms
 {{ end }}
 

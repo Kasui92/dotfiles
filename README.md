@@ -4,6 +4,11 @@
 
 My personal dotfiles are managed entirely through [chezmoi](https://www.chezmoi.io).
 
+## System overrides
+
+- `~/.config/systemd/user`: `localsearch-3.service` masked, DMS service environment.
+- `~/.config/autostart`: GNOME keyring SSH agent, MATE polkit agent and print applet disabled.
+
 ## Machine-local configuration
 
 These files are ignored by chezmoi and optional. Create them only where needed.

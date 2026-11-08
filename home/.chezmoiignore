@@ -22,6 +22,10 @@
 .local/state/dms
 {{ end }}
 
+{{ if not (lookPath "btop") }}
+.config/btop
+{{ end }}
+
 {{ if not (lookPath "claude") }}
 .claude
 {{ end }}

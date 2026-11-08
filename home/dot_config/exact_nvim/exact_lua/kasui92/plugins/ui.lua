@@ -77,6 +77,9 @@ require("snacks").setup({
   },
 })
 
+-- Popup with the next keys after a prefix
+require("which-key").setup({ preset = "helix" })
+
 -- File name at the top right of each window
 require("incline").setup({
   window = { margin = { vertical = 0, horizontal = 1 }, zindex = 10 },

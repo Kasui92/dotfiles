@@ -1,5 +1,18 @@
 local map = vim.keymap.set
 
+require("which-key").add({
+  { "<leader>a", group = "ai" },
+  { "<leader>c", group = "code" },
+  { "<leader>d", group = "diff" },
+  { "<leader>g", group = "git" },
+  { "<leader>q", group = "session" },
+  { "<leader>u", group = "toggle" },
+  { "<leader>y", group = "yank" },
+  { "<leader><tab>", group = "tabs" },
+  { ";", group = "pick" },
+  { "s", group = "split/oil" },
+})
+
 -- Oil
 map("n", "sf", function()
   require("oil").open_float(nil, { preview = {} })

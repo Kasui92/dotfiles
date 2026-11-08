@@ -64,6 +64,8 @@ jq --arg theme {{ printf "%s/.config/dms/themes/rosePine/theme.json" .chezmoi.ho
     | .muxType = "zellij"
     | .density = "dense"
     | .blurBorderEnabled = true
+    | .centeringMode = "geometric"
+    | .audioVisualizerEnabled = false
     | .builtInPluginSettings = ((.builtInPluginSettings // {}) * {
         dms_settings_search: {trigger: "?"},
         dms_clipboard_search: {trigger: "cb"},
@@ -105,7 +107,16 @@ jq --arg theme {{ printf "%s/.config/dms/themes/rosePine/theme.json" .chezmoi.ho
                 workspaceIndicatorCompact: false,
                 workspaceIndicatorRoundness: -1
             },
-            {id: "music", enabled: true}
+            {
+                id: "music",
+                enabled: true,
+                mediaShowLyrics: false,
+                mediaShowCoverArt: true,
+                mediaAdaptiveWidthEnabled: true,
+                mediaStyle: "controls",
+                mediaSize: 1,
+                audioScrollMode: "nothing"
+            }
         ],
         centerWidgets: [
             {id: "notificationButton", enabled: true},

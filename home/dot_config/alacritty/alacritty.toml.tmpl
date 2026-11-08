@@ -6,7 +6,7 @@ import = [ "~/.config/alacritty/themes/rose-pine.toml" ]
 TERM = "xterm-256color"
 
 [terminal]
-osc52 = "CopyPaste"
+osc52 = "OnlyCopy"
 {{ if $zellij }}
 [terminal.shell]
 program = {{ $zellij | quote }}
@@ -32,6 +32,6 @@ bindings = [
 { key = "Insert", mods = "Control", action = "Copy" },
 # Send Shift+Return as CSI-u so TUIs can distinguish it from Return without treating it as Alt+Return.
 { key = "Return", mods = "Shift", chars = "\u001B[13;2u" },
-# Legacy encoding sends Alt+Shift+Return the same as Alt+Return; send CSI-u so tmux can match M-S-Enter.
+# Legacy encoding sends Alt+Shift+Return the same as Alt+Return; send CSI-u so TUIs can match it.
 { key = "Return", mods = "Alt|Shift", chars = "\u001B[13;4u" }
 ]

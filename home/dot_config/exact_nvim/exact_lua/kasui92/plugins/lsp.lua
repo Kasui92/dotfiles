@@ -65,7 +65,6 @@ vim.lsp.config("tailwindcss", {
 -- Each diagnostic shows the tool and rule that raised it
 vim.diagnostic.config({
   severity_sort = true,
-  update_in_insert = false,
   float = { source = true },
   signs = {
     text = {

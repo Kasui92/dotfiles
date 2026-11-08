@@ -1,9 +1,9 @@
 ---@type vim.lsp.Config
 return {
   settings = {
-    json = {
-      schemas = require("schemastore").json.schemas(),
-      validate = { enable = true },
-    },
+    json = { validate = { enable = true } },
   },
+  before_init = function(_, config)
+    config.settings.json.schemas = require("schemastore").json.schemas()
+  end,
 }

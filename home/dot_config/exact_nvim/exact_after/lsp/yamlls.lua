@@ -7,7 +7,9 @@ return {
       validate = true,
       -- Schemas from SchemaStore.nvim instead of the built-in download
       schemaStore = { enable = false, url = "" },
-      schemas = require("schemastore").yaml.schemas(),
     },
   },
+  before_init = function(_, config)
+    config.settings.yaml.schemas = require("schemastore").yaml.schemas()
+  end,
 }

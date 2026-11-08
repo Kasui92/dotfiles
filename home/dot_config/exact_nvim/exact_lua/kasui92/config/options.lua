@@ -36,7 +36,6 @@ opt.confirm = true
 -- Search
 opt.ignorecase = true
 opt.smartcase = true
-opt.inccommand = "nosplit"
 opt.grepprg = "rg --vimgrep"
 opt.grepformat = "%f:%l:%c:%m"
 opt.wildmode = "longest:full,full"

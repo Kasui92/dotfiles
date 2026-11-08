@@ -50,9 +50,6 @@ require("persistence").setup()
 require("mini.diff").setup()
 require("gitsigns").setup({ signcolumn = false })
 
--- Side-by-side git diff with a file explorer and history
-require("codediff").setup({})
-
 -- eslint fixes before conform formats
 vim.api.nvim_create_autocmd("BufWritePre", {
   group = vim.api.nvim_create_augroup("kasui92_eslint_fix", { clear = true }),

@@ -9,12 +9,6 @@ window-rule {
     opacity 0.90
 }
 
-// Work around WezTerm's initial configure bug.
-window-rule {
-    match app-id=r#"^org\.wezfurlong\.wezterm$"#
-    default-column-width {}
-}
-
 window-rule {
     match app-id=r#"^org\.gnome\."#
     draw-border-with-background false
@@ -54,11 +48,8 @@ window-rule {
 }
 
 window-rule {
-    match app-id=r#"^org\.wezfurlong\.wezterm$"#
     match app-id="Alacritty"
     match app-id="zen"
-    match app-id="com.mitchellh.ghostty"
-    match app-id="kitty"
     draw-border-with-background false
 }
 

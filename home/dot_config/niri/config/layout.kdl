@@ -14,13 +14,6 @@ layout {
         off
     }
 
-    shadow {
-        softness 30
-        spread 5
-        offset x=0 y=5
-        color "#0007"
-    }
-
     struts {
         left 2
         right 2

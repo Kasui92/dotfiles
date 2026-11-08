@@ -14,6 +14,7 @@ include "config/binds.kdl"
 {{- if lookPath "dms" }}
 // Local integration first, followed by files managed by DMS.
 include "dms/general.kdl"
+include "dms/input.kdl"
 include "dms/colors.kdl"
 include "dms/layout.kdl"
 include "dms/alttab.kdl"
@@ -22,6 +23,7 @@ include "dms/binds.kdl"
 include optional=true "dms/outputs.kdl"
 include optional=true "dms/cursor.kdl"
 include "dms/windowrules.kdl"
+include "dms/wpblur.kdl"
 {{- end }}
 
 // Runtime struts override written by niri-toggle-struts; keep it last.

@@ -4,6 +4,13 @@
 
 My personal dotfiles are managed entirely through [chezmoi](https://www.chezmoi.io).
 
+## Requirements
+
+- `jq`: the `modify_` scripts for the DMS, DMS session and Claude Code settings need it.
+- [mise](https://mise.jdx.dev): node, delta and rust, installed on apply when its config changes.
+- [Bitwarden CLI](https://bitwarden.com/help/cli/) (`bw`): SSH and GPG keys, see [Bitwarden](#bitwarden).
+- Optional: `niri`, `dms`, `btop`, `claude`. Their config is applied only where they are installed.
+
 ## System overrides
 
 - `~/.config/systemd/user`: `localsearch-3.service` masked, DMS service environment.

@@ -1,29 +1,14 @@
-# ~/.profile: executed by the command interpreter for login shells.
-# This file is not read by bash(1), if ~/.bash_profile or ~/.bash_login
-# exists.
-# see /usr/share/doc/bash/examples/startup-files for examples.
-# the files are located in the bash-doc package.
+# Login shells: PATH and editor, then .bashrc
 
-# the default umask is set in /etc/profile; for setting the umask
-# for ssh logins, install and configure the libpam-umask package.
-#umask 022
-
-# set PATH so it includes user's private bin if it exists
-if [ -d "$HOME/bin" ] ; then
-    PATH="$HOME/bin:$PATH"
-fi
-
-# set PATH so it includes user's private bin if it exists
-if [ -d "$HOME/.local/bin" ] ; then
+if [ -d "$HOME/.local/bin" ]; then
     PATH="$HOME/.local/bin:$PATH"
 fi
 
 # mise shims for login and graphical sessions
-if [ -d "$HOME/.local/share/mise/shims" ] ; then
+if [ -d "$HOME/.local/share/mise/shims" ]; then
     PATH="$HOME/.local/share/mise/shims:$PATH"
 fi
 
-# export PATH
 export PATH
 
 # Editor used by CLI and graphical apps
@@ -31,9 +16,6 @@ export EDITOR="nvim"
 export SUDO_EDITOR="$EDITOR"
 
 # if running bash, include .bashrc last so it sees the full PATH
-if [ -n "$BASH_VERSION" ]; then
-    # include .bashrc if it exists
-    if [ -f "$HOME/.bashrc" ]; then
-	. "$HOME/.bashrc"
-    fi
+if [ -n "$BASH_VERSION" ] && [ -f "$HOME/.bashrc" ]; then
+    . "$HOME/.bashrc"
 fi

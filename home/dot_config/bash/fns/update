@@ -6,12 +6,8 @@ update-system() {
   fi
 
   sudo apt-get update
-  sudo apt-get -y upgrade
-  sudo apt-get -y dist-upgrade
-
-  if (( $(sudo apt-get -s autoremove 2>/dev/null | grep 'The following packages will be REMOVED:' | wc -l) > 0 )); then
-    sudo apt-get -y autoremove
-  fi
+  sudo apt-get -y full-upgrade
+  sudo apt-get -y autoremove
 }
 
 # Update firmware function

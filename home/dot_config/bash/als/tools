@@ -7,7 +7,9 @@ alias dv='docker volume ls'
 alias dn='docker network ls'
 alias dsa='docker stop $(docker ps -q)'
 
-alias lzd='lazydocker'
+if command -v lazydocker &> /dev/null; then
+  alias lzd='lazydocker'
+fi
 
 # Git
 alias g='git'
@@ -17,7 +19,9 @@ alias gcad='git commit -a --amend'
 alias gf='git fetch'
 alias gfp='git fetch --prune'
 
-alias gl='glab'
+if command -v glab &> /dev/null; then
+  alias gl='glab'
+fi
 alias lzg='lazygit'
 
 # Chezmoi

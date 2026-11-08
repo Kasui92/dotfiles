@@ -1,8 +1,10 @@
 # VS Code
-c() {
-  if (( $# )); then cd "$1" || return; fi
-  code .
-}
+if command -v code &> /dev/null; then
+  c() {
+    if (( $# )); then cd "$1" || return; fi
+    code .
+  }
+fi
 
 # Neovim
 n() {

@@ -1,6 +1,4 @@
 # Prompt configuration: segments are computed by __prompt before each prompt
-force_color_prompt=yes
-color_prompt=yes
 
 # SSH user (e.g. ssh:(localuser@remotehost))
 _ps_ssh=

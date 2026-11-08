@@ -1,4 +1,4 @@
-require("nvim-treesitter").install({
+local parsers = {
   "astro",
   "bash",
   "css",
@@ -30,7 +30,23 @@ require("nvim-treesitter").install({
   "vimdoc",
   "xml",
   "yaml",
-})
+}
+
+-- Parsers compile with the tree-sitter CLI, which mason installs on first start
+local function has_cli()
+  return vim.fn.executable("tree-sitter") == 1
+end
+if has_cli() then
+  require("nvim-treesitter").install(parsers)
+else
+  vim.api.nvim_create_autocmd("User", {
+    pattern = "MasonToolsUpdateCompleted",
+    once = true,
+    callback = function()
+      require("nvim-treesitter").install(parsers)
+    end,
+  })
+end
 
 local available
 
@@ -49,7 +65,7 @@ vim.api.nvim_create_autocmd("FileType", {
   group = vim.api.nvim_create_augroup("kasui92_treesitter", { clear = true }),
   callback = function(ev)
     local lang = vim.treesitter.language.get_lang(ev.match)
-    if not lang or start(ev.buf, lang) then
+    if not lang or start(ev.buf, lang) or not has_cli() then
       return
     end
     available = available or require("nvim-treesitter").get_available()

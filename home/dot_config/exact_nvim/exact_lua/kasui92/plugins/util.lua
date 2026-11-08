@@ -52,4 +52,4 @@ vim.api.nvim_create_autocmd("WinClosed", {
 require("zellij-nav").setup({})
 
 -- Claude runs in a zellij floating pane (Alt f hides it), connected through the env set by Kasui92.zellij
-require("claudecode").setup({ terminal = { provider = "none" } })
+require("claudecode").setup({ log_level = "warn", terminal = { provider = "none" } })

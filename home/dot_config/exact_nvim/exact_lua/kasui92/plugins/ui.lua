@@ -37,6 +37,7 @@ require("snacks").setup({
     sources = {
       files = { hidden = true },
       grep = { hidden = true },
+      explorer = { hidden = true },
     },
     -- Toggles moved off the keys zellij binds (Alt h/f/p/r, Ctrl g)
     win = {

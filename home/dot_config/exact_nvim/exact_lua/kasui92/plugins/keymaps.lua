@@ -21,6 +21,14 @@ map("n", "sF", function()
   require("oil").open_float(Kasui92.root(), { preview = {} })
 end, { desc = "Oil (project root)" })
 
+-- Explorer
+map("n", "<leader>e", function()
+  Snacks.explorer({ cwd = Kasui92.root() })
+end, { desc = "Explorer (project root)" })
+map("n", "<leader>E", function()
+  Snacks.explorer()
+end, { desc = "Explorer (cwd)" })
+
 -- Pickers
 map("n", ";f", Snacks.picker.files, { desc = "Find files" })
 map("n", ";r", Snacks.picker.grep, { desc = "Live grep" })

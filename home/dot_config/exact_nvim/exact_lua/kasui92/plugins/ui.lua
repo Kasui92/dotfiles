@@ -47,6 +47,7 @@ require("snacks").setup({
           ["<a-v>"] = { "toggle_preview", mode = { "i", "n" } },
           ["<a-e>"] = { "toggle_regex", mode = { "i", "n" } },
           ["<c-l>"] = { "toggle_live", mode = { "i", "n" } },
+          ["<c-cr>"] = { "tab", mode = { "i", "n" } },
         },
       },
       list = {
@@ -54,6 +55,7 @@ require("snacks").setup({
           ["<a-.>"] = "toggle_hidden",
           ["<a-s>"] = "toggle_follow",
           ["<a-v>"] = "toggle_preview",
+          ["<c-cr>"] = "tab",
         },
       },
     },

@@ -5,4 +5,5 @@ layout {
         }
         children
     }
+    tab name="shell"
 }

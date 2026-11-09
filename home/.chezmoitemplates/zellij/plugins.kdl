@@ -16,8 +16,9 @@ plugins {
         format_precedence "lrc"
 
         // Tab ends from the Kasui92 Tab Caps font (~/.local/share/fonts)
-        tab_normal    "#[fg=black]􀀀#[fg=white,bg=black] {name}{fullscreen_indicator}{floating_indicator} #[fg=black]􀀁"
-        tab_active    "#[fg=magenta]􀀀#[fg=black,bg=magenta,bold] {name}{fullscreen_indicator}{floating_indicator} #[fg=magenta]􀀁"
+        tab_normal    "#[fg=black]􀀀#[fg=white,bg=black] {index}: {name}{fullscreen_indicator}{floating_indicator} #[fg=black]􀀁"
+        tab_active    "#[fg=magenta]􀀀#[fg=black,bg=magenta,bold] {index}: {name}{fullscreen_indicator}{floating_indicator} #[fg=magenta]􀀁"
+        tab_rename    "#[fg=magenta]􀀀#[fg=black,bg=magenta,bold] {index}: {name}{fullscreen_indicator}{floating_indicator} #[fg=magenta]􀀁"
         tab_separator " "
         tab_fullscreen_indicator " □"
         tab_floating_indicator   " 󰉈"

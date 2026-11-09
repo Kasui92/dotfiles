@@ -103,7 +103,7 @@ keybinds clear-defaults=true {
         bind "Alt -" { Resize "Decrease"; }
 
         // Tabs
-        bind "Alt t" { NewTab; }
+        bind "Alt t" { NewTab { name "shell"; }; }
         bind "Alt r" { SwitchToMode "RenameTab"; TabNameInput 0; }
         // Session name asked in a one-row floating pane
         bind "Alt Shift r" {

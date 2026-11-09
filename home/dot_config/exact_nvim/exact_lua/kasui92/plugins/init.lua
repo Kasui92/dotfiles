@@ -60,6 +60,11 @@ vim.pack.add({
   gh("vuki656/package-info.nvim"),
 })
 
+-- Machine-local plugins, not managed by chezmoi
+if #vim.api.nvim_get_runtime_file("lua/kasui92/plugins/local.lua", false) > 0 then
+  require("kasui92.plugins.local")
+end
+
 require("kasui92.plugins.ui")
 require("kasui92.plugins.editor")
 require("kasui92.plugins.lsp")

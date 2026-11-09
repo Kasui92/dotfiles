@@ -1,20 +1,28 @@
+![Neovim](./images/neovim.png)
+
 # dotfiles
 
 > What are we, if not the sum of our dotfiles?
 
-My personal dotfiles are managed entirely through [chezmoi](https://www.chezmoi.io).
+My personal dotfiles, managed entirely through [chezmoi](https://www.chezmoi.io).
+Everything uses the [Rosé Pine](https://rosepinetheme.com) theme.
+
+## How it works
+
+- `home/` is the chezmoi source; the repo root only holds this README and its images.
+- Config for optional tools is applied only where the tool is installed.
+- SSH and GPG keys come from Bitwarden, never from the repo.
+- Machine-specific files are ignored, see [Machine-local configuration](#machine-local-configuration).
+- Also managed: `localsearch-3.service` masked, DMS service environment, three autostart entries disabled.
 
 ## Requirements
 
-- `jq`: the `modify_` scripts for the DMS, DMS session and Claude Code settings need it.
-- [mise](https://mise.jdx.dev): node, delta and rust, installed on apply when its config changes.
-- [Bitwarden CLI](https://bitwarden.com/help/cli/) (`bw`): SSH and GPG keys, see [Bitwarden](#bitwarden).
-- Optional: `niri`, `dms`, `btop`, `claude`. Their config is applied only where they are installed.
-
-## System overrides
-
-- `~/.config/systemd/user`: `localsearch-3.service` masked, DMS service environment.
-- `~/.config/autostart`: GNOME keyring SSH agent, MATE polkit agent and print applet disabled.
+- chezmoi, git, `jq` (for the `modify_` scripts)
+- [mise](https://mise.jdx.dev): installs node, delta and rust on apply
+- [Bitwarden CLI](https://bitwarden.com/help/cli/) (`bw`), see [Bitwarden](#bitwarden)
+- Neovim >= 0.12, a C compiler, ripgrep and fd; mason installs the language servers, formatters and the tree-sitter CLI on first start
+- A Nerd Font (Alacritty uses CaskaydiaMono)
+- Optional: niri, DMS, Alacritty, zellij, btop, lazygit, Claude Code; fzf, zoxide, eza and bat for bash
 
 ## Machine-local configuration
 
@@ -40,15 +48,13 @@ must have exactly one secret key.
 Other identities follow the same pattern from `~/.gitconfig`:
 
 ```gitconfig
+# ~/.gitconfig
 [includeIf "hasconfig:remote.*.url:git@example.com:*/**"]
     path = ~/.config/git/example.identity
-```
 
-```gitconfig
 # ~/.config/git/example.identity
 [user]
     email = user@example.com
-
 [commit]
     gpgsign = true
 ```

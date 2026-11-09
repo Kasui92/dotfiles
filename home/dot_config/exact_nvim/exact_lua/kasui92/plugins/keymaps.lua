@@ -189,6 +189,24 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+-- package.json dependencies
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+  group = vim.api.nvim_create_augroup("kasui92_package_info", { clear = true }),
+  pattern = "package.json",
+  callback = function(ev)
+    local function bmap(lhs, cmd, desc)
+      map("n", lhs, "<cmd>" .. cmd .. "<cr>", { buffer = ev.buf, desc = desc })
+    end
+    require("which-key").add({ { "<leader>n", group = "npm", buffer = ev.buf } })
+    bmap("<leader>nt", "PackageInfoToggle", "Toggle versions")
+    bmap("<leader>nr", "PackageInfoShowForce", "Refresh versions")
+    bmap("<leader>nu", "PackageInfoUpdate", "Update dependency")
+    bmap("<leader>nd", "PackageInfoDelete", "Delete dependency")
+    bmap("<leader>ni", "PackageInfoInstall", "Install dependency")
+    bmap("<leader>nc", "PackageInfoChangeVersion", "Change version")
+  end,
+})
+
 -- Zellij
 if vim.env.ZELLIJ then
   map("n", "<leader>z", function()

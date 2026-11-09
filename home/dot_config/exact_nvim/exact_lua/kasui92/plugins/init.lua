@@ -56,6 +56,8 @@ vim.pack.add({
   gh("swaits/zellij-nav.nvim"),
   gh("coder/claudecode.nvim"),
   gh("alker0/chezmoi.vim"),
+  gh("MunifTanjim/nui.nvim"),
+  gh("vuki656/package-info.nvim"),
 })
 
 require("kasui92.plugins.ui")

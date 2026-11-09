@@ -53,3 +53,6 @@ require("zellij-nav").setup({})
 
 -- Claude runs in a zellij floating pane (Alt f hides it), connected through the env set by Kasui92.zellij
 require("claudecode").setup({ log_level = "warn", terminal = { provider = "none" } })
+
+-- Latest dependency versions as virtual text in package.json
+require("package-info").setup()

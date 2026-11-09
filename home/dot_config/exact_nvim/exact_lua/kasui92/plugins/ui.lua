@@ -7,6 +7,10 @@ require("rose-pine").setup({
     TabLineSel = { fg = "base", bg = "iris", bold = true },
     TabLineSelEdge = { fg = "iris", bg = "NONE" },
     TabLineFill = { bg = "NONE" },
+    -- package-info.nvim virtual text
+    PackageInfoUpToDateVersion = { fg = "muted" },
+    PackageInfoOutdatedVersion = { fg = "gold" },
+    PackageInfoInErrorVersion = { fg = "love" },
   },
 })
 vim.cmd.colorscheme("rose-pine")

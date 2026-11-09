@@ -12,6 +12,8 @@ map("n", "<C-a>", "gg<S-v>G", { desc = "Select all" })
 -- New line without comment continuation
 map("n", "<leader>o", "o<Esc>^Da", { desc = "Line below (no comment)" })
 map("n", "<leader>O", "O<Esc>^Da", { desc = "Line above (no comment)" })
+map("n", "gco", "o<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>", { desc = "Comment line below" })
+map("n", "gcO", "O<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>", { desc = "Comment line above" })
 
 map({ "i", "x", "n", "s" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Save file" })
 map({ "i", "n", "s" }, "<esc>", function()

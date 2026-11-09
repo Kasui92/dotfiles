@@ -167,6 +167,7 @@ end, { desc = "Restore last session" })
 map("n", "<leader>qd", function()
   require("persistence").stop()
 end, { desc = "Don't save session on exit" })
+map("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit all" })
 
 -- Claude
 local function claude(args)

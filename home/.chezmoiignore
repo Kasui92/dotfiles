@@ -31,3 +31,7 @@
 {{ if not (lookPath "claude") }}
 .claude
 {{ end }}
+
+{{ if not (lookPath "zen") }}
+.config/zen
+{{ end }}

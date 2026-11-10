@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Links the shared user.js into every Zen profile
+# user.js: {{ include "dot_config/private_zen/user.js" | sha256sum }}
+set -euo pipefail
+zen="$HOME/.config/zen"
+[[ -f $zen/user.js ]] || exit 0
+for profile in "$zen"/*/; do
+  [[ -f $profile/prefs.js ]] || continue
+  ln -sfn "$zen/user.js" "$profile/user.js"
+done

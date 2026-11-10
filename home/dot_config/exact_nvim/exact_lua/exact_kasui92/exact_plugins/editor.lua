@@ -40,8 +40,21 @@ require("grug-far").setup({ headerMaxWidth = 80 })
 -- ys/cs/ds add, change or delete quotes, brackets and tags around text
 require("nvim-surround").setup()
 
--- a/i text objects for arguments, calls, tags, quotes and brackets
-require("mini.ai").setup({ n_lines = 500 })
+-- a/i text objects: f function, c class, o block/conditional/loop, u call, plus the
+-- mini.ai defaults (a argument, t tag, quotes and brackets)
+local ai = require("mini.ai")
+ai.setup({
+  n_lines = 500,
+  custom_textobjects = {
+    f = ai.gen_spec.treesitter({ a = "@function.outer", i = "@function.inner" }),
+    c = ai.gen_spec.treesitter({ a = "@class.outer", i = "@class.inner" }),
+    o = ai.gen_spec.treesitter({
+      a = { "@block.outer", "@conditional.outer", "@loop.outer" },
+      i = { "@block.inner", "@conditional.inner", "@loop.inner" },
+    }),
+    u = ai.gen_spec.function_call(),
+  },
+})
 
 -- Session per cwd, saved on exit
 require("persistence").setup()

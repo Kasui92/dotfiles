@@ -46,6 +46,7 @@ vim.pack.add({
   gh("stevearc/conform.nvim"),
   gh("mfussenegger/nvim-lint"),
   { src = gh("nvim-treesitter/nvim-treesitter"), version = "main" },
+  { src = gh("nvim-treesitter/nvim-treesitter-textobjects"), version = "main" },
   -- LSP
   gh("neovim/nvim-lspconfig"),
   gh("mason-org/mason.nvim"),

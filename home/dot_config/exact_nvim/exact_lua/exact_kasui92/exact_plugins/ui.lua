@@ -32,6 +32,8 @@ if not ok then
 end
 
 require("snacks").setup({
+  -- Big files without treesitter, LSP and other heavy features
+  bigfile = { enabled = true },
   indent = { enabled = true },
   input = { enabled = true },
   notifier = { enabled = true },

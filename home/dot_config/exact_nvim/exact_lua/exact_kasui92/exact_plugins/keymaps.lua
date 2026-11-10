@@ -2,6 +2,7 @@ local map = vim.keymap.set
 
 require("which-key").add({
   { "<leader>a", group = "ai" },
+  { "<leader>b", group = "buffer" },
   { "<leader>c", group = "code" },
   { "<leader>d", group = "diff" },
   { "<leader>g", group = "git" },
@@ -167,6 +168,7 @@ map("n", "<leader>dh", "<cmd>CodeDiff history %<cr>", { desc = "CodeDiff (file h
 map("n", "<leader>dH", "<cmd>CodeDiff history<cr>", { desc = "CodeDiff (repo history)" })
 
 map("n", "<leader>j", Kasui92.editor.open_package_json, { desc = "package.json" })
+map("n", "<leader>bd", Kasui92.editor.delete_hidden_buffers, { desc = "Delete hidden buffers" })
 
 -- Sessions (persistence)
 map("n", "<leader>qs", function()

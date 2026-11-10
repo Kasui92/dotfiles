@@ -2,20 +2,6 @@ local function augroup(name)
   return vim.api.nvim_create_augroup("kasui92_" .. name, { clear = true })
 end
 
--- Strip trailing whitespace on save, except in markdown and diff
-vim.api.nvim_create_autocmd("BufWritePre", {
-  group = augroup("trim_whitespace"),
-  callback = function(ev)
-    local ft = vim.bo[ev.buf].filetype
-    if not vim.bo[ev.buf].modifiable or ft == "diff" or ft:match("^markdown") then
-      return
-    end
-    local view = vim.fn.winsaveview()
-    vim.cmd([[keeppatterns silent! %s/\s\+$//e]])
-    vim.fn.winrestview(view)
-  end,
-})
-
 -- Reload files changed on disk, e.g. by claude in another pane
 vim.api.nvim_create_autocmd({ "FocusGained", "TermClose", "TermLeave" }, {
   group = augroup("checktime"),

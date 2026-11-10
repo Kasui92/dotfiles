@@ -18,13 +18,18 @@ vim.cmd.colorscheme("rose-pine")
 require("mini.icons").setup()
 MiniIcons.mock_nvim_web_devicons()
 
--- Cmdline and messages in floating windows, with cmdheight = 0
-require("vim._core.ui2").enable({
-  msg = {
-    target = "msg",
-    targets = { list_cmd = "pager", verbose = "pager", shell_out = "pager", shell_err = "pager" },
-  },
-})
+-- Cmdline and messages in floating windows, with cmdheight = 0; ui2 is an experimental core module
+local ok, err = pcall(function()
+  require("vim._core.ui2").enable({
+    msg = {
+      target = "msg",
+      targets = { list_cmd = "pager", verbose = "pager", shell_out = "pager", shell_err = "pager" },
+    },
+  })
+end)
+if not ok then
+  vim.notify("ui2: " .. err, vim.log.levels.WARN)
+end
 
 require("snacks").setup({
   indent = { enabled = true },

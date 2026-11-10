@@ -60,14 +60,19 @@ vim.pack.add({
   gh("vuki656/package-info.nvim"),
 })
 
--- Machine-local plugins, not managed by chezmoi
-if #vim.api.nvim_get_runtime_file("lua/kasui92/plugins/local.lua", false) > 0 then
-  require("kasui92.plugins.local")
+-- Each module loads on its own: an error is notified and the others still load
+local function load(name)
+  local ok, err = pcall(require, "kasui92.plugins." .. name)
+  if not ok then
+    vim.notify(("kasui92.plugins.%s: %s"):format(name, err), vim.log.levels.ERROR)
+  end
 end
 
-require("kasui92.plugins.ui")
-require("kasui92.plugins.editor")
-require("kasui92.plugins.lsp")
-require("kasui92.plugins.treesitter")
-require("kasui92.plugins.util")
-require("kasui92.plugins.keymaps")
+-- Machine-local plugins, not managed by chezmoi
+if #vim.api.nvim_get_runtime_file("lua/kasui92/plugins/local.lua", false) > 0 then
+  load("local")
+end
+
+for _, name in ipairs({ "ui", "editor", "lsp", "treesitter", "util", "keymaps" }) do
+  load(name)
+end

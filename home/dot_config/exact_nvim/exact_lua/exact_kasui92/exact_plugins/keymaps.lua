@@ -11,7 +11,7 @@ require("which-key").add({
   { "<leader>y", group = "yank" },
   { "<leader><tab>", group = "tabs" },
   { ";", group = "pick" },
-  { "s", group = "windows/explorer" },
+  { "s", group = "split/oil" },
 })
 
 -- Oil
@@ -21,14 +21,6 @@ end, { desc = "Oil (file dir)" })
 map("n", "sF", function()
   require("oil").open_float(Kasui92.root(), { preview = {} })
 end, { desc = "Oil (project root)" })
-
--- Explorer
-map("n", "se", function()
-  Snacks.explorer({ cwd = Kasui92.root() })
-end, { desc = "Explorer (project root)" })
-map("n", "sE", function()
-  Snacks.explorer()
-end, { desc = "Explorer (cwd)" })
 
 -- Pickers
 map("n", ";f", Snacks.picker.files, { desc = "Find files" })

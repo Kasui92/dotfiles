@@ -59,8 +59,8 @@ ai.setup({
 -- Session per cwd, saved on exit
 require("persistence").setup()
 
--- Change signs, hunk navigation (]h [h) and overlay; gitsigns keeps blame and stage
-require("mini.diff").setup()
+-- Change signs, hunk navigation (]c [c, like codediff) and overlay; gitsigns keeps blame and stage
+require("mini.diff").setup({ mappings = { goto_next = "]c", goto_prev = "[c" } })
 require("gitsigns").setup({ signcolumn = false })
 
 -- eslint fixes before conform formats

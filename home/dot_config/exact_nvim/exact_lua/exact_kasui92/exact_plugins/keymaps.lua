@@ -10,7 +10,7 @@ require("which-key").add({
   { "<leader>y", group = "yank" },
   { "<leader><tab>", group = "tabs" },
   { ";", group = "pick" },
-  { "s", group = "split/oil" },
+  { "s", group = "windows/explorer" },
 })
 
 -- Oil
@@ -22,10 +22,10 @@ map("n", "sF", function()
 end, { desc = "Oil (project root)" })
 
 -- Explorer
-map("n", "<leader>e", function()
+map("n", "se", function()
   Snacks.explorer({ cwd = Kasui92.root() })
 end, { desc = "Explorer (project root)" })
-map("n", "<leader>E", function()
+map("n", "sE", function()
   Snacks.explorer()
 end, { desc = "Explorer (cwd)" })
 

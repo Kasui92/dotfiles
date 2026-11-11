@@ -56,19 +56,9 @@ function M.claude(args)
   end
   cmd[#cmd + 1] = "claude"
   vim.list_extend(cmd, args or {})
-  local out = M.float(Kasui92.root(), cmd, {
-    "--name",
-    "claude",
-    "--close-on-exit",
-    "--width",
-    "80%",
-    "--height",
-    "80%",
-    "--x",
-    "10%",
-    "--y",
-    "10%",
-  }):wait().stdout or ""
+  local opts =
+    { "--name", "claude", "--close-on-exit", "--width", "80%", "--height", "80%", "--x", "10%", "--y", "10%" }
+  local out = M.float(Kasui92.root(), cmd, opts):wait().stdout or ""
   claude_id = out:match("terminal_%d+")
 end
 

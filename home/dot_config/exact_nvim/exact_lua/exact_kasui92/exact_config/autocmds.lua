@@ -12,6 +12,18 @@ vim.api.nvim_create_autocmd({ "FocusGained", "TermClose", "TermLeave" }, {
   end,
 })
 
+-- Cd into the directory given as the only argument
+local arg_dir = vim.fn.argc() == 1 and vim.fn.fnamemodify(vim.fn.argv(0), ":p")
+if arg_dir and vim.fn.isdirectory(arg_dir) == 1 then
+  vim.api.nvim_create_autocmd("VimEnter", {
+    group = augroup("cd_arg_dir"),
+    once = true,
+    callback = function()
+      vim.cmd.cd(arg_dir)
+    end,
+  })
+end
+
 vim.api.nvim_create_autocmd("TextYankPost", {
   group = augroup("highlight_yank"),
   callback = function()

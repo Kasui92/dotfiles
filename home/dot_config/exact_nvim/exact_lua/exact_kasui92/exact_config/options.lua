@@ -32,6 +32,7 @@ opt.smartindent = true
 opt.virtualedit = "block"
 opt.completeopt = "menu,menuone,noselect"
 opt.confirm = true
+opt.spelllang = { "it", "en" }
 
 -- Search
 opt.ignorecase = true

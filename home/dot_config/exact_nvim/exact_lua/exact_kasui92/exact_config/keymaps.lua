@@ -55,3 +55,6 @@ end, { desc = "Toggle autoformat (buffer)" })
 map("n", "<leader>uh", function()
   vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = 0 }), { bufnr = 0 })
 end, { desc = "Toggle inlay hints" })
+map("n", "<leader>us", function()
+  vim.wo.spell = not vim.wo.spell
+end, { desc = "Toggle spelling" })

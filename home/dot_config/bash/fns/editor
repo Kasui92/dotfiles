@@ -1,13 +1,11 @@
+# Open the given files or directories, the current directory without arguments
+
 # VS Code
 if command -v code &> /dev/null; then
-  c() {
-    if (( $# )); then cd "$1" || return; fi
-    code .
-  }
+  c() { code "${@:-.}"; }
 fi
 
 # Neovim
-n() {
-  if (( $# )); then cd "$1" || return; fi
-  command nvim .
-}
+if command -v nvim &> /dev/null; then
+  n() { command nvim "${@:-.}"; }
+fi

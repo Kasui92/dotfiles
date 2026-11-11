@@ -89,6 +89,9 @@ for _, lhs in ipairs({ "grn", "grr", "gri", "gra", "grt", "grx" }) do
   pcall(vim.keymap.del, { "n", "x" }, lhs)
 end
 map("n", "gd", Snacks.picker.lsp_definitions, { desc = "Goto definition" })
+map("n", "<C-w>gd", function()
+  Snacks.picker.lsp_definitions({ confirm = { action = "jump", cmd = "tab" } })
+end, { desc = "Goto definition in new tab" })
 map("n", "gD", Snacks.picker.lsp_declarations, { desc = "Goto declaration" })
 map("n", "gy", Snacks.picker.lsp_type_definitions, { desc = "Goto type definition" })
 map("n", "gr", Snacks.picker.lsp_references, { desc = "References" })

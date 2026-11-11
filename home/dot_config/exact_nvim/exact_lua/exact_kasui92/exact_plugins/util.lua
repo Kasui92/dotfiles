@@ -51,8 +51,28 @@ vim.api.nvim_create_autocmd("WinClosed", {
 -- Alt hjkl across nvim splits and zellij panes
 require("zellij-nav").setup({})
 
--- Claude runs in a zellij floating pane (Alt f hides it), connected through the env set by Kasui92.zellij
-require("claudecode").setup({ log_level = "warn", terminal = { provider = "none" } })
+-- Claude runs in a zellij floating pane (Alt f hides it), connected through the env set by Kasui92.zellij,
+-- or in a snacks float in the project root via :ClaudeCode
+require("claudecode").setup({
+  log_level = "warn",
+  terminal = {
+    provider = "snacks",
+    cwd_provider = function()
+      return Kasui92.root()
+    end,
+    -- Double Esc goes to claude; Ctrl q hides the float
+    snacks_win_opts = {
+      position = "float",
+      width = 0.8,
+      height = 0.8,
+      border = true,
+      keys = {
+        term_normal = false,
+        claude_hide = { "<C-q>", "hide", mode = "t" },
+      },
+    },
+  },
+})
 
 -- Latest dependency versions as virtual text in package.json
 require("package-info").setup()

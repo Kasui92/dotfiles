@@ -180,7 +180,8 @@ local function claude(args)
     Kasui92.zellij.claude(args)
   end
 end
-map("n", "<leader>ac", claude(), { desc = "Claude (zellij float)" })
+map("n", "<leader>ac", claude(), { desc = "Claude (zellij)" })
+map("n", "<leader>af", "<cmd>ClaudeCode<cr>", { desc = "Claude (float)" })
 map("n", "<leader>ar", claude({ "--resume" }), { desc = "Resume Claude" })
 map("n", "<leader>aC", claude({ "--continue" }), { desc = "Continue Claude" })
 map("n", "<leader>ab", "<cmd>ClaudeCodeAdd %<cr>", { desc = "Add buffer to Claude" })

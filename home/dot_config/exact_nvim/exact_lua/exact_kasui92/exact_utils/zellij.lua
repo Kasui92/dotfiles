@@ -37,10 +37,11 @@ local function claude_tab()
   end
 end
 
--- Shows this nvim's claude float, or starts one in the project root connected to this nvim
+-- Shows this nvim's claude float, or starts one in the project root connected to this nvim;
+-- outside zellij toggles the :ClaudeCode float
 function M.claude(args)
   if not vim.env.ZELLIJ then
-    return vim.notify("Claude opens in a zellij floating pane: not inside zellij", vim.log.levels.WARN)
+    return vim.cmd.ClaudeCode(args or {})
   end
   local tab = claude_tab()
   if tab then

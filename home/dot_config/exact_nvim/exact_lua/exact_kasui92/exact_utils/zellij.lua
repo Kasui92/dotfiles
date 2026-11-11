@@ -11,37 +11,41 @@ function M.float(dir, cmd, extra)
     vim.list_extend(args, { "--" })
     vim.list_extend(args, cmd)
   end
-  action(args)
+  return action(args)
 end
 
--- Id of the floating claude pane in this nvim's tab
-local function claude_pane()
-  local ok, panes = pcall(vim.json.decode, action({ "list-panes", "--json", "--all" }):wait().stdout or "")
+-- Pane id ("terminal_<n>") of the claude float started by this nvim
+local claude_id
+
+-- Tab id of claude_id while the pane is still open
+local function claude_tab()
+  if not claude_id then
+    return
+  end
+  local ok, panes = pcall(
+    vim.json.decode,
+    action({ "list-panes", "--json", "--all" }):wait().stdout or "",
+    { luanil = { object = true, array = true } }
+  )
   if not ok then
     return
   end
-  local own, tab = tonumber(vim.env.ZELLIJ_PANE_ID), nil
   for _, p in ipairs(panes) do
-    if not p.is_plugin and p.id == own then
-      tab = p.tab_id
-    end
-  end
-  for _, p in ipairs(panes) do
-    if not p.is_plugin and p.is_floating and p.tab_id == tab and (p.terminal_command or ""):find("claude") then
-      return p.id
+    if not p.is_plugin and "terminal_" .. p.id == claude_id and not p.exited then
+      return p.tab_id
     end
   end
 end
 
--- Shows the tab's claude float, or starts one in the project root connected to this nvim
+-- Shows this nvim's claude float, or starts one in the project root connected to this nvim
 function M.claude(args)
   if not vim.env.ZELLIJ then
     return vim.notify("Claude opens in a zellij floating pane: not inside zellij", vim.log.levels.WARN)
   end
-  local id = claude_pane()
-  if id then
-    action({ "show-floating-panes" }):wait()
-    action({ "focus-pane-id", "terminal_" .. id })
+  local tab = claude_tab()
+  if tab then
+    action({ "show-floating-panes", "--tab-id", tostring(tab) }):wait()
+    action({ "focus-pane-id", claude_id })
     return
   end
   local cmd = { "env", "ENABLE_IDE_INTEGRATION=true", "FORCE_CODE_TERMINAL=true" }
@@ -51,7 +55,7 @@ function M.claude(args)
   end
   cmd[#cmd + 1] = "claude"
   vim.list_extend(cmd, args or {})
-  M.float(Kasui92.root(), cmd, {
+  local out = M.float(Kasui92.root(), cmd, {
     "--name",
     "claude",
     "--close-on-exit",
@@ -63,7 +67,8 @@ function M.claude(args)
     "10%",
     "--y",
     "10%",
-  })
+  }):wait().stdout or ""
+  claude_id = out:match("terminal_%d+")
 end
 
 return M

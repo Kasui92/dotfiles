@@ -60,5 +60,8 @@ opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 opt.foldtext = ""
 opt.foldlevel = 99
 
--- sample.env and similar as shell, like .env
-vim.filetype.add({ pattern = { [".*%.env"] = "sh" } })
+-- .env, .env.local, sample.env and similar as shell
+vim.filetype.add({
+  filename = { [".env"] = "sh" },
+  pattern = { [".*%.env"] = "sh", [".*/%.env%.[%w_-]+"] = { "sh", { priority = 10 } } },
+})

@@ -2,6 +2,14 @@ require("blink.cmp").setup({
   keymap = { preset = "enter", ["<C-y>"] = { "select_and_accept" } },
   completion = {
     accept = { auto_brackets = { enabled = true } },
+    -- No first item preselected in markdown, so Enter after a prose word inserts a newline
+    list = {
+      selection = {
+        preselect = function()
+          return vim.bo.filetype ~= "markdown"
+        end,
+      },
+    },
     menu = { draw = { treesitter = { "lsp" } } },
     documentation = { auto_show = true, auto_show_delay_ms = 200 },
   },

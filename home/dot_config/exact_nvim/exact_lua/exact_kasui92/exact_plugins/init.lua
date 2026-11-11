@@ -59,6 +59,8 @@ vim.pack.add({
   gh("alker0/chezmoi.vim"),
   gh("MunifTanjim/nui.nvim"),
   gh("vuki656/package-info.nvim"),
+  -- Markdown
+  gh("MeanderingProgrammer/render-markdown.nvim"),
 })
 
 -- Each module loads on its own: an error is notified and the others still load
@@ -74,6 +76,6 @@ if #vim.api.nvim_get_runtime_file("lua/kasui92/plugins/local.lua", false) > 0 th
   load("local")
 end
 
-for _, name in ipairs({ "ui", "editor", "lsp", "treesitter", "util", "keymaps" }) do
+for _, name in ipairs({ "ui", "editor", "lsp", "treesitter", "util", "markdown", "keymaps" }) do
   load(name)
 end

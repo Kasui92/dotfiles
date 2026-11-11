@@ -1,0 +1,54 @@
+{
+  "Note alert": {
+    "prefix": "note",
+    "body": ["> [!NOTE]", "> ${1}"],
+    "description": "GitHub alert: note"
+  },
+  "Tip alert": {
+    "prefix": "tip",
+    "body": ["> [!TIP]", "> ${1}"],
+    "description": "GitHub alert: tip"
+  },
+  "Important alert": {
+    "prefix": "important",
+    "body": ["> [!IMPORTANT]", "> ${1}"],
+    "description": "GitHub alert: important"
+  },
+  "Warning alert": {
+    "prefix": "warning",
+    "body": ["> [!WARNING]", "> ${1}"],
+    "description": "GitHub alert: warning"
+  },
+  "Caution alert": {
+    "prefix": "caution",
+    "body": ["> [!CAUTION]", "> ${1}"],
+    "description": "GitHub alert: caution"
+  },
+  "Code tabs": {
+    "prefix": "codetabs",
+    "body": [
+      ":::code-tabs",
+      "",
+      "```${1:bash} ${2:npm}",
+      "${3}",
+      "```",
+      "",
+      "```${4:bash} ${5:pnpm}",
+      "${6}",
+      "```",
+      "",
+      ":::"
+    ],
+    "description": "jaamd code tabs: the meta after the language is the tab label"
+  },
+  "Table of contents": {
+    "prefix": "toc",
+    "body": [":::toc[${1:On this page}]", "", "- [${2}](#${3})", "", ":::"],
+    "description": "jaamd table of contents"
+  },
+  "Frontmatter": {
+    "prefix": "fm",
+    "body": ["---", "title: ${1}", "description: ${2}", "draft: false", "---", "", "$0"],
+    "description": "Frontmatter with title, description and draft"
+  }
+}

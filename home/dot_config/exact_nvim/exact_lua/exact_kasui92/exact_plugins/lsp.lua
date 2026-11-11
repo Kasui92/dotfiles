@@ -19,7 +19,6 @@ require("mason-tool-installer").setup({
     "yaml-language-server",
     -- Formatters and linters
     "hadolint",
-    "markdown-toc",
     "oxfmt",
     "prettier",
     "shellcheck",

@@ -97,8 +97,7 @@ require("conform").setup({
     scss = { "prettier" },
     html = { "prettier" },
     yaml = { "prettier" },
-    markdown = { "prettier", "markdown-toc" },
-    ["markdown.mdx"] = { "prettier", "markdown-toc" },
+    markdown = js,
     lua = { "stylua" },
     sh = { "shfmt" },
   },
@@ -113,17 +112,6 @@ require("conform").setup({
       }),
     },
     prettier = { condition = Kasui92.format.prettier_has_config },
-    -- Only files with a <!-- toc --> marker
-    ["markdown-toc"] = {
-      condition = function(_, ctx)
-        for _, line in ipairs(vim.api.nvim_buf_get_lines(ctx.buf, 0, -1, false)) do
-          if line:find("<!%-%- toc %-%->") then
-            return true
-          end
-        end
-        return false
-      end,
-    },
   },
   format_on_save = function(bufnr)
     if Kasui92.format.enabled(bufnr) then

@@ -17,3 +17,14 @@ theme_light "rose-pine-dawn"
 
 default_mode "locked"
 show_startup_tips false
+
+// Right click goes to the pane (nvim PopUp menu) instead of the zellij menu
+context_menu_enabled false
+
+// Inbox notifications reach alacritty as a bell, niri marks the window urgent
+host_notification_protocol "bell"
+
+attention {
+    // Commands running longer than done_threshold_secs are listed as working
+    track_commands true
+}

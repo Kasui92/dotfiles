@@ -129,6 +129,8 @@ keybinds clear-defaults=true {
         // Layout, sessions, help
         bind "Alt Space" { NextSwapLayout; }
         bind "Alt Shift Space" { PreviousSwapLayout; }
+        // Next pane that needs attention (inbox), in any session
+        bind "Alt a" { GoToNextAttention; }
         bind "Alt o" { LaunchOrFocusPlugin "sessionizer" { floating true; move_to_focused_tab true; }; }
         bind "Alt Shift o" { LaunchOrFocusPlugin "zellij:session-manager" { floating true; move_to_focused_tab true; }; }
         bind "Alt /" "Alt ?" { LaunchOrFocusPlugin "forgot" { floating true; }; }

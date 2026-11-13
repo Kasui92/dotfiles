@@ -22,6 +22,8 @@ keybinds clear-defaults=true {
         bind "Shift f" { ToggleFocusNoUiFullscreen; SwitchToMode "Locked"; }
         bind "z" { TogglePaneFrames; SwitchToMode "Locked"; }
         bind "c" { SwitchToMode "RenamePane"; PaneNameInput 0; }
+        bind "v" { WatchPane; SwitchToMode "Locked"; }
+        bind "u" { MutePane; SwitchToMode "Locked"; }
     }
     scroll {
         bind "e" { EditScrollback; SwitchToMode "Locked"; }
@@ -66,6 +68,10 @@ keybinds clear-defaults=true {
         bind "Ctrl c" "Enter" { SwitchToMode "Locked"; }
         bind "Esc" { UndoRenamePane; SwitchToMode "Locked"; }
     }
+    renamesession {
+        bind "Ctrl c" "Enter" { SwitchToMode "Locked"; }
+        bind "Esc" { UndoRenameSession; SwitchToMode "Locked"; }
+    }
     session {
         bind "d" { Detach; }
     }
@@ -105,13 +111,7 @@ keybinds clear-defaults=true {
         // Tabs
         bind "Alt t" { NewTab { name "shell"; }; }
         bind "Alt r" { SwitchToMode "RenameTab"; TabNameInput 0; }
-        // Session name asked in a one-row floating pane
-        bind "Alt Shift r" {
-            Run "bash" "-c" r#"read -r n && [ -n "$n" ] && zellij action rename-session "$n""# {
-                floating true; close_on_exit true; name "Rename Session";
-                width "40"; height "3"; x "30%"; y "40%";
-            };
-        }
+        bind "Alt Shift r" { SwitchToMode "RenameSession"; SessionNameInput 0; }
         bind "Alt [" { GoToPreviousTab; }
         bind "Alt ]" { GoToNextTab; }
         bind "Alt Shift [" "Alt {" { MoveTab "Left"; }
@@ -128,6 +128,7 @@ keybinds clear-defaults=true {
 
         // Layout, sessions, help
         bind "Alt Space" { NextSwapLayout; }
+        bind "Alt Shift Space" { PreviousSwapLayout; }
         bind "Alt o" { LaunchOrFocusPlugin "sessionizer" { floating true; move_to_focused_tab true; }; }
         bind "Alt Shift o" { LaunchOrFocusPlugin "zellij:session-manager" { floating true; move_to_focused_tab true; }; }
         bind "Alt /" "Alt ?" { LaunchOrFocusPlugin "forgot" { floating true; }; }
@@ -136,7 +137,7 @@ keybinds clear-defaults=true {
         bind "Ctrl g" { SwitchToMode "Locked"; }
         bind "Ctrl q" { Quit; }
     }
-    shared_except "locked" "entersearch" "renametab" "renamepane" {
+    shared_except "locked" "entersearch" "renametab" "renamepane" "renamesession" {
         bind "Enter" "Esc" { SwitchToMode "Locked"; }
     }
 }

@@ -14,6 +14,9 @@ __prompt() {
     local status=$? out gitdir top head branch rel name len
     local -a parts
 
+    # OSC 133 end of the previous command, with its exit status
+    printf '\e]133;D;%s\a' "$status"
+
     # Lock while the SSH agent is reachable but holds no keys
     _ps_lock=
     if (( _ps_bw )); then
@@ -84,4 +87,6 @@ __prompt() {
 }
 
 PROMPT_COMMAND=__prompt
-PS1='${_ps_lock}${_ps_ssh}${_ps_path}${_ps_git} ${_ps_cursor}'
+# OSC 133 prompt markers: prompt start (A), input start (B), output start (C)
+PS1='\[\e]133;A\a\]${_ps_lock}${_ps_ssh}${_ps_path}${_ps_git} ${_ps_cursor}\[\e]133;B\a\]'
+PS0='\e]133;C\a'

@@ -1,10 +1,5 @@
 {{- $plugins := printf "file:%s/.config/zellij/plugins" .chezmoi.homeDir -}}
 plugins {
-    tab-bar { path "tab-bar"; }
-    status-bar { path "status-bar"; }
-    strider { path "strider"; }
-    compact-bar { path "compact-bar"; }
-
     // Minimal status bar. Colors are ANSI names, so they follow the terminal
     // palette (rose-pine / rose-pine-dawn) instead of being hardcoded.
     zjstatus location="{{ $plugins }}/zjstatus.wasm" {

@@ -1,3 +1,17 @@
+# Services tab from the project layout .zellij/services.kdl (git root, or the current dir)
+if [[ -n $ZELLIJ ]]; then
+  zs() {
+    local root file
+    root=$(git rev-parse --show-toplevel 2> /dev/null || pwd)
+    file="$root/.zellij/services.kdl"
+    if [[ ! -f $file ]]; then
+      echo "zs: no $file" >&2
+      return 1
+    fi
+    zellij action new-tab --layout "$file" --cwd "$root" --name services > /dev/null
+  }
+fi
+
 # Claude Code: after exit, set the pane title to the tab name, which zjstatus shows in place of the cleared title
 if [[ -n $ZELLIJ ]] && command -v claude &> /dev/null && command -v jq &> /dev/null; then
   claude() {

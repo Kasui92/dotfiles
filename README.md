@@ -18,7 +18,7 @@ Everything uses the [Rosé Pine](https://rosepinetheme.com) theme.
 ## Requirements
 
 - chezmoi, git, `jq` (for the `modify_` scripts)
-- [mise](https://mise.jdx.dev): installs node, delta and rust on apply
+- [mise](https://mise.jdx.dev): installs node, delta, rust and gitleaks (pre-commit secret scan) on apply
 - [Bitwarden CLI](https://bitwarden.com/help/cli/) (`bw`), see [Bitwarden](#bitwarden)
 - Neovim >= 0.12, a C compiler, ripgrep and fd; mason installs the language servers, formatters and the tree-sitter CLI on first start
 - A Nerd Font (Alacritty uses CaskaydiaMono)

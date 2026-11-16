@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Blocks commits that add secrets
+set -euo pipefail
+
+if ! command -v gitleaks &> /dev/null; then
+  echo "pre-commit: gitleaks not found, secret scan skipped" >&2
+  exit 0
+fi
+
+exec gitleaks git --pre-commit --staged --redact --no-banner

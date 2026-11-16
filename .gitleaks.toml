@@ -1,0 +1,7 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "GPG key IDs in git identity files are public fingerprints"
+regexTarget = "line"
+regexes = ['''^\s*signingkey\s*=''']

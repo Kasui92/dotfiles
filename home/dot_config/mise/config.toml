@@ -2,6 +2,7 @@
 node = "24"
 delta = "latest"
 rust = "stable"
+gitleaks = "latest"
 
 [settings]
 idiomatic_version_file_enable_tools = ["rust"]

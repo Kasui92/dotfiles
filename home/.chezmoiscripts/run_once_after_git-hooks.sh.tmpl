@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Git hooks of this repo from .githooks
+set -euo pipefail
+git -C {{ .chezmoi.workingTree | quote }} config core.hooksPath .githooks

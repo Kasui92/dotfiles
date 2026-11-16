@@ -1,27 +1,60 @@
 # Prompt configuration: segments are computed by __prompt before each prompt
 
+# ANSI colors, inside \001 \002 so readline skips them when measuring the prompt
+_c_reset=$'\001\e[0m\002'
+_c_red=$'\001\e[31m\002'
+_c_cyan=$'\001\e[1;36m\002'
+_c_green=$'\001\e[0;32m\002'
+_c_yellow=$'\001\e[1;33m\002'
+
 # SSH user (e.g. ssh:(localuser@remotehost))
 _ps_ssh=
 if [[ -n $SSH_CLIENT || -n $SSH_TTY ]]; then
-    _ps_ssh=$' \001\e[1;36m\002ssh:(\001\e[0;38;5;107m\002'"$USER@$HOSTNAME"$'\001\e[1;36m\002)\001\e[0m\002 '
+    _ps_ssh=" ${_c_cyan}ssh:(${_c_green}$USER@$HOSTNAME${_c_cyan})${_c_reset} "
 fi
 
-# Lock segment only where the Bitwarden CLI loads the SSH keys
+# Lock segment only where the Bitwarden CLI loads the SSH keys; the agent is checked at most
+# every 30s, bwu and bwl reset _ps_lock_at to check it on the next prompt
 _ps_bw=0
 command -v bw &> /dev/null && _ps_bw=1
+_ps_lock=
+_ps_lock_at=0
+
+# Sets _ps_path to root/rel, root/…/last/two past two levels
+_ps_short() {
+    local root=$1 rel=$2
+    local -a parts
+    if [[ -z $rel ]]; then
+        _ps_path=$root
+        return
+    fi
+    IFS=/ read -ra parts <<< "$rel"
+    local len=${#parts[@]}
+    if (( len <= 2 )); then
+        _ps_path=$root/$rel
+    else
+        _ps_path=$root/…/${parts[len-2]}/${parts[len-1]}
+    fi
+}
 
 __prompt() {
-    local status=$? out gitdir top head branch rel name len
-    local -a parts
+    local status=$? out gitdir top head ref op n m njobs
 
     # OSC 133 end of the previous command, with its exit status
     printf '\e]133;D;%s\a' "$status"
 
+    # Background and stopped jobs, counted by the \j prompt escape
+    njobs='\j'
+    njobs=${njobs@P}
+    _ps_jobs=
+    (( njobs )) && _ps_jobs="${_c_yellow}⏸${njobs}${_c_reset} "
+
     # Lock while the SSH agent is reachable but holds no keys
-    _ps_lock=
-    if (( _ps_bw )); then
+    if (( _ps_bw && EPOCHSECONDS - _ps_lock_at >= 30 )); then
+        _ps_lock_at=$EPOCHSECONDS
+        _ps_lock=
         ssh-add -l &> /dev/null
-        (( $? == 1 )) && _ps_lock=$'\001\e[1;33m\002\uf023\001\e[0m\002  '
+        (( $? == 1 )) && _ps_lock="${_c_yellow}"$''"${_c_reset}  "
     fi
 
     # Git dir and work tree root in one call; inside .git only the dir is printed
@@ -30,63 +63,65 @@ __prompt() {
     top=
     [[ $out == *$'\n'* ]] && top=${out#*$'\n'}
 
-    # Current branch, empty on detached HEAD
+    # Branch or short sha of a detached HEAD, then the operation in progress
     _ps_git=
     if [[ -n $gitdir ]]; then
-        head=
         { read -r head < "$gitdir/HEAD"; } 2> /dev/null
-        branch=
-        [[ $head == "ref: refs/heads/"* ]] && branch=${head#ref: refs/heads/}
-        [[ $branch == .invalid ]] && branch=$(git symbolic-ref --short -q HEAD)
-        [[ -n $branch ]] && _ps_git=$' \001\e[1;36m\002git:(\001\e[0;38;5;107m\002'"$branch"$'\001\e[1;36m\002)\001\e[0m\002'
+        case $head in
+            "ref: refs/heads/.invalid") ref=$(git symbolic-ref --short -q HEAD || git rev-parse --short HEAD 2> /dev/null) ;;
+            "ref: refs/heads/"*) ref=${head#ref: refs/heads/} ;;
+            "ref: "*) ref=${head#ref: refs/} ;;
+            *) ref=${head:0:7} ;;
+        esac
+
+        op=
+        if [[ -d $gitdir/rebase-merge ]]; then
+            { read -r n < "$gitdir/rebase-merge/msgnum"; read -r m < "$gitdir/rebase-merge/end"; } 2> /dev/null
+            { read -r head < "$gitdir/rebase-merge/head-name"; } 2> /dev/null && ref=${head#refs/heads/}
+            op="rebase $n/$m"
+        elif [[ -f $gitdir/rebase-apply/applying ]]; then
+            op=am
+        elif [[ -d $gitdir/rebase-apply ]]; then
+            { read -r n < "$gitdir/rebase-apply/next"; read -r m < "$gitdir/rebase-apply/last"; } 2> /dev/null
+            { read -r head < "$gitdir/rebase-apply/head-name"; } 2> /dev/null && ref=${head#refs/heads/}
+            op="rebase $n/$m"
+        elif [[ -f $gitdir/MERGE_HEAD ]]; then
+            op=merge
+        elif [[ -f $gitdir/CHERRY_PICK_HEAD ]]; then
+            op=cherry-pick
+        elif [[ -f $gitdir/REVERT_HEAD ]]; then
+            op=revert
+        elif [[ -f $gitdir/BISECT_LOG ]]; then
+            op=bisect
+        fi
+
+        if [[ -n $ref || -n $op ]]; then
+            _ps_git=" ${_c_cyan}git:(${_c_green}${ref}${op:+${_c_yellow}|${op}}${_c_cyan})${_c_reset}"
+        fi
     fi
 
-    # Short PWD: repo name, ~ or absolute path, then the last two components
-    if [[ -n $top ]]; then
-        rel=${PWD#"$top"}
-        rel=${rel#/}
-        name=${top##*/}
-        IFS=/ read -ra parts <<< "$rel"
-        len=${#parts[@]}
-        if [[ -z $rel ]]; then
-            _ps_path=$name
-        elif (( len <= 1 )); then
-            _ps_path=$name/$rel
-        else
-            _ps_path=…/${parts[len-2]}/${parts[len-1]}
-        fi
-    elif [[ $PWD == "$HOME"* ]]; then
-        rel=${PWD#"$HOME"}
-        rel=${rel#/}
-        IFS=/ read -ra parts <<< "$rel"
-        len=${#parts[@]}
-        if [[ -z $rel ]]; then
-            _ps_path='~'
-        elif (( len <= 2 )); then
-            _ps_path=\~/$rel
-        else
-            _ps_path=…/${parts[len-2]}/${parts[len-1]}
-        fi
+    # Short PWD: rooted at the repo name, ~ or /
+    if [[ -n $top && ($PWD == "$top" || $PWD == "$top"/*) ]]; then
+        out=${PWD#"$top"}
+        _ps_short "${top##*/}" "${out#/}"
+    elif [[ $PWD == "$HOME" || $PWD == "$HOME"/* ]]; then
+        out=${PWD#"$HOME"}
+        _ps_short '~' "${out#/}"
     else
-        IFS=/ read -ra parts <<< "$PWD"
-        len=${#parts[@]}
-        if (( len <= 2 )); then
-            _ps_path=$PWD
-        else
-            _ps_path=…/${parts[len-2]}/${parts[len-1]}
-        fi
+        _ps_short '' "${PWD#/}"
+        [[ -z $_ps_path ]] && _ps_path=/
     fi
-    _ps_path=$'\001\e[31m\002'"$_ps_path"$'\001\e[0m\002'
+    _ps_path="${_c_red}${_ps_path}${_c_reset}"
 
     # Cursor, red cross after a failed command
     if (( status )); then
-        _ps_cursor=$'\001\e[31m\002✗\001\e[0m\002 '
+        _ps_cursor="${_c_red}✗${_c_reset} "
     else
-        _ps_cursor=$'\001\e[31m\002❯\001\e[0m\002 '
+        _ps_cursor="${_c_red}❯${_c_reset} "
     fi
 }
 
 PROMPT_COMMAND=__prompt
 # OSC 133 prompt markers: prompt start (A), input start (B), output start (C)
-PS1='\[\e]133;A\a\]${_ps_lock}${_ps_ssh}${_ps_path}${_ps_git} ${_ps_cursor}\[\e]133;B\a\]'
+PS1='\[\e]133;A\a\]${_ps_jobs}${_ps_lock}${_ps_ssh}${_ps_path}${_ps_git} ${_ps_cursor}\[\e]133;B\a\]'
 PS0='\e]133;C\a'

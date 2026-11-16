@@ -21,6 +21,7 @@ if command -v bw &> /dev/null; then
 
   # Unlock the vault, load SSH keys, import GPG keys and preset their passphrases, then lock it again
   bwu() {
+    _ps_lock_at=0
     local -x BW_SESSION=${BW_SESSION:-}
     local items item key relock=0 ssh=0 notes=0 imported=0 preset=0 ttl=12h
 
@@ -67,6 +68,7 @@ if command -v bw &> /dev/null; then
 
   # Lock the vault and clear the SSH agent and GPG passphrase cache
   bwl() {
+    _ps_lock_at=0
     ssh-add -D &> /dev/null
     gpg-connect-agent reloadagent /bye > /dev/null
     bw lock > /dev/null

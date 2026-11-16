@@ -1,19 +1,5 @@
 local map = vim.keymap.set
 
-require("which-key").add({
-  { "<leader>a", group = "ai" },
-  { "<leader>b", group = "buffer" },
-  { "<leader>c", group = "code" },
-  { "<leader>d", group = "diff" },
-  { "<leader>g", group = "git" },
-  { "<leader>q", group = "session" },
-  { "<leader>u", group = "toggle" },
-  { "<leader>y", group = "yank" },
-  { "<leader><tab>", group = "tabs" },
-  { ";", group = "pick" },
-  { "s", group = "split/oil" },
-})
-
 -- Oil
 map("n", "sf", function()
   require("oil").open_float(nil, { preview = {} })
@@ -57,9 +43,7 @@ end, { desc = "Next todo comment" })
 map("n", "[t", function()
   require("todo-comments").jump_prev()
 end, { desc = "Prev todo comment" })
-map("n", ";g", function()
-  Snacks.lazygit()
-end, { desc = "Lazygit" })
+map("n", ";g", Kasui92.lazygit.open, { desc = "Lazygit" })
 
 -- Buffers; jumps to the window already showing the buffer, in any tab
 map("n", "\\\\", function()
@@ -124,7 +108,6 @@ map("n", "gI", function()
   end, 0)
 end, { desc = "Goto source definition / implementation" })
 map("n", "gK", vim.lsp.buf.signature_help, { desc = "Signature help" })
-map("i", "<C-k>", vim.lsp.buf.signature_help, { desc = "Signature help" })
 map({ "n", "x" }, "<leader>ca", vim.lsp.buf.code_action, { desc = "Code action" })
 map("n", "<leader>cr", vim.lsp.buf.rename, { desc = "Rename" })
 map("n", "<leader>cR", Snacks.rename.rename_file, { desc = "Rename file" })
@@ -142,7 +125,13 @@ map({ "n", "x" }, "<leader>f", function()
   require("conform").format()
 end, { desc = "Format" })
 
--- Git; ]h [h hunks and gh gH apply/reset come from mini.diff
+-- Git; gh gH apply/reset come from mini.diff
+-- ]c [c: mini.diff hunks, native change jumps in diff mode (nvim -d, chezmoi merge)
+for lhs, dir in pairs({ ["]c"] = "next", ["[c"] = "prev" }) do
+  map({ "n", "x" }, lhs, function()
+    return vim.wo.diff and lhs or ("<Cmd>lua MiniDiff.goto_hunk('%s')<CR>"):format(dir)
+  end, { expr = true, desc = dir == "next" and "Next hunk" or "Prev hunk" })
+end
 map("n", "<leader>gd", function()
   MiniDiff.toggle_overlay()
 end, { desc = "Toggle diff overlay" })
@@ -191,8 +180,7 @@ local function claude(args)
     Kasui92.zellij.claude(args)
   end
 end
-map("n", "<leader>ac", claude(), { desc = "Claude (zellij)" })
-map("n", "<leader>af", "<cmd>ClaudeCode<cr>", { desc = "Claude (float)" })
+map("n", "<leader>ac", claude(), { desc = "Claude (zellij, float outside)" })
 map("n", "<leader>ar", claude({ "--resume" }), { desc = "Resume Claude" })
 map("n", "<leader>aC", claude({ "--continue" }), { desc = "Continue Claude" })
 map("n", "<leader>ab", "<cmd>ClaudeCodeAdd %<cr>", { desc = "Add buffer to Claude" })
@@ -215,7 +203,6 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
     local function bmap(lhs, cmd, desc)
       map("n", lhs, "<cmd>" .. cmd .. "<cr>", { buffer = ev.buf, desc = desc })
     end
-    require("which-key").add({ { "<leader>n", group = "npm", buffer = ev.buf } })
     bmap("<leader>nt", "PackageInfoToggle", "Toggle versions")
     bmap("<leader>nr", "PackageInfoShowForce", "Refresh versions")
     bmap("<leader>nu", "PackageInfoUpdate", "Update dependency")

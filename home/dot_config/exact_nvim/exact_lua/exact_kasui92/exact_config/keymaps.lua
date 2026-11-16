@@ -16,6 +16,8 @@ map("n", "gco", "o<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>", { desc = "Comment li
 map("n", "gcO", "O<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>", { desc = "Comment line above" })
 
 map({ "i", "x", "n", "s" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Save file" })
+map("n", "<leader>W", Kasui92.format.write_unformatted, { desc = "Save without formatting" })
+vim.api.nvim_create_user_command("W", Kasui92.format.write_unformatted, { desc = "Save without formatting" })
 map({ "i", "n", "s" }, "<esc>", function()
   vim.cmd("nohlsearch")
   return "<esc>"

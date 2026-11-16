@@ -13,6 +13,9 @@ end
 
 -- Whether format on save is on for the buffer
 function M.enabled(bufnr)
+  if vim.b[bufnr].skip_format then
+    return false
+  end
   local b = vim.b[bufnr].autoformat
   if b ~= nil then
     return b
@@ -30,6 +33,16 @@ function M.toggle(buffer)
     vim.b.autoformat = nil
   end
   vim.notify(("Autoformat %s%s"):format(on and "on" or "off", buffer and " (buffer)" or ""))
+end
+
+-- Writes the current buffer without conform and eslint fixes
+function M.write_unformatted()
+  vim.b.skip_format = true
+  local ok, err = pcall(vim.cmd.write)
+  vim.b.skip_format = nil
+  if not ok then
+    vim.notify(err, vim.log.levels.ERROR)
+  end
 end
 
 return M

@@ -1,10 +1,11 @@
 if command -v bat &> /dev/null; then
   # Fix BAT theme
   export BAT_THEME=ansi
+fi
 
-  # Color man pages with bat
-  export MANROFFOPT="-c"
-  export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+# Man pages in nvim: gO outline, K follows references
+if command -v nvim &> /dev/null; then
+  export MANPAGER="nvim +Man!"
 fi
 
 # Fzf rose-pine theme

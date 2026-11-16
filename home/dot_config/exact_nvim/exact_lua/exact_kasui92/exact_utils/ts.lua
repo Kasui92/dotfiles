@@ -1,5 +1,8 @@
 local M = {}
 
+-- Major version by typescript package.json path, read once per nvim session
+local cache = {}
+
 -- TypeScript major version installed for the buffer's project, 0 if none
 function M.major(bufnr)
   local dir = vim.fs.dirname(vim.api.nvim_buf_get_name(bufnr))
@@ -7,8 +10,11 @@ function M.major(bufnr)
   if not pkg then
     return 0
   end
-  local ok, data = pcall(vim.json.decode, table.concat(vim.fn.readfile(pkg), "\n"))
-  return ok and tonumber(tostring(data.version):match("^(%d+)")) or 0
+  if cache[pkg] == nil then
+    local ok, data = pcall(vim.json.decode, table.concat(vim.fn.readfile(pkg), "\n"))
+    cache[pkg] = ok and tonumber(tostring(data.version):match("^(%d+)")) or 0
+  end
+  return cache[pkg]
 end
 
 return M

@@ -54,7 +54,6 @@ require("snacks").setup({
           ["<a-v>"] = { "toggle_preview", mode = { "i", "n" } },
           ["<a-e>"] = { "toggle_regex", mode = { "i", "n" } },
           ["<c-l>"] = { "toggle_live", mode = { "i", "n" } },
-          ["<c-cr>"] = { "tab", mode = { "i", "n" } },
         },
       },
       list = {
@@ -62,9 +61,14 @@ require("snacks").setup({
           ["<a-.>"] = "toggle_hidden",
           ["<a-s>"] = "toggle_follow",
           ["<a-v>"] = "toggle_preview",
-          ["<c-cr>"] = "tab",
         },
       },
+    },
+  },
+  -- Files edited from lazygit open in the window it was launched from
+  lazygit = {
+    config = {
+      os = { edit = Kasui92.lazygit.edit_command(), editAtLine = Kasui92.lazygit.edit_command(true) },
     },
   },
   styles = {
@@ -89,9 +93,6 @@ require("snacks").setup({
     },
   },
 })
-
--- Popup with the next keys after a prefix
-require("which-key").setup({ preset = "helix" })
 
 -- File name at the top right of each window
 require("incline").setup({
@@ -133,7 +134,17 @@ require("lualine").setup({
     lualine_a = { "mode" },
     lualine_b = { "branch" },
     lualine_c = { "diagnostics", { "filename", path = 1 } },
-    lualine_x = { "diff", "filetype" },
+    lualine_x = {
+      {
+        "diff",
+        -- Counts of the mini.diff signs
+        source = function()
+          local s = vim.b.minidiff_summary
+          return s and { added = s.add, modified = s.change, removed = s.delete }
+        end,
+      },
+      "filetype",
+    },
     lualine_y = { "progress" },
     lualine_z = { "location" },
   },

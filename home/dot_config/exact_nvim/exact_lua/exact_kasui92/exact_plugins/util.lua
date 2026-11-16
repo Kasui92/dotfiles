@@ -4,6 +4,9 @@ require("oil").setup({
   keymaps = {
     ["h"] = { "actions.parent", mode = "n" },
     ["l"] = { "actions.select", mode = "n" },
+    -- Ctrl s saves through the global map; Ctrl v opens in a vsplit like the pickers
+    ["<C-s>"] = false,
+    ["<C-v>"] = { "actions.select", opts = { vertical = true } },
     -- No-op when oil is the only buffer
     ["q"] = {
       callback = function()

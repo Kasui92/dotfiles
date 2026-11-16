@@ -37,8 +37,8 @@ opt.spelllang = { "it", "en" }
 -- Search
 opt.ignorecase = true
 opt.smartcase = true
+-- Without the default -uu, so :grep skips ignored and hidden files
 opt.grepprg = "rg --vimgrep"
-opt.grepformat = "%f:%l:%c:%m"
 opt.wildmode = "longest:full,full"
 
 -- Files

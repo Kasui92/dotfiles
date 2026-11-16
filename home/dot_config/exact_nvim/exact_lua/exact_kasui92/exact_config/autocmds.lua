@@ -24,6 +24,20 @@ if arg_dir and vim.fn.isdirectory(arg_dir) == 1 then
   })
 end
 
+-- q closes help, man, quickfix and similar buffers
+vim.api.nvim_create_autocmd("FileType", {
+  group = augroup("close_with_q"),
+  pattern = { "help", "man", "qf", "checkhealth", "gitsigns-blame" },
+  callback = function(ev)
+    vim.bo[ev.buf].buflisted = false
+    vim.keymap.set("n", "q", function()
+      if not pcall(vim.cmd.close) then
+        vim.cmd.bdelete()
+      end
+    end, { buffer = ev.buf, desc = "Close" })
+  end,
+})
+
 vim.api.nvim_create_autocmd("TextYankPost", {
   group = augroup("highlight_yank"),
   callback = function()

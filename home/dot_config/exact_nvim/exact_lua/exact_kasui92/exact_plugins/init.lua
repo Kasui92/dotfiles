@@ -25,7 +25,6 @@ vim.pack.add({
   gh("nvim-mini/mini.icons"),
   gh("folke/snacks.nvim"),
   gh("nvim-lualine/lualine.nvim"),
-  gh("folke/which-key.nvim"),
   gh("esmuellert/codediff.nvim"),
   gh("b0o/incline.nvim"),
   gh("brenoprata10/nvim-highlight-colors"),

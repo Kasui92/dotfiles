@@ -4,5 +4,6 @@ return {
   format = require("kasui92.utils.format"),
   editor = require("kasui92.utils.editor"),
   zellij = require("kasui92.utils.zellij"),
+  lazygit = require("kasui92.utils.lazygit"),
   tabline = require("kasui92.utils.tabline"),
 }

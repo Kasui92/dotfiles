@@ -23,6 +23,7 @@ vim.pack.add({
   -- UI
   { src = gh("rose-pine/neovim"), name = "rose-pine" },
   gh("nvim-mini/mini.icons"),
+  gh("nvim-mini/mini.clue"),
   gh("folke/snacks.nvim"),
   gh("nvim-lualine/lualine.nvim"),
   gh("esmuellert/codediff.nvim"),

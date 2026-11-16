@@ -94,6 +94,29 @@ require("snacks").setup({
   },
 })
 
+-- Menus for <Leader> and ; (pickers): they wait for the next key, the window shows after delay.
+-- ; alone (repeat f/t) runs with ; <CR>
+require("mini.clue").setup({
+  triggers = {
+    { mode = "n", keys = "<Leader>" },
+    { mode = "x", keys = "<Leader>" },
+    { mode = "n", keys = ";" },
+    { mode = "x", keys = ";" },
+  },
+  clues = {
+    { mode = "n", keys = "<Leader>a", desc = "+ai" },
+    { mode = "n", keys = "<Leader>b", desc = "+buffer" },
+    { mode = "n", keys = "<Leader>c", desc = "+code" },
+    { mode = "n", keys = "<Leader>d", desc = "+diff" },
+    { mode = "n", keys = "<Leader>g", desc = "+git" },
+    { mode = "n", keys = "<Leader>q", desc = "+session" },
+    { mode = "n", keys = "<Leader>u", desc = "+toggle" },
+    { mode = "n", keys = "<Leader>y", desc = "+yank" },
+    { mode = "n", keys = "<Leader><Tab>", desc = "+tabs" },
+  },
+  window = { delay = 300, config = { width = "auto" } },
+})
+
 -- File name at the top right of each window
 require("incline").setup({
   window = { margin = { vertical = 0, horizontal = 1 }, zindex = 10 },

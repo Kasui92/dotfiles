@@ -203,6 +203,7 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
     local function bmap(lhs, cmd, desc)
       map("n", lhs, "<cmd>" .. cmd .. "<cr>", { buffer = ev.buf, desc = desc })
     end
+    vim.b[ev.buf].miniclue_config = { clues = { { mode = "n", keys = "<Leader>n", desc = "+npm" } } }
     bmap("<leader>nt", "PackageInfoToggle", "Toggle versions")
     bmap("<leader>nr", "PackageInfoShowForce", "Refresh versions")
     bmap("<leader>nu", "PackageInfoUpdate", "Update dependency")

@@ -1,0 +1,33 @@
+{{- $zellij := lookPath "zellij" -}}
+# Runs as a server (foot-server.socket): changes apply after
+# `systemctl --user restart foot-server`, which closes every footclient window.
+
+[main]
+include=~/.config/foot/themes/rose-pine
+include=~/.config/foot/themes/rose-pine-dawn
+# Light/dark switch: SIGUSR1 (dark) and SIGUSR2 (light) to the server
+initial-color-theme=dark
+term=xterm-256color
+font=CaskaydiaMono Nerd Font:size=9
+pad=14x14
+{{- if $zellij }}
+shell={{ $zellij }}
+{{- end }}
+
+[bell]
+# zellij forwards inbox notifications as a bell, niri marks the window urgent
+urgent=yes
+
+[security]
+osc52=copy-enabled
+
+[key-bindings]
+clipboard-copy=Control+Shift+c Control+Insert XF86Copy
+clipboard-paste=Control+Shift+v Shift+Insert XF86Paste
+primary-paste=none
+
+[text-bindings]
+# Send Shift+Return as CSI-u so TUIs can distinguish it from Return without treating it as Alt+Return.
+\x1b[13;2u=Shift+Return
+# Legacy encoding sends Alt+Shift+Return the same as Alt+Return; send CSI-u so TUIs can match it.
+\x1b[13;4u=Mod1+Shift+Return

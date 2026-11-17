@@ -24,6 +24,11 @@
 .local/state/dms
 {{ end }}
 
+{{ if not (lookPath "foot") }}
+.config/foot
+.config/systemd/user/graphical-session.target.wants/foot-server.socket
+{{ end }}
+
 {{ if not (lookPath "btop") }}
 .config/btop
 {{ end }}

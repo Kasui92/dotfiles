@@ -32,6 +32,10 @@
 .claude
 {{ end }}
 
+{{ if not (lookPath "codex") }}
+.codex
+{{ end }}
+
 {{ if not (lookPath "zen") }}
 .config/zen
 {{ end }}

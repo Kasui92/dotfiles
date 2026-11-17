@@ -22,7 +22,7 @@ Everything uses the [Rosé Pine](https://rosepinetheme.com) theme.
 - [Bitwarden CLI](https://bitwarden.com/help/cli/) (`bw`), see [Bitwarden](#bitwarden)
 - Neovim >= 0.12, a C compiler, ripgrep and fd; mason installs the language servers, formatters and the tree-sitter CLI on first start
 - A Nerd Font (Alacritty uses CaskaydiaMono)
-- Optional: niri, DMS, Alacritty, zellij, btop, lazygit, Claude Code; fzf, zoxide, eza and bat for bash
+- Optional: niri, DMS, Alacritty, zellij, btop, lazygit, Claude Code, Codex; fzf, zoxide, eza and bat for bash
 
 ## Machine-local configuration
 

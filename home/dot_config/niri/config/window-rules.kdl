@@ -49,6 +49,7 @@ window-rule {
 
 window-rule {
     match app-id="Alacritty"
+    match app-id="foot"
     match app-id="zen"
     draw-border-with-background false
 }

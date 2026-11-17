@@ -20,6 +20,7 @@
 
 {{ if not (lookPath "dms") }}
 .config/dms
+.config/matugen
 .config/systemd/user/dms.service.d
 .local/state/dms
 {{ end }}
@@ -27,6 +28,8 @@
 {{ if not (lookPath "foot") }}
 .config/foot
 .config/systemd/user/graphical-session.target.wants/foot-server.socket
+.local/state/foot
+.config/matugen
 {{ end }}
 
 {{ if not (lookPath "btop") }}

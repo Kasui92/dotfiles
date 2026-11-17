@@ -1,0 +1,10 @@
+# User templates: DMS runs them on every theme or light/dark change.
+
+[config]
+
+# foot can't reload its config: new instances read the theme from the state file,
+# running ones (and the server) switch on SIGUSR1 (dark) or SIGUSR2 (light).
+[templates.foot]
+input_path = '~/.config/matugen/templates/foot-color-theme.ini'
+output_path = '~/.local/state/foot/color-theme.ini'
+post_hook = 'pkill -<* if {{ is_dark_mode }} *>USR1<* else *>USR2<* endif *> -x foot || true'

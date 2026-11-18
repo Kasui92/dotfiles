@@ -26,8 +26,17 @@ if command -v bw &> /dev/null; then
     local items item key relock=0 ssh=0 notes=0 imported=0 preset=0 ttl=12h
 
     if [[ -z $BW_SESSION ]] || ! bw unlock --check &> /dev/null; then
-      if ! BW_SESSION=$(bw unlock --raw); then
-        bw login --check &> /dev/null && return 1
+      if bw login --check &> /dev/null; then
+        local password
+        read -rsp "Master password: " password
+        echo
+
+        # bw prints errors on stderr, the prompt is ours, so its output can be dropped
+        if ! BW_SESSION=$(BW_PASSWORD=$password bw unlock --raw --passwordenv BW_PASSWORD 2> /dev/null); then
+          echo "bwu: wrong master password, vault still locked" >&2
+          return 1
+        fi
+      else
         BW_SESSION=$(bw login --raw) || return 1
       fi
       relock=1

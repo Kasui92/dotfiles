@@ -17,9 +17,8 @@ opt.winborder = "rounded"
 opt.pumheight = 10
 opt.fillchars = { foldopen = "\u{f078}", foldclose = "\u{f054}", fold = " ", foldsep = " ", diff = "╱", eob = " " }
 
--- Tabpages instead of a buffer line, shown only with 2+ tabs
-opt.showtabline = 1
-opt.tabline = "%!v:lua.Kasui92.tabline.render()"
+-- Tabpages are listed in lualine, at the bottom, away from the zjstatus tabs
+opt.showtabline = 0
 
 -- Editing
 opt.mouse = "a"

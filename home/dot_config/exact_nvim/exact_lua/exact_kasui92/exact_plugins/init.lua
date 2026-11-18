@@ -27,7 +27,6 @@ vim.pack.add({
   gh("folke/snacks.nvim"),
   gh("nvim-lualine/lualine.nvim"),
   gh("esmuellert/codediff.nvim"),
-  gh("b0o/incline.nvim"),
   gh("brenoprata10/nvim-highlight-colors"),
   -- Editor
   { src = gh("saghen/blink.cmp"), version = vim.version.range("^1") },

@@ -1,12 +1,9 @@
 require("rose-pine").setup({
   styles = { transparency = true },
-  -- Tabline colors matching the zjstatus tabs
   highlight_groups = {
-    TabLine = { fg = "text", bg = "overlay" },
-    TabLineEdge = { fg = "overlay", bg = "NONE" },
-    TabLineSel = { fg = "base", bg = "iris", bold = true },
-    TabLineSelEdge = { fg = "iris", bg = "NONE" },
-    TabLineFill = { bg = "NONE" },
+    -- lualine tabs: the current one stands out like the active zjstatus tab
+    LualineTabActive = { fg = "iris", bold = true },
+    LualineTabInactive = { fg = "muted" },
     -- package-info.nvim virtual text
     PackageInfoUpToDateVersion = { fg = "muted" },
     PackageInfoOutdatedVersion = { fg = "gold" },
@@ -117,23 +114,6 @@ require("mini.clue").setup({
   window = { delay = 300, config = { width = "auto" } },
 })
 
--- File name at the top right of each window
-require("incline").setup({
-  window = { margin = { vertical = 0, horizontal = 1 }, zindex = 10 },
-  hide = { cursorline = "smart" },
-  render = function(props)
-    local name = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ":t")
-    if name == "" then
-      name = "[No Name]"
-    end
-    if vim.bo[props.buf].modified then
-      name = "[+] " .. name
-    end
-    local icon, hl = MiniIcons.get("file", name)
-    return { { icon, group = hl }, { " " }, { name } }
-  end,
-})
-
 -- Colors behind #hex, rgb(), hsl(), CSS variables and Tailwind classes, in any file
 vim.lsp.document_color.enable(false)
 require("nvim-highlight-colors").setup({
@@ -146,9 +126,32 @@ require("nvim-highlight-colors").setup({
   enable_tailwind = true,
 })
 
+-- Status line on the terminal background: the mode keeps its color as bold text, no blocks.
+-- A function, so lualine rebuilds it with the current rose-pine variant on ColorScheme.
+local function text_theme()
+  local p = require("rose-pine.palette")
+
+  local function sections(mode_color)
+    return {
+      a = { fg = mode_color, bg = "NONE", gui = "bold" },
+      b = { fg = p.subtle, bg = "NONE" },
+      c = { fg = p.text, bg = "NONE" },
+    }
+  end
+
+  return {
+    normal = sections(p.rose),
+    insert = sections(p.foam),
+    visual = sections(p.iris),
+    replace = sections(p.pine),
+    command = sections(p.love),
+    inactive = sections(p.muted),
+  }
+end
+
 require("lualine").setup({
   options = {
-    theme = "rose-pine",
+    theme = text_theme,
     globalstatus = true,
     component_separators = "",
     section_separators = "",
@@ -156,7 +159,22 @@ require("lualine").setup({
   sections = {
     lualine_a = { "mode" },
     lualine_b = { "branch" },
-    lualine_c = { "diagnostics", { "filename", path = 1 } },
+    -- Tabpages in place of the file name: the current tab shows the file being edited
+    lualine_c = {
+      {
+        "tabs",
+        mode = 2, -- index and name, like the zjstatus tabs
+        max_length = function()
+          return math.floor(vim.o.columns / 2)
+        end,
+        tabs_color = { active = "LualineTabActive", inactive = "LualineTabInactive" },
+        fmt = function(name)
+          local icon = MiniIcons.get("file", name)
+          return icon .. " " .. name
+        end,
+      },
+      "diagnostics",
+    },
     lualine_x = {
       {
         "diff",

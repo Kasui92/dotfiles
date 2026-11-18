@@ -26,6 +26,8 @@ bright5=c4a7e7
 bright6=ebbcba
 bright7=e0def4
 
+# Dim text (SGR 2) on the default foreground matches regular7: use the muted text color,
+# like alacritty's dim_foreground. The other colors keep their hue, like the alacritty theme.
 dim0=6e6a86
 dim1=eb6f92
 dim2=31748f
@@ -33,4 +35,4 @@ dim3=f6c177
 dim4=9ccfd8
 dim5=c4a7e7
 dim6=ebbcba
-dim7=e0def4
+dim7=908caa

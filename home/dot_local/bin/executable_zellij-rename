@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Rename the current zellij tab or session from a floating pane. The readline prompt starts
+# from the current name; Ctrl+C or an empty name leave it unchanged.
+set -euo pipefail
+
+target=${1:?usage: zellij-rename tab|session}
+
+case $target in
+  tab)
+    # "name: <name>" and "id: <id>" lines
+    info=$(zellij action current-tab-info)
+    current=$(sed -n 's/^name: //p' <<< "$info")
+    tab_id=$(sed -n 's/^id: //p' <<< "$info")
+    ;;
+  session)
+    current=$ZELLIJ_SESSION_NAME
+    ;;
+  *)
+    echo "zellij-rename: unknown target: $target" >&2
+    exit 1
+    ;;
+esac
+
+read -rep "Rename $target: " -i "$current" name
+
+if [[ -z $name || $name == "$current" ]]; then
+  exit 0
+fi
+
+if [[ $target == tab ]]; then
+  # By id: the tab stays the right one even if focus moves meanwhile
+  zellij action rename-tab-by-id "$tab_id" "$name"
+else
+  zellij action rename-session "$name"
+fi

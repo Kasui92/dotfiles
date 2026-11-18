@@ -10,11 +10,10 @@ plugins {
         format_hide_on_overlength "true"
         format_precedence "lrc"
 
-        // Tab ends from the Kasui92 Tab Caps font (~/.local/share/fonts)
-        tab_normal    "#[fg=black]􀀀#[fg=white,bg=black] {index}: {name}{fullscreen_indicator}{floating_indicator} #[fg=black]􀀁"
-        tab_active    "#[fg=magenta]􀀀#[fg=black,bg=magenta,bold] {index}: {name}{fullscreen_indicator}{floating_indicator} #[fg=magenta]􀀁"
-        tab_rename    "#[fg=magenta]􀀀#[fg=black,bg=magenta,bold] {index}: {name}{fullscreen_indicator}{floating_indicator} #[fg=magenta]􀀁"
-        tab_separator " "
+        tab_normal    "#[fg=bright_black] {index} {name}{fullscreen_indicator}{floating_indicator} "
+        tab_active    "#[fg=magenta,bold] {index} {name}{fullscreen_indicator}{floating_indicator} "
+        tab_rename    "#[fg=magenta,bold] {index} {name}{fullscreen_indicator}{floating_indicator} "
+        tab_separator ""
         tab_fullscreen_indicator " □"
         tab_floating_indicator   " 󰉈"
 
@@ -23,16 +22,17 @@ plugins {
         tab_truncate_start_format "#[fg=bright_black]‹{count} "
         tab_truncate_end_format   "#[fg=bright_black] {count}›"
 
-        // Locked is the resting mode: no label; the others show up after Ctrl g
-        mode_locked       ""
-        mode_normal       "#[fg=green,bold]NORMAL  "
-        mode_pane         "#[fg=magenta,bold]PANE  "
-        mode_resize       "#[fg=red,bold]RESIZE  "
-        mode_scroll       "#[fg=yellow,bold]SCROLL  "
-        mode_enter_search "#[fg=green,bold]SEARCH  "
-        mode_search       "#[fg=green,bold]SEARCH  "
-        mode_rename_tab   "#[fg=cyan,bold]RENAME  "
-        mode_rename_pane  "#[fg=magenta,bold]RENAME  "
+        // Every mode shows its label, padded to the width of SESSION so the tabs never shift.
+        // Locked is the resting mode, in the muted color.
+        mode_locked       "#[fg=bright_black,bold]LOCKED   "
+        mode_normal       "#[fg=green,bold]NORMAL   "
+        mode_pane         "#[fg=magenta,bold]PANE     "
+        mode_resize       "#[fg=red,bold]RESIZE   "
+        mode_scroll       "#[fg=yellow,bold]SCROLL   "
+        mode_enter_search "#[fg=green,bold]SEARCH   "
+        mode_search       "#[fg=green,bold]SEARCH   "
+        mode_rename_tab   "#[fg=cyan,bold]RENAME   "
+        mode_rename_pane  "#[fg=magenta,bold]RENAME   "
         mode_session      "#[fg=blue,bold]SESSION  "
     }
 

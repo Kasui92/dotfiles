@@ -81,7 +81,7 @@ vim.api.nvim_create_autocmd("FileType", {
       "n",
       "<leader>um",
       "<cmd>RenderMarkdown buf_toggle<cr>",
-      { buffer = ev.buf, desc = "Toggle markdown render" }
+      { buffer = ev.buf, desc = "󰍔 Markdown render" }
     )
   end,
 })

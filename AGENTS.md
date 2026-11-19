@@ -33,7 +33,8 @@ Each layer owns its keys:
   - `;` pickers (Snacks), plus `;g` lazygit; `\\` buffers.
   - `s` windows and oil: `ss` `sv` split, `sf` `sF` oil.
   - `<leader>` + area for actions: `c` code, `g` git, `d` codediff, `y` yank, `u` toggles, `q` session, `a` Claude, `b` buffers, `<tab>` tabpages.
-  - Divergence: mini.clue on `<Leader>` and `;` waits for the next key and shows their menus (group names in `plugins/ui.lua`, buffer groups via `vim.b.miniclue_config`); `;` alone is `;<CR>`. Other prefixes keep craftz's 500 ms `timeoutlen`.
+  - Divergence: mini.clue on `<Leader>`, `;`, `[`, `]`, `z`, registers and marks waits for the next key and shows their menus (group names and icons in `plugins/ui.lua`, buffer groups via `vim.b.miniclue_config`); `;` alone is `;<CR>`. Action icons live in the mapping `desc`, which wins over clue `desc`. Other prefixes keep craftz's 500 ms `timeoutlen`.
+  - Tabpages: `<leader><tab>t`/`x` new/close, native `{n}gt` for tab n.
   - Pickers keep the Snacks keys (`<C-v>` vsplit, `<C-s>` split, `<C-t>` tab); in oil `<C-s>` saves and `<C-v>` opens a vsplit.
   - No Alt keys that zellij binds; see `home/.chezmoitemplates/zellij/keybinds.kdl`.
 

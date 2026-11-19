@@ -93,23 +93,42 @@ require("snacks").setup({
 
 -- Menus for <Leader> and ; (pickers): they wait for the next key, the window shows after delay.
 -- ; alone (repeat f/t) runs with ; <CR>
-require("mini.clue").setup({
+-- Actions take their icon from the mapping desc, which wins over clue desc; groups get it here.
+local miniclue = require("mini.clue")
+miniclue.setup({
   triggers = {
     { mode = "n", keys = "<Leader>" },
     { mode = "x", keys = "<Leader>" },
     { mode = "n", keys = ";" },
     { mode = "x", keys = ";" },
+    { mode = "n", keys = "[" },
+    { mode = "x", keys = "[" },
+    { mode = "n", keys = "]" },
+    { mode = "x", keys = "]" },
+    { mode = "n", keys = "z" },
+    { mode = "x", keys = "z" },
+    { mode = "n", keys = '"' },
+    { mode = "x", keys = '"' },
+    { mode = "i", keys = "<C-r>" },
+    { mode = "c", keys = "<C-r>" },
+    { mode = "n", keys = "'" },
+    { mode = "x", keys = "'" },
+    { mode = "n", keys = "`" },
+    { mode = "x", keys = "`" },
   },
   clues = {
-    { mode = "n", keys = "<Leader>a", desc = "+ai" },
-    { mode = "n", keys = "<Leader>b", desc = "+buffer" },
-    { mode = "n", keys = "<Leader>c", desc = "+code" },
-    { mode = "n", keys = "<Leader>d", desc = "+diff" },
-    { mode = "n", keys = "<Leader>g", desc = "+git" },
-    { mode = "n", keys = "<Leader>q", desc = "+session" },
-    { mode = "n", keys = "<Leader>u", desc = "+toggle" },
-    { mode = "n", keys = "<Leader>y", desc = "+yank" },
-    { mode = "n", keys = "<Leader><Tab>", desc = "+tabs" },
+    { mode = { "n", "x" }, keys = "<Leader>a", desc = "󰚩 Claude" },
+    { mode = "n", keys = "<Leader>b", desc = "󰈔 Buffers" },
+    { mode = { "n", "x" }, keys = "<Leader>c", desc = "󰅩 Code" },
+    { mode = "n", keys = "<Leader>d", desc = "󰢪 CodeDiff" },
+    { mode = { "n", "x" }, keys = "<Leader>g", desc = "󰊢 Git" },
+    { mode = "n", keys = "<Leader>q", desc = "󰆓 Session" },
+    { mode = "n", keys = "<Leader>u", desc = "󰔡 Toggles" },
+    { mode = { "n", "x" }, keys = "<Leader>y", desc = "󰆏 Yank" },
+    { mode = "n", keys = "<Leader><Tab>", desc = "󰓩 Tabs" },
+    miniclue.gen_clues.z(),
+    miniclue.gen_clues.registers(),
+    miniclue.gen_clues.marks(),
   },
   window = { delay = 300, config = { width = "auto" } },
 })

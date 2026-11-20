@@ -1,0 +1,12 @@
+[init]
+	defaultBranch = main
+
+[pull]
+	rebase = true             # Rebase (instead of merge) on pull
+
+[push]
+	autoSetupRemote = true    # Automatically set upstream branch on push
+
+[rerere]
+	enabled = true            # Record and reuse conflict resolutions
+	autoupdate = true         # Apply stored conflict resolutions automatically
